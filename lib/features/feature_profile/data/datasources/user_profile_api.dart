@@ -9,21 +9,20 @@ class UserProfileApi {
   UserProfileApi(this.baseUrl);
 
   Future<UserProfileModel> fetchUserProfile() async {
-      final token = await SecureStorage.readToken();
+    final token = await SecureStorage.readToken();
 
-  final response = await http.get(
-    Uri.parse('$baseUrl/api/user/'),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    },
-  );
-  print(jsonDecode(response.body));
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/user/'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    print(jsonDecode(response.body));
 
     if (response.statusCode == 200) {
       return UserProfileModel.fromJson(jsonDecode(response.body));
     } else {
-      
       throw Exception('Failed to fetch profile');
     }
   }

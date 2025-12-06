@@ -4,4 +4,5 @@ class AssetsData {
   static const splash = 'assets/images/splash1.png';
   static const profile = 'assets/images/profile.jpg';
   static const profilephoto = 'assets/images/profilePhoto.jpg';
+  static const caricon = 'assets/images/car_icon.png';
 }

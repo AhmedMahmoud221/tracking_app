@@ -25,9 +25,7 @@ class Profile extends StatelessWidget {
         providers: [
           // Cubit الخاص بالـ logout
           BlocProvider(
-            create: (_) => ProfileCubit(
-              LogoutUseCase(AuthService()),
-            ),
+            create: (_) => ProfileCubit(LogoutUseCase(AuthService())),
           ),
 
           // Cubit الخاص ببيانات البروفايل
@@ -36,7 +34,7 @@ class Profile extends StatelessWidget {
               GetUserProfileUseCase(
                 UserProfileRepositoryImpl(
                   UserProfileApi(
-                    "https://v05j2rv7-5000.euw.devtunnels.ms", // <=== حط هنا الـ base URL الصح
+                    "https://r8c974qv-5000.uks1.devtunnels.ms", // <=== حط هنا الـ base URL الصح
                   ),
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/login_page_view.dart';
@@ -15,23 +16,22 @@ class AppRouter {
   static const kHomePage = '/home';
   static const kSignupPageView = '/signup';
   static const kProfile = '/profile';
+  static const kGoogleMap = '/googlemap';
 
   static final routes = <GoRoute>[
-    GoRoute(
-      path: kSplashView,
-      builder: (context, state) => const SplashView(),
-    ),
+    GoRoute(path: kSplashView, builder: (context, state) => const SplashView()),
     GoRoute(
       path: kLoginPageView,
       builder: (context, state) => const LoginPageView(),
     ),
-    GoRoute(
-      path: kHomePage,
-      builder: (context, state) => const HomePage(),
-    ),
+    GoRoute(path: kHomePage, builder: (context, state) => const HomePage()),
     GoRoute(
       path: kSignupPageView,
       builder: (context, state) => const SignupPageView(),
+    ),
+    GoRoute(
+      path: kGoogleMap,
+      builder: (context, state) => const GoogleMapPage(),
     ),
     GoRoute(
       path: '/profile',

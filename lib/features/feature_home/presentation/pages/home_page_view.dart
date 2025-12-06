@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:live_tracking/features/feature_devices/presentation/widgets/devices.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/widgets/google_map.dart';
+import 'package:live_tracking/features/feature_devices/presentation/views/devices_page.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/custom_app_bar.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/custom_bottom_bar.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/home_page_body.dart';
 import 'package:live_tracking/features/feature_profile/presentation/widgets/profile.dart';
 
 class HomePageView extends StatefulWidget {
+  const HomePageView({super.key});
+
   @override
   State<HomePageView> createState() => _HomePageViewState();
 }
@@ -16,8 +18,8 @@ class _HomePageViewState extends State<HomePageView> {
 
   final List<Widget> pages = [
     HomePageBody(),
-    Devices(),
-    LiveGoogleMap(),
+    DevicesPage(),
+    GoogleMapPage(),
     Profile(),
   ];
 
@@ -35,10 +37,7 @@ class _HomePageViewState extends State<HomePageView> {
 
       appBar: CustomAppBar(),
 
-      body: IndexedStack(
-        index: selectedIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: selectedIndex, children: pages),
 
       bottomNavigationBar: CustomBottomBar(
         currentIndex: selectedIndex,
