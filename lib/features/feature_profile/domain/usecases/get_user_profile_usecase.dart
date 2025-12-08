@@ -1,6 +1,5 @@
+import 'package:live_tracking/features/feature_profile/domain/entities/user_profile.dart';
 import 'package:live_tracking/features/feature_profile/domain/repositories/user_profile_repository.dart';
-
-import '../entities/user_profile.dart';
 
 class GetUserProfileUseCase {
   final UserProfileRepository repository;

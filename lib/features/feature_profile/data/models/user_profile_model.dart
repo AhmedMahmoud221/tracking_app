@@ -4,10 +4,10 @@ class UserProfileModel extends UserProfile {
   UserProfileModel({required super.name, required super.email});
 
     factory UserProfileModel.fromJson(Map<String, dynamic> json) {
-    final userData = json['data']?['user'] ?? {};
+    final user = json['data']['user'] ?? {};
     return UserProfileModel(
-      name: userData['name'] ?? '',
-      email: userData['email'] ?? '',
+      name: user['name'] ?? '',
+      email: user['email'] ?? '',
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_profile/data/datasources/user_profile_api.dart';
 import 'package:live_tracking/features/feature_profile/data/repositories/user_profile_repository_impl.dart';
@@ -34,7 +35,7 @@ class Profile extends StatelessWidget {
               GetUserProfileUseCase(
                 UserProfileRepositoryImpl(
                   UserProfileApi(
-                    "https://r8c974qv-5000.uks1.devtunnels.ms", // <=== حط هنا الـ base URL الصح
+                    ApiConstants.baseUrl, // <=== حط هنا الـ base URL الصح
                   ),
                 ),
               ),
