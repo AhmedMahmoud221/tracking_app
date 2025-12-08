@@ -79,12 +79,9 @@ class LiveTrackingApp extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthCubit>(
-      create: (_) => AuthCubit(AuthService()),
-    ),
-      BlocProvider<ProfileDataCubit>(
-        create: (_) => sl<ProfileDataCubit>(),
-    ),
+        BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()),
+        BlocProvider<ProfileDataCubit>(create: (_) => sl<ProfileDataCubit>()),
+        BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>(),),
       ],
       child: MaterialApp.router(
         routerConfig: router,
