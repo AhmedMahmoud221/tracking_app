@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:live_tracking/features/feature_google-map/data/data_sources/device_remote_data_source.dart';
 // import 'package:live_tracking/features/feature_google-map/data/repostories/device_repository_impl.dart';
@@ -8,15 +9,19 @@ import 'package:go_router/go_router.dart';
 // import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
+import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
 // import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/login_page_view.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/signup_page_view.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
+import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 // import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/widgets/profile.dart';
 import 'package:live_tracking/features/feature_splash/presentation/widgets/splash_view.dart';
-// import 'package:live_tracking/injection_container.dart';
+import 'package:live_tracking/injection_container.dart';
+
+final sl = GetIt.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,10 +77,20 @@ class LiveTrackingApp extends StatelessWidget {
       ],
     );
 
-    return MaterialApp.router(
-      routerConfig: router,
-      debugShowCheckedModeBanner: false,
-      title: 'Live Tracking App',
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthCubit>(
+      create: (_) => AuthCubit(AuthService()),
+    ),
+      BlocProvider<ProfileDataCubit>(
+        create: (_) => sl<ProfileDataCubit>(),
+    ),
+      ],
+      child: MaterialApp.router(
+        routerConfig: router,
+        debugShowCheckedModeBanner: false,
+        title: 'Live Tracking App',
+      ),
     );
   }
 }

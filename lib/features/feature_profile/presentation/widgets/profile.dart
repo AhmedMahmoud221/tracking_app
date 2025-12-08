@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_profile/data/datasources/user_profile_api.dart';
@@ -84,20 +85,32 @@ class Profile extends StatelessWidget {
                 onTap: () {},
               ),
 
-              BlocBuilder<ProfileCubit, ProfileState>(
-                builder: (context, state) {
-                  final isLoading = state is LogoutLoadingState;
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: LogoutButton(
-                      isLoading: isLoading,
-                      onTap: () {
-                        context.read<ProfileCubit>().logout();
-                      },
-                    ),
-                  );
+              BlocListener<ProfileCubit, ProfileState>(
+                listener: (context, state) {
+                  if (state is LogoutSuccessState) {
+                    // بعد نجاح logout، نروح للـ login
+                    context.go('/login'); // لو بتستخدم GoRouter
+                  } else if (state is LogoutErrorState) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
+                  }
                 },
+                child: BlocBuilder<ProfileCubit, ProfileState>(
+                  builder: (context, state) {
+                    final isLoading = state is LogoutLoadingState;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: LogoutButton(
+                        isLoading: isLoading,
+                        onTap: () {
+                          context.read<ProfileCubit>().logout();
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
 
               const SizedBox(height: 40),

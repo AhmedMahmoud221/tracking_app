@@ -9,7 +9,7 @@ class AuthService {
 
   // login method
   Future<String> login({required String email, required String password}) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}api/user/login');
+    final url = Uri.parse('${ApiConstants.baseUrl}/api/user/login');
     final response = await client.post(url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}));
@@ -29,7 +29,7 @@ class AuthService {
     required String password,
     required String passwordConfirm,
   }) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}api/user/register');
+    final url = Uri.parse('${ApiConstants.baseUrl}/api/user/register');
     final response = await client.post(url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -49,7 +49,7 @@ class AuthService {
 
   // Existing login & signup methods ...
   Future<void> logoutbutton(String token) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}api/user/logout');
+    final url = Uri.parse('${ApiConstants.baseUrl}/api/user/logout');
 
     final response = await client.get(
       url,
