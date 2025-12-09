@@ -4,15 +4,16 @@ import 'package:live_tracking/features/feature_login/data/models/auth_service.da
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  final AuthService _authService;
+  final AuthService authService;
 
-  AuthCubit(this._authService) : super(AuthInitial());
+  AuthCubit(this.authService) : super(AuthInitial());
 
   Future<void> login({required String email, required String password}) async {
     emit(AuthLoading());
     try {
-      final token = await _authService.login(email: email, password: password);
+      final token = await authService.login(email: email, password: password);
       await SecureStorage.saveToken(token); // ← هنا
+            print(token);
       emit(AuthSuccess(token: token));
     } catch (e) {
       emit(AuthFailure(e.toString()));
@@ -27,7 +28,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(AuthLoading());
     try {
-      final token = await _authService.signup(
+      final token = await authService.signup(
         name: name,
         email: email,
         password: password,

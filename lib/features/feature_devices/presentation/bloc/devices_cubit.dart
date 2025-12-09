@@ -24,7 +24,7 @@ class DevicesCubit extends Cubit<DevicesState> {
       emit(DevicesLoaded(List.from(_allDevices)));
       emit(DevicesLoaded(devices));
     } catch (e) {
-      emit(DevicesError(e.toString()));
+      emit(DevicesError(e.toString())); // هنا هتظهر الرسالة على الشاشة بدل الأحمر
     }
   }
 

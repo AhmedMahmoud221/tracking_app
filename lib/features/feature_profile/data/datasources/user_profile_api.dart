@@ -21,9 +21,6 @@ class UserProfileApi {
         'Content-Type': 'application/json',
       },
     );
-    print('Token: $token');
-    print(jsonDecode(response.body));
-    print(response.statusCode);
 
     if (response.statusCode == 200) {
       return UserProfileModel.fromJson(jsonDecode(response.body));
