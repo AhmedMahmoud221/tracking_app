@@ -18,29 +18,46 @@ class AppRouter {
   static const kProfile = '/profile';
   static const kGoogleMap = '/googlemap';
 
-  static final routes = <GoRoute>[
-    GoRoute(path: kSplashView, builder: (context, state) => const SplashView()),
-    GoRoute(
-      path: kLoginPageView,
-      builder: (context, state) => const LoginPageView(),
-    ),
-    GoRoute(path: kHomePage, builder: (context, state) => const HomePage()),
-    GoRoute(
-      path: kSignupPageView,
-      builder: (context, state) => const SignupPageView(),
-    ),
-    GoRoute(
-      path: kGoogleMap,
-      builder: (context, state) => const GoogleMapPage(),
-    ),
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) {
-        return BlocProvider(
-          create: (_) => ProfileCubit(LogoutUseCase(AuthService())),
-          child: const Profile(),
-        );
-      },
-    ),
-  ];
+  static final  router = GoRouter(
+      initialLocation: '/', //splash first
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) =>
+              const SplashView(), // Splash handle token itself
+        ),
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => const LoginPageView(),
+        ),
+        GoRoute(
+          path: '/signup',
+          builder: (context, state) => const SignupPageView(),
+        ),
+        GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+        // ⬇⬇⬇ هنا تحط الـ Profile + Provider
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) {
+            return BlocProvider(
+              create: (_) => ProfileCubit(LogoutUseCase(AuthService())),
+              child: const Profile(),
+            );
+          },
+        ),
+        // GoRoute(
+        //   path: '/map',
+        //   builder: (context, state) {
+        //     return BlocProvider(
+        //       create: (_) => MapCubit(
+        //         getDevices: GetDevices(
+        //           DeviceRepositoryImpl(DeviceRemoteDataSource()),
+        //         ),
+        //       ),
+        //       child: const GoogleMapPage(),
+        //     );
+        //   },
+        // ),
+      ],
+    );
 }

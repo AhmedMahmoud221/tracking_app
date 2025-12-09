@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/core/utils/app_router.dart';
 // import 'package:live_tracking/features/feature_google-map/data/data_sources/device_remote_data_source.dart';
 // import 'package:live_tracking/features/feature_google-map/data/repostories/device_repository_impl.dart';
 // import 'package:live_tracking/features/feature_google-map/domain/usecases/get_device_map.dart';
@@ -19,7 +20,6 @@ import 'package:live_tracking/features/feature_profile/presentation/cubit/profil
 // import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/widgets/profile.dart';
 import 'package:live_tracking/features/feature_splash/presentation/widgets/splash_view.dart';
-import 'package:live_tracking/injection_container.dart';
 
 final sl = GetIt.instance;
 
@@ -34,48 +34,6 @@ class LiveTrackingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GoRouter router = GoRouter(
-      initialLocation: '/', //splash first
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) =>
-              const SplashView(), // Splash handle token itself
-        ),
-        GoRoute(
-          path: '/login',
-          builder: (context, state) => const LoginPageView(),
-        ),
-        GoRoute(
-          path: '/signup',
-          builder: (context, state) => const SignupPageView(),
-        ),
-        GoRoute(path: '/home', builder: (context, state) => const HomePage()),
-        // ⬇⬇⬇ هنا تحط الـ Profile + Provider
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) {
-            return BlocProvider(
-              create: (_) => ProfileCubit(LogoutUseCase(AuthService())),
-              child: const Profile(),
-            );
-          },
-        ),
-        // GoRoute(
-        //   path: '/map',
-        //   builder: (context, state) {
-        //     return BlocProvider(
-        //       create: (_) => MapCubit(
-        //         getDevices: GetDevices(
-        //           DeviceRepositoryImpl(DeviceRemoteDataSource()),
-        //         ),
-        //       ),
-        //       child: const GoogleMapPage(),
-        //     );
-        //   },
-        // ),
-      ],
-    );
 
     return MultiBlocProvider(
       providers: [
@@ -84,7 +42,7 @@ class LiveTrackingApp extends StatelessWidget {
         BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>(),),
       ],
       child: MaterialApp.router(
-        routerConfig: router,
+        routerConfig: AppRouter.router,
         debugShowCheckedModeBanner: false,
         title: 'Live Tracking App',
       ),
