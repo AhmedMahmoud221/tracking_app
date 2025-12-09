@@ -4,10 +4,10 @@ class DotsJumpAnimation extends StatefulWidget {
   const DotsJumpAnimation({super.key});
 
   @override
-  _DotsJumpAnimationState createState() => _DotsJumpAnimationState();
+  DotsJumpAnimationState createState() => DotsJumpAnimationState();
 }
 
-class _DotsJumpAnimationState extends State<DotsJumpAnimation>
+class DotsJumpAnimationState extends State<DotsJumpAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

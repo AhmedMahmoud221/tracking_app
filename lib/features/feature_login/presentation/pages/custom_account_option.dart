@@ -20,7 +20,7 @@ class CustomAccountOption extends StatelessWidget {
         Text(
           text1,
           style: Styles.textStyle16.copyWith(
-            color: Colors.black54.withOpacity(0.3),
+            color: Colors.black54.withValues(alpha:  0.3),
           ),
         ),
         TextButton(

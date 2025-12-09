@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:live_tracking/core/utils/storage_helper.dart';
 import 'package:live_tracking/features/feature_profile/data/models/user_profile_model.dart';

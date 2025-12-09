@@ -75,8 +75,10 @@ class _SplashViewBodyState extends State<SplashViewBody>
     final token = await SecureStorage.readToken();
 
     if (token != null) {
+      // ignore: use_build_context_synchronously
       GoRouter.of(context).go(AppRouter.kHomePage); // لو موجود → Home
     } else {
+      // ignore: use_build_context_synchronously
       GoRouter.of(context).go(AppRouter.kLoginPageView); // لو مش موجود → Login
     }
   }  
