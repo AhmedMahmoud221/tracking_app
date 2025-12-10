@@ -2,4 +2,6 @@ import 'package:live_tracking/features/feature_devices/domain/entities/device_en
 
 abstract class DeviceRepository {
   Future<List<DeviceEntity>> getDevices();
+
+  Future<DeviceEntity> createDevice(DeviceEntity device); // New
 }

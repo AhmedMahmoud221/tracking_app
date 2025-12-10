@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/features/feature_devices/presentation/bloc/devices_cubit.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/cubit/devices_map_cubit.dart';
+import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
@@ -29,6 +30,7 @@ class LiveTrackingApp extends StatelessWidget {
         BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>()),
         BlocProvider<DevicesMapCubit>(create: (_) => sl<DevicesMapCubit>()),
         BlocProvider<DevicesCubit>(create: (_) => sl<DevicesCubit>()),
+        BlocProvider<CreateDeviceCubit>(create: (_) => sl<CreateDeviceCubit>()),
       ],
       child: MaterialApp.router(
         routerConfig: AppRouter.router,

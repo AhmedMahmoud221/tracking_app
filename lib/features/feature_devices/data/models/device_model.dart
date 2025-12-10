@@ -1,4 +1,3 @@
-
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 
 class DeviceModel extends DeviceEntity {
@@ -32,10 +31,7 @@ class DeviceModel extends DeviceEntity {
 }
 
 class LastLocationModel extends LastLocationEntity {
-  LastLocationModel({
-    required super.type,
-    required super.coordinates,
-  });
+  LastLocationModel({required super.type, required super.coordinates});
 
   factory LastLocationModel.fromJson(Map<String, dynamic> json) {
     return LastLocationModel(

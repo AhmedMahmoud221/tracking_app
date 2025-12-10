@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/features/feature_devices/presentation/bloc/devices_cubit.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
+import 'package:live_tracking/features/feature_home/presentation/pages/custom_add_device.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/login_page_view.dart';
@@ -19,6 +20,7 @@ class AppRouter {
   static const kSignupPageView = '/signup';
   static const kProfile = '/profile';
   static const kGoogleMap = '/google-map';
+  static const kCreateDevice = '/create-device';
 
   static final router = GoRouter(
     initialLocation: '/', //splash first
@@ -55,6 +57,10 @@ class AppRouter {
             child: const GoogleMapPage(),
           );
         },
+      ),
+      GoRoute(
+        path: '/create-device',
+        builder: (context, state) => CreateDevicePage(),
       ),
     ],
   );

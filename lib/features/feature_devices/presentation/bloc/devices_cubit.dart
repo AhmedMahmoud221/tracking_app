@@ -24,19 +24,23 @@ class DevicesCubit extends Cubit<DevicesState> {
       emit(DevicesLoaded(List.from(_allDevices)));
       emit(DevicesLoaded(devices));
     } catch (e) {
-      emit(DevicesError(e.toString())); // هنا هتظهر الرسالة على الشاشة بدل الأحمر
+      emit(
+        DevicesError(e.toString()),
+      ); // هنا هتظهر الرسالة على الشاشة بدل الأحمر
     }
   }
 
   void searchDevices(String query) {
-  final filtered = allDevices.where(
-    (device) => device.model.toLowerCase().contains(query.toLowerCase()),
-  ).toList();
+    final filtered = allDevices
+        .where(
+          (device) => device.model.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
 
-  emit(DevicesLoaded(filtered));
+    emit(DevicesLoaded(filtered));
   }
 
- /// فلترة محلية على _allDevices
+  /// فلترة محلية على _allDevices
   void searchDevicesList(String query) {
     final q = query.trim();
 
@@ -55,9 +59,9 @@ class DevicesCubit extends Cubit<DevicesState> {
       final lowerQ = q.toLowerCase();
 
       return brand.contains(lowerQ) ||
-             model.contains(lowerQ) ||
-             plate.contains(lowerQ) ||
-             status.contains(lowerQ);
+          model.contains(lowerQ) ||
+          plate.contains(lowerQ) ||
+          status.contains(lowerQ);
     }).toList();
 
     emit(DevicesLoaded(filtered));
@@ -67,4 +71,14 @@ class DevicesCubit extends Cubit<DevicesState> {
   void clearSearch() {
     emit(DevicesLoaded(List.from(_allDevices)));
   }
+
+  // void addDevice(DeviceEntity device) async {
+  //   try {
+  //     final newDevice = await repository.createDevice(device);
+  //     _allDevices.add(newDevice); // اضف للجهاز المحلي
+  //     emit(DevicesLoaded(List.from(_allDevices)));
+  //   } catch (e) {
+  //     emit(DevicesError(e.toString()));
+  //   }
+  // }
 }

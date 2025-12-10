@@ -28,8 +28,5 @@ class LastLocationEntity {
   final String type;
   final List<double> coordinates;
 
-  LastLocationEntity({
-    required this.type,
-    required this.coordinates,
-  });
+  LastLocationEntity({required this.type, required this.coordinates});
 }
