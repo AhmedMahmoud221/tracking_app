@@ -14,14 +14,14 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
   @override
   Future<List<DeviceModel>> getDevices() async {
     final token = await SecureStorage.readToken() ?? "";
-    print('token is ${token}');
+    print('token is $token');
 
     final response = await dio.get(
       'https://v05j2rv7-5000.euw.devtunnels.ms/api/user/device',
       options: Options(
         headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
         },
       ),
     );

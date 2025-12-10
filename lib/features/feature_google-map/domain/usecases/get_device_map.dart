@@ -1,12 +1,12 @@
-// import 'package:live_tracking/features/feature_google-map/data/repostories/device_repository_impl.dart';
-// import 'package:live_tracking/features/feature_google-map/domain/entities/vehicle_map.dart';
+// import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+// import 'package:live_tracking/features/feature_google-map/domain/repository/device_map_repository.dart';
 
-// class GetDevices {
-//   final DeviceRepository repository;
+// class GetDevicesMapList {
+//   final DeviceMapRepository repository;
 
-//   GetDevices(this.repository);
+//   GetDevicesList(this.repository);
 
-//   Future<List<Device>> call() {
-//     return repository.getAllDevices();
+//   Future<List<DeviceEntity>> call() async {
+//     return await repository.getDevices();
 //   }
 // }

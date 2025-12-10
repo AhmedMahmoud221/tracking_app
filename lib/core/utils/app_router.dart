@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/features/feature_devices/presentation/bloc/devices_cubit.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
@@ -9,6 +10,7 @@ import 'package:live_tracking/features/feature_profile/domain/usecases/logout_us
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/widgets/profile.dart';
 import 'package:live_tracking/features/feature_splash/presentation/widgets/splash_view.dart';
+import 'package:live_tracking/main.dart';
 
 class AppRouter {
   static const kSplashView = '/';
@@ -16,9 +18,9 @@ class AppRouter {
   static const kHomePage = '/home';
   static const kSignupPageView = '/signup';
   static const kProfile = '/profile';
-  static const kGoogleMap = '/googlemap';
+  static const kGoogleMap = '/google-map';
 
-  static final  router = GoRouter(
+  static final router = GoRouter(
     initialLocation: '/', //splash first
     routes: [
       GoRoute(
@@ -45,19 +47,15 @@ class AppRouter {
           );
         },
       ),
-      // GoRoute(
-      //   path: '/map',
-      //   builder: (context, state) {
-      //     return BlocProvider(
-      //       create: (_) => MapCubit(
-      //         getDevices: GetDevices(
-      //           DeviceRepositoryImpl(DeviceRemoteDataSource()),
-      //         ),
-      //       ),
-      //       child: const GoogleMapPage(),
-      //     );
-      //   },
-      // ),
+      GoRoute(
+        path: '/google-map',
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: sl<DevicesCubit>(), // reuse نفس الـ Cubit
+            child: const GoogleMapPage(),
+          );
+        },
+      ),
     ],
   );
 }
