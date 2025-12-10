@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/domain/usecases/get_devices_list.dart';
-import 'package:live_tracking/features/feature_devices/presentation/bloc/devices_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
 
 class DevicesCubit extends Cubit<DevicesState> {
   final GetDevicesList getDevicesList;
@@ -22,7 +22,6 @@ class DevicesCubit extends Cubit<DevicesState> {
       _allDevices.clear();
       _allDevices.addAll(devices);
       emit(DevicesLoaded(List.from(_allDevices)));
-      emit(DevicesLoaded(devices));
     } catch (e) {
       emit(
         DevicesError(e.toString()),
@@ -30,55 +29,36 @@ class DevicesCubit extends Cubit<DevicesState> {
     }
   }
 
+  /// إضافة جهاز جديد مباشرة
+  void addDevice(DeviceEntity device) {
+    _allDevices.add(device);
+    emit(DevicesLoaded(List.from(_allDevices)));
+  }
+
   void searchDevices(String query) {
-    final filtered = allDevices
-        .where(
-          (device) => device.model.toLowerCase().contains(query.toLowerCase()),
-        )
-        .toList();
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) {
+      emit(DevicesLoaded(List.from(_allDevices)));
+      return;
+    }
+
+    final filtered = _allDevices.where((device) {
+      return device.brand.toLowerCase().contains(q) ||
+          device.model.toLowerCase().contains(q) ||
+          device.plateNumber.toLowerCase().contains(q) ||
+          device.status.toLowerCase().contains(q);
+    }).toList();
 
     emit(DevicesLoaded(filtered));
   }
 
   /// فلترة محلية على _allDevices
   void searchDevicesList(String query) {
-    final q = query.trim();
-
-    // لو البحث فاضي رجّع القائمة الأصلية
-    if (q.isEmpty) {
-      emit(DevicesLoaded(List.from(_allDevices)));
-      return;
-    }
-
-    // فلترة آمنة — نتاكد إننا نعمل toLowerCase على السلاسل قبل المقارنة
-    final filtered = _allDevices.where((device) {
-      final brand = device.brand.toLowerCase();
-      final model = device.model.toLowerCase();
-      final plate = device.plateNumber.toLowerCase();
-      final status = device.status.toLowerCase();
-      final lowerQ = q.toLowerCase();
-
-      return brand.contains(lowerQ) ||
-          model.contains(lowerQ) ||
-          plate.contains(lowerQ) ||
-          status.contains(lowerQ);
-    }).toList();
-
-    emit(DevicesLoaded(filtered));
+    emit(DevicesLoaded(List.from(_allDevices)));
   }
 
   /// لو احتجت تعمل إعادة تحميل / مسح فلتر
   void clearSearch() {
     emit(DevicesLoaded(List.from(_allDevices)));
   }
-
-  // void addDevice(DeviceEntity device) async {
-  //   try {
-  //     final newDevice = await repository.createDevice(device);
-  //     _allDevices.add(newDevice); // اضف للجهاز المحلي
-  //     emit(DevicesLoaded(List.from(_allDevices)));
-  //   } catch (e) {
-  //     emit(DevicesError(e.toString()));
-  //   }
-  // }
 }

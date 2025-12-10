@@ -13,6 +13,18 @@ class DevicesMapCubit extends Cubit<DevicesMapState> {
   List<DeviceEntity> _devices = [];
   DeviceEntity? _selected;
 
+  /// تهيئة الأجهزة من الـ DevicesCubit
+  void setDevices(List<DeviceEntity> devices) {
+    _devices.clear();
+    _devices.addAll(devices);
+    emit(DevicesLoaded(devices: _devices));
+  }
+
+  void addDevice(DeviceEntity device) {
+    _devices.add(device);
+    emit(DevicesLoaded(devices: _devices));
+  }
+
   Future<void> loadDevices() async {
     emit(DevicesLoading());
 

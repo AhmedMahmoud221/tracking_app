@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:live_tracking/features/feature_devices/presentation/bloc/devices_cubit.dart';
-import 'package:live_tracking/features/feature_devices/presentation/bloc/devices_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_devices/presentation/widgets/device_card.dart';
 
 class DevicesPage extends StatelessWidget {
@@ -27,9 +27,9 @@ class DevicesPage extends StatelessWidget {
             Expanded(
               child: BlocBuilder<DevicesCubit, DevicesState>(
                 builder: (context, state) {
-                  if (state is DevicesLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                  // if (state is DevicesLoading) {
+                  //   return const Center(child: CircularProgressIndicator());
+                  // }
 
                   if (state is DevicesLoaded) {
                     final devices = state.devices;
@@ -67,14 +67,13 @@ class DevicesPage extends StatelessWidget {
   }
 }
 
-
 class _SearchBar extends StatelessWidget {
   final TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,      
+      controller: controller,
       onChanged: (query) {
         context.read<DevicesCubit>().searchDevices(query);
       },

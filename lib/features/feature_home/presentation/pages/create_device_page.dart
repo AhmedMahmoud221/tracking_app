@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/cubit/devices_map_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_state.dart';
 
@@ -26,28 +29,41 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
 
       body: BlocListener<CreateDeviceCubit, CreateDeviceState>(
         listener: (context, state) {
-          if (state is CreateDeviceLoading) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (_) => Center(child: CircularProgressIndicator()),
-            );
-          }
-
           if (state is CreateDeviceSuccess) {
-            Navigator.pop(context); // close loading
-            Navigator.pop(context); // go back to Home
+            // 1. **إغلاق شاشة التحميل (مهم جداً)**
+            // هذا يغلق الـ showDialog الذي فُتح في حالة Loading
+            // يجب استدعاؤها مرتين لضمان إغلاق أي نافذة عائمة إذا كنت تستخدم نافيجيتور آخر
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+
+            // 2. تفريغ الحقول (ستجدها فارغة عند فتح الفورم مجدداً)
+            brandController.clear();
+            modelController.clear();
+            yearController.clear();
+            plateController.clear();
+            setState(() {
+              selectedType = "Car";
+            });
+
+            // **تحديث الـ DevicesCubit وDevicesMapCubit فورًا**
+            context.read<DevicesCubit>().addDevice(state.device);
+            context.read<DevicesMapCubit>().addDevice(state.device);
+
+            // 3. عرض رسالة النجاح (الأفضل نقلها للصفحة الأم لضمان الظهور، لكن لنتركها هنا حالياً)
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Device Created Successfully")),
             );
 
-            // نرجع نعمل refresh للـ devices
-            // Cubit تاني في الصفحة الرئيسية
-            // وتلقائي الماب كمان هتتحدّث
+            // 4. العودة للصفحة الأم بعد كل الإجراءات
+            if (context.canPop()) {
+              context.pop(true);
+            }
           }
 
           if (state is CreateDeviceError) {
-            Navigator.pop(context); // close loading
+            // أيضاً، تأكد من إغلاق شاشة التحميل في حالة الخطأ!
+            Navigator.pop(context); // إغلاق الـ Loading Dialog
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -89,7 +105,7 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                   DropdownButtonFormField<String>(
                     value: selectedType,
                     decoration: InputDecoration(labelText: "Type"),
-                    items: ["Car", "Bike", "Truck", "Bus"]
+                    items: ["Car", "motorcycle", "Truck"]
                         .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                         .toList(),
                     onChanged: (v) => setState(() => selectedType = v!),
