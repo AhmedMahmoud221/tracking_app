@@ -32,7 +32,7 @@ class CustomBottomBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           buildItem(Icons.home, "Home", 0),
-          buildItem(Icons.devices, "Devices", 1),
+          buildItem(Icons.directions_car, "Devices", 1),
           buildItem(Icons.gps_fixed, "Live", 2),
           buildItem(Icons.person, "Profile", 3),
         ],

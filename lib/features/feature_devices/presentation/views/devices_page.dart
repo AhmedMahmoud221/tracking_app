@@ -92,12 +92,7 @@ class _DevicesPageState extends State<DevicesPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              114,
-                              188,
-                              248,
-                            ),
+                            backgroundColor: Colors.blue,
                             elevation: 3,
                           ),
                         ),

@@ -50,7 +50,6 @@ class CustomBottomSheet extends StatelessWidget {
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final d = devices[index];
-                        final online = d.status == 'online';
                         return InkWell(
                           onTap: () {
                             Navigator.pop(context); // close sheet
@@ -69,17 +68,40 @@ class CustomBottomSheet extends StatelessWidget {
                             child: Row(
                               children: [
                                 const Icon(
-                                  Icons.location_on_outlined,
+                                  Icons.directions_car,
                                   size: 32,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: Text(
-                                    d.brand,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            d.brand,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          SizedBox(width: 6,),
+                                          Text(
+                                            d.model,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          'Speed : ${d.speed}',
+                                        
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 Row(
@@ -88,7 +110,7 @@ class CustomBottomSheet extends StatelessWidget {
                                       width: 12,
                                       height: 12,
                                       decoration: BoxDecoration(
-                                        color: online
+                                        color: d.status == "Moving"
                                             ? Colors.green
                                             : Colors.red,
                                         shape: BoxShape.circle,
@@ -96,11 +118,12 @@ class CustomBottomSheet extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      online ? 'Online' : 'Offline',
+                                      d.status == "Moving" ? 'Online' : 'Offline',
                                       style: TextStyle(
-                                        color: online
+                                        color: d.status == "Moving"
                                             ? Colors.green
                                             : Colors.red,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ],
