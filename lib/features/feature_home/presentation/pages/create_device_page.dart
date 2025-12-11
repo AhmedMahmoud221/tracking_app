@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,7 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(179, 214, 246, 255),
         title: Text(
@@ -36,9 +38,7 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
           if (state is CreateDeviceSuccess) {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
-
             }
-
             brandController.clear();
             modelController.clear();
             yearController.clear();
@@ -70,71 +70,181 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
           padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
-
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: brandController,
-                    decoration: InputDecoration(labelText: "Brand"),
-                    validator: (v) => v!.isEmpty ? "Required" : null,
-                  ),
-                  TextFormField(
-                    controller: modelController,
-                    decoration: InputDecoration(labelText: "Model"),
-                    validator: (v) => v!.isEmpty ? "Required" : null,
-                  ),
-                  TextFormField(
-                    controller: yearController,
-                    decoration: InputDecoration(labelText: "Year"),
-                    keyboardType: TextInputType.number,
-                    validator: (v) => v!.isEmpty ? "Required" : null,
-                  ),
-                  TextFormField(
-                    controller: plateController,
-                    decoration: InputDecoration(labelText: "Plate Number"),
-                    validator: (v) => v!.isEmpty ? "Required" : null,
-                  ),
-
-                  SizedBox(height: 15),
-
-                  DropdownButtonFormField<String>(
-                    value: selectedType,
-                    decoration: InputDecoration(labelText: "Type"),
-                    items: ["Car", "motorcycle", "Truck"]
-                        .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                        .toList(),
-                    onChanged: (v) => setState(() => selectedType = v!),
-                  ),
-
-                  SizedBox(height: 25),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final device = DeviceEntity(
-                          id: "",
-                          brand: brandController.text,
-                          model: modelController.text,
-                          year: int.parse(yearController.text),
-                          plateNumber: plateController.text,
-                          type: selectedType,
-                          user: "",
-                          status: "",
-                          speed: 0,
-                          lastLocation: LastLocationEntity(
-                            type: "",
-                            coordinates: [],
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 12,),
+                  
+                        TextFormField(
+                          controller: brandController,
+                          decoration: InputDecoration(
+                            labelText: "Brand",
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            labelStyle: TextStyle(
+                              color: Colors.grey, // هنا تختار اللون اللي تحبه
+                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontSize: 16, // اختياري لو عايز حجم مختلف
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
                           ),
-                        );
-
-                        context.read<CreateDeviceCubit>().createDevice(device);
-                      }
-                    },
-                    child: Text("Create Device"),
+                          validator: (v) => v!.isEmpty ? "Required" : null,
+                        ),
+                  
+                        const SizedBox(height: 12,),
+                        TextFormField(
+                          controller: brandController,
+                          decoration: InputDecoration(
+                            labelText: "Model",
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            labelStyle: TextStyle(
+                              color: Colors.grey, // هنا تختار اللون اللي تحبه
+                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontSize: 16, // اختياري لو عايز حجم مختلف
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (v) => v!.isEmpty ? "Required" : null,
+                        ),
+                  
+                        const SizedBox(height: 12,),
+                        TextFormField(
+                          controller: brandController,
+                          decoration: InputDecoration(
+                            labelText: "Year",
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            labelStyle: TextStyle(
+                              color: Colors.grey, // هنا تختار اللون اللي تحبه
+                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontSize: 16, // اختياري لو عايز حجم مختلف
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (v) => v!.isEmpty ? "Required" : null,
+                          keyboardType: TextInputType.number,
+                        ),
+                  
+                        const SizedBox(height: 12,),
+                        TextFormField(
+                          controller: brandController,
+                          decoration: InputDecoration(
+                            labelText: "Plate Number",
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            labelStyle: TextStyle(
+                              color: Colors.grey, // هنا تختار اللون اللي تحبه
+                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontSize: 16, // اختياري لو عايز حجم مختلف
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          validator: (v) => v!.isEmpty ? "Required" : null,
+                        ),
+                  
+                        const SizedBox(height: 12,),
+                        DropdownButtonFormField2<String>(
+                          value: null, // null عشان يظهر placeholder بدل القيمة الافتراضية
+                          decoration: InputDecoration(
+                            // labelText: "Type", // كلمة placeholder
+                            filled: true,
+                            fillColor: Colors.grey[100], // خلفية رمادية للحقل
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          isExpanded: false,
+                          hint: const Text(
+                            "Type", // placeholder
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          items: ["Car", "Motorcycle", "Truck"]
+                              .map((item) => DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(item),
+                                  ))
+                              .toList(),
+                          dropdownStyleData: DropdownStyleData(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12), // ريدياس للقائمة
+                              color: Colors.grey[100], // خلفية بيضاء
+                            ),
+                            elevation: 4,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedType = value!;
+                            });
+                          },
+                        ),
+                  
+                        SizedBox(height: 25),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          final device = DeviceEntity(
+                            id: "",
+                            brand: brandController.text,
+                            model: modelController.text,
+                            year: int.parse(yearController.text),
+                            plateNumber: plateController.text,
+                            type: selectedType,
+                            user: "",
+                            status: "",
+                            speed: 0,
+                            lastLocation: LastLocationEntity(
+                              type: "",
+                              coordinates: [],
+                            ),
+                          );
+                                      
+                          context.read<CreateDeviceCubit>().createDevice(device);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(12),
+                        ),
+                        backgroundColor: const Color.fromARGB(255, 96, 182, 253),
+                        elevation: 4,
+                      ),
+                      child: Text("Create Device", 
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
