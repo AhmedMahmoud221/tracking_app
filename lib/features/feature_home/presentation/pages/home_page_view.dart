@@ -16,34 +16,23 @@ class HomePageView extends StatefulWidget {
 class _HomePageViewState extends State<HomePageView> {
   int selectedIndex = 0;
 
-  final List<Widget> pages = [
-    HomePageBody(),
-    DevicesPage(),
-    GoogleMapPage(),
-    Profile(),
-  ];
-
-  final List<String> titles = const [
-    "Home Page",
-    "Devices",
-    "Live Tracking",
-    "Profile",
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: CustomAppBar(),
-
-      body: IndexedStack(index: selectedIndex, children: pages),
-
+      body: IndexedStack(
+        index: selectedIndex,
+        children: [
+          HomePageBody(),
+          DevicesPage(isActive: selectedIndex == 1),
+          GoogleMapPage(),
+          Profile(),
+        ],
+      ),
       bottomNavigationBar: CustomBottomBar(
         currentIndex: selectedIndex,
-        onTap: (index) {
-          setState(() => selectedIndex = index);
-        },
+        onTap: (index) => setState(() => selectedIndex = index),
       ),
     );
   }

@@ -4,8 +4,31 @@ import 'package:live_tracking/features/feature_devices/presentation/cubit/device
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_devices/presentation/widgets/device_card.dart';
 
-class DevicesPage extends StatelessWidget {
-  const DevicesPage({super.key});
+class DevicesPage extends StatefulWidget {
+  final bool isActive; // <- added for IndexedStack refetch
+
+  const DevicesPage({super.key, required this.isActive});
+
+  @override
+  State<DevicesPage> createState() => _DevicesPageState();
+}
+
+class _DevicesPageState extends State<DevicesPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<DevicesCubit>().fetchDevices(); // first load
+  }
+
+  @override
+  void didUpdateWidget(covariant DevicesPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // refetch when tab becomes active
+    if (!oldWidget.isActive && widget.isActive) {
+      context.read<DevicesCubit>().fetchDevices();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,22 +37,17 @@ class DevicesPage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 12),
-
-            // Search Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: _SearchBar(),
             ),
-
             const SizedBox(height: 12),
-
-            // Devices List
             Expanded(
               child: BlocBuilder<DevicesCubit, DevicesState>(
                 builder: (context, state) {
-                  // if (state is DevicesLoading) {
-                  //   return const Center(child: CircularProgressIndicator());
-                  // }
+                  if (state is DevicesLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
                   if (state is DevicesLoaded) {
                     final devices = state.devices;

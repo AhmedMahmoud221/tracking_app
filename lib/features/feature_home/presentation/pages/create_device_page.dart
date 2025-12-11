@@ -30,14 +30,11 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
       body: BlocListener<CreateDeviceCubit, CreateDeviceState>(
         listener: (context, state) {
           if (state is CreateDeviceSuccess) {
-            // 1. **إغلاق شاشة التحميل (مهم جداً)**
-            // هذا يغلق الـ showDialog الذي فُتح في حالة Loading
-            // يجب استدعاؤها مرتين لضمان إغلاق أي نافذة عائمة إذا كنت تستخدم نافيجيتور آخر
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
+
             }
 
-            // 2. تفريغ الحقول (ستجدها فارغة عند فتح الفورم مجدداً)
             brandController.clear();
             modelController.clear();
             yearController.clear();
@@ -46,24 +43,20 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
               selectedType = "Car";
             });
 
-            // **تحديث الـ DevicesCubit وDevicesMapCubit فورًا**
             context.read<DevicesCubit>().addDevice(state.device);
             context.read<DevicesMapCubit>().addDevice(state.device);
 
-            // 3. عرض رسالة النجاح (الأفضل نقلها للصفحة الأم لضمان الظهور، لكن لنتركها هنا حالياً)
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Device Created Successfully")),
             );
 
-            // 4. العودة للصفحة الأم بعد كل الإجراءات
             if (context.canPop()) {
               context.pop(true);
             }
           }
 
           if (state is CreateDeviceError) {
-            // أيضاً، تأكد من إغلاق شاشة التحميل في حالة الخطأ!
-            Navigator.pop(context); // إغلاق الـ Loading Dialog
+            Navigator.pop(context);
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class CustomBottomSheet extends StatelessWidget {
@@ -54,6 +56,7 @@ class CustomBottomSheet extends StatelessWidget {
                           onTap: () {
                             Navigator.pop(context); // close sheet
                             onSelect(d);
+                            print("DevicesCubit hashCode: ${context.read<DevicesCubit>().hashCode}");
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
