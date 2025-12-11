@@ -24,7 +24,12 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Create Device")),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(179, 214, 246, 255),
+        title: Text(
+          "Create Device"
+        ),
+      ),
 
       body: BlocListener<CreateDeviceCubit, CreateDeviceState>(
         listener: (context, state) {

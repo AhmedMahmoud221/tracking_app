@@ -12,6 +12,7 @@ class DeviceDetailsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(179, 214, 246, 255),
         title: const Text('Device Details'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

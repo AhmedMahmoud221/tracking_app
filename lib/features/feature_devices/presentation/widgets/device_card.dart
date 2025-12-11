@@ -55,8 +55,7 @@ class DeviceCardGrid extends StatelessWidget {
               width: 120,
               child: ElevatedButton(
                 onPressed: () {
-                  // هنا تضيف اللي عايز يحصل لما يضغط على الزر
-                  print('More pressed');
+                  context.push('/device-details', extra: device);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 88, 180, 255), // لون الزر
