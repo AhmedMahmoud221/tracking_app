@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/cubit/devices_map_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_state.dart';
 
@@ -44,8 +43,7 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
             });
 
             context.read<DevicesCubit>().addDevice(state.device);
-            context.read<DevicesMapCubit>().addDevice(state.device);
-
+            
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Device Created Successfully")),
             );

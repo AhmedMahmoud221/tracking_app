@@ -8,8 +8,9 @@ class DevicesLoading extends DevicesState {}
 
 class DevicesLoaded extends DevicesState {
   final List<DeviceEntity> devices;
+  final DeviceEntity? selectedDevice;
 
-  DevicesLoaded(this.devices);
+  DevicesLoaded(this.devices, this.selectedDevice);
 }
 
 class DevicesError extends DevicesState {

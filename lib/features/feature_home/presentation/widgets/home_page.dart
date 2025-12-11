@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/cubit/devices_map_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/home_page_view.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
@@ -21,8 +20,6 @@ class HomePage extends StatelessWidget {
         // Devices provider
         BlocProvider(create: (_) => sl<DevicesCubit>()..fetchDevices()),
 
-        // Devices map cubit
-        BlocProvider(create: (_) => sl<DevicesMapCubit>()..loadDevices()),
       ],
       child: const HomePageView(),
     );

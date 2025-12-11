@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/domain/usecases/get_devices_list.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
@@ -11,6 +12,8 @@ class DevicesCubit extends Cubit<DevicesState> {
   // خزّن هنا كل الأجهزة اللي جت من الـ API عشان نقدر نفلتر بسهولة
   final List<DeviceEntity> _allDevices = [];
 
+  DeviceEntity? selectedDevice;
+
   DevicesCubit(this.getDevicesList) : super(DevicesInitial());
 
   Future<void> fetchDevices() async {
@@ -21,7 +24,7 @@ class DevicesCubit extends Cubit<DevicesState> {
       // خزّن النسخة الأصلية
       _allDevices.clear();
       _allDevices.addAll(devices);
-      emit(DevicesLoaded(List.from(_allDevices)));
+      emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
     } catch (e) {
       emit(
         DevicesError(e.toString()),
@@ -32,13 +35,13 @@ class DevicesCubit extends Cubit<DevicesState> {
   /// إضافة جهاز جديد مباشرة
   void addDevice(DeviceEntity device) {
     _allDevices.add(device);
-    emit(DevicesLoaded(List.from(_allDevices)));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
   }
 
   void searchDevices(String query) {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) {
-      emit(DevicesLoaded(List.from(_allDevices)));
+      emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
       return;
     }
 
@@ -49,16 +52,35 @@ class DevicesCubit extends Cubit<DevicesState> {
           device.status.toLowerCase().contains(q);
     }).toList();
 
-    emit(DevicesLoaded(filtered));
+    emit(DevicesLoaded(filtered, selectedDevice));
   }
 
   /// فلترة محلية على _allDevices
   void searchDevicesList(String query) {
-    emit(DevicesLoaded(List.from(_allDevices)));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
   }
 
   /// لو احتجت تعمل إعادة تحميل / مسح فلتر
   void clearSearch() {
-    emit(DevicesLoaded(List.from(_allDevices)));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+  }
+
+   /// تحديد جهاز معين
+  void selectDevice(DeviceEntity device) {
+    selectedDevice = device;
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+  }
+
+  /// تحويل الأجهزة إلى Markers
+  Set<Marker> getMarkers() {
+    return _allDevices.map((device) {
+      final coords = device.lastLocation.coordinates;
+      return Marker(
+        markerId: MarkerId(device.id),
+        position: LatLng(coords[1], coords[0]),
+        infoWindow: InfoWindow(title: device.brand),
+      );
+    }).toSet();
   }
 }
+

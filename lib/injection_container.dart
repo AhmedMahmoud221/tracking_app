@@ -5,7 +5,6 @@ import 'package:live_tracking/features/feature_devices/data/datasource/device_re
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
 import 'package:live_tracking/features/feature_devices/domain/usecases/get_devices_list.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/cubit/devices_map_cubit.dart';
 import 'package:live_tracking/features/feature_home/domain/create_device_use_case.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
@@ -21,30 +20,26 @@ Future<void> init() async {
   // -------------------------------
   // Cubit
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthService>()));
-  sl.registerFactory<ProfileDataCubit>(
-    () => ProfileDataCubit(sl<GetUserProfileUseCase>()),
-  );
+
+  sl.registerFactory<ProfileDataCubit>(() => ProfileDataCubit(sl<GetUserProfileUseCase>()));
+
   sl.registerFactory(() => DevicesCubit(sl<GetDevicesList>()));
-  sl.registerFactory<DevicesMapCubit>(
-    () => DevicesMapCubit(sl<GetDevicesList>()),
-  );
+
   sl.registerFactory(() => CreateDeviceCubit(sl<CreateDeviceUseCase>()));
+
   sl.registerLazySingleton(() => CreateDeviceUseCase(sl<DeviceRepository>()));
 
   // -------------------------------
   // Use Case
   sl.registerLazySingleton<AuthService>(() => AuthService());
+
   sl.registerLazySingleton(() => GetDevicesList(sl<DeviceRepository>()));
 
   // -------------------------------
   // Repository
-  sl.registerLazySingleton<DeviceRepository>(
-    () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>()),
-  );
+  sl.registerLazySingleton<DeviceRepository>(() => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>()));
 
   // -------------------------------
   // Data source
-  sl.registerLazySingleton<DeviceRemoteDataSource>(
-    () => DeviceRemoteDataSourceImpl(sl<Dio>()),
-  );
+  sl.registerLazySingleton<DeviceRemoteDataSource>(() => DeviceRemoteDataSourceImpl(sl<Dio>()),);
 }
