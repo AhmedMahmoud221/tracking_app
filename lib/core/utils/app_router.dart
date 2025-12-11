@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/features/feature_devices/presentation/views/device_details_page.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/create_device_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
@@ -19,6 +21,7 @@ class AppRouter {
   static const kProfile = '/profile';
   static const kGoogleMap = '/google-map';
   static const kCreateDevice = '/create-device';
+  static const kDeviceDetails = '/device-details';
 
   static final router = GoRouter(
     initialLocation: '/', //splash first
@@ -54,6 +57,13 @@ class AppRouter {
       GoRoute(
         path: '/create-device',
         builder: (context, state) => CreateDevicePage(),
+      ),
+      GoRoute(
+        path: '/device-details',
+        builder: (context, state) {
+          final device = state.extra as DeviceEntity;
+          return DeviceDetailsPage(device: device);
+        },
       ),
     ],
   );

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class CustomBottomSheet extends StatelessWidget {
@@ -23,7 +21,7 @@ class CustomBottomSheet extends StatelessWidget {
           backgroundColor: Colors.transparent,
           builder: (context) {
             return Container(
-              height: 520,
+              height: 650,
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -44,9 +42,10 @@ class CustomBottomSheet extends StatelessWidget {
                     'Devices',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 12),
+                  //const SizedBox(height: 12),
                   Expanded(
                     child: ListView.separated(
+                      padding: EdgeInsets.only(top: 16),
                       itemCount: devices.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
@@ -56,7 +55,6 @@ class CustomBottomSheet extends StatelessWidget {
                           onTap: () {
                             Navigator.pop(context); // close sheet
                             onSelect(d);
-                            print("DevicesCubit hashCode: ${context.read<DevicesCubit>().hashCode}");
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
