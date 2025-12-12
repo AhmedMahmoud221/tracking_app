@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/features/feature_devices/presentation/views/add_device.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/device_details_page.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
-import 'package:live_tracking/features/feature_home/presentation/pages/create_device_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/login_page_view.dart';
@@ -40,7 +40,6 @@ class AppRouter {
         builder: (context, state) => const SignupPageView(),
       ),
       GoRoute(path: '/home', builder: (context, state) => const HomePage()),
-      // ⬇⬇⬇ هنا تحط الـ Profile + Provider
       GoRoute(
         path: '/profile',
         builder: (context, state) {
@@ -52,12 +51,12 @@ class AppRouter {
       ),
       GoRoute(
         path: '/google-map',
-        builder: (context, state) => const GoogleMapPage(),
+        builder: (context, state) {
+          final DeviceEntity? device = state.extra as DeviceEntity?;
+          return GoogleMapPage(initialDevice: device);
+        },
       ),
-      GoRoute(
-        path: '/create-device',
-        builder: (context, state) => CreateDevicePage(),
-      ),
+      GoRoute(path: '/create-device', builder: (context, state) => AddDevice()),
       GoRoute(
         path: '/device-details',
         builder: (context, state) {

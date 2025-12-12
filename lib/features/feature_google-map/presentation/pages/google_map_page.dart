@@ -9,7 +9,8 @@ import 'package:live_tracking/features/feature_devices/presentation/cubit/device
 import 'package:live_tracking/features/feature_google-map/presentation/widgets/custom_bottom_sheet.dart';
 
 class GoogleMapPage extends StatefulWidget {
-  const GoogleMapPage({super.key});
+  final DeviceEntity? initialDevice; // الجهاز اللي عايز تعرضه
+  const GoogleMapPage({super.key, this.initialDevice});
 
   @override
   State<GoogleMapPage> createState() => _GoogleMapPageState();
@@ -22,6 +23,16 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   @override
   void initState() {
     super.initState();
+
+    // لو جاي من زرار "Track Now"
+    final initialDevice = widget.initialDevice;
+    if (initialDevice != null) {
+      context.read<DevicesCubit>().selectDevice(initialDevice);
+    } else {
+      // لو مش محدد، جلب كل الأجهزة
+      context.read<DevicesCubit>().fetchDevices();
+    }
+
     _controllerCompleter = Completer();
     context.read<DevicesCubit>().fetchDevices();
   }
@@ -83,3 +94,12 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     );
   }
 }
+
+
+
+
+// final DeviceEntity? device;
+//     // خذ الـ device.coordinates وحطه على initialCameraPosition
+//         final initialPosition = device != null
+//             ? LatLng(device!.lastLocation.coordinates[1], device!.lastLocation.coordinates[0])
+//             : LatLng(0, 0);

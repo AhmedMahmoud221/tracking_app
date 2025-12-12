@@ -26,94 +26,128 @@ class DeviceCardGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push('/device-details', extra: device);
-      },
-      child: Card(
-        color: const Color.fromARGB(252, 252, 252, 252),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 2,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // صورة الجهاز
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              child: Container(
-                height: 180,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(12)),
-                  image: DecorationImage(
-                    image: AssetImage(AssetsData.caricon), // placeholder لو مفيش صورة
-                    fit: BoxFit.fill,
+      onTap: () => context.push('/device-details', extra: device),
+
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final cardWidth = constraints.maxWidth;
+          final imageHeight = cardWidth * 0.70; // responsive ratio
+
+          return Card(
+            color: const Color.fromARGB(252, 252, 252, 252),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // صورة الجهاز
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  height: imageHeight,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(12),
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage(AssetsData.caricon),
+                      //fit: BoxFit.cover, // مهم جداً
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // النوع
-            Row(
-              children: [
-                Expanded(
+
+                const SizedBox(height: 10),
+
+                // Brand + Model + Status
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(width: 12,),
-                      Text(
-                      device.brand,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      // Left Column: Brand + Model
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              device.brand,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: cardWidth < 180 ? 15 : 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              device.model,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: cardWidth < 180 ? 13 : 16,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      SizedBox(width: 6,),
-                      // الموديل
-                      Text(
-                        device.model,
-                        style: const TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w500),
+
+                      // Status Badge
+                      FittedBox(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(
+                              device.status,
+                            ).withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            device.status,
+                            style: TextStyle(
+                              fontSize: cardWidth < 180 ? 12 : 14,
+                              color: _getStatusColor(device.status),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
+
+                //const SizedBox(height: 8),
+
+                // Plate Number
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(device.status).withOpacity(0.10),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        device.status,
-                        style: TextStyle(
-                          color: _getStatusColor(device.status),
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    'Number : ${device.plateNumber}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: cardWidth * 0.08,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-              ],
-            ),   
 
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  'Plate Number ${device.plateNumber}',
-                  style: TextStyle(
-                    fontSize: 16, 
-                    color: Colors.grey[600], 
-                    fontWeight: FontWeight.w400
-                  ),
-                ),
-              ),
-            ),        
-            const SizedBox(height: 4),
-          ],
-        ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

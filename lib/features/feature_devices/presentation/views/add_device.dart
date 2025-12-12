@@ -7,12 +7,12 @@ import 'package:live_tracking/features/feature_devices/presentation/cubit/device
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_state.dart';
 
-class CreateDevicePage extends StatefulWidget {
+class AddDevice extends StatefulWidget {
   @override
-  State<CreateDevicePage> createState() => _CreateDevicePageState();
+  State<AddDevice> createState() => _AddDeviceState();
 }
 
-class _CreateDevicePageState extends State<CreateDevicePage> {
+class _AddDeviceState extends State<AddDevice> {
   final _formKey = GlobalKey<FormState>();
 
   final brandController = TextEditingController();
@@ -27,10 +27,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(179, 214, 246, 255),
-        title: Text(
-          "Create Device"
-        ),
+        backgroundColor: Colors.white,
+        title: Text("Create Device"),
       ),
 
       body: BlocListener<CreateDeviceCubit, CreateDeviceState>(
@@ -48,7 +46,7 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
             });
 
             context.read<DevicesCubit>().addDevice(state.device);
-            
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Device Created Successfully")),
             );
@@ -76,8 +74,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const SizedBox(height: 12,),
-                  
+                        const SizedBox(height: 12),
+
                         TextFormField(
                           controller: brandController,
                           decoration: InputDecoration(
@@ -86,7 +84,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                             fillColor: Colors.grey[100],
                             labelStyle: TextStyle(
                               color: Colors.grey, // هنا تختار اللون اللي تحبه
-                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontWeight:
+                                  FontWeight.w500, // اختياري لو عايز سمك مختلف
                               fontSize: 16, // اختياري لو عايز حجم مختلف
                             ),
                             border: OutlineInputBorder(
@@ -96,8 +95,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                           ),
                           validator: (v) => v!.isEmpty ? "Required" : null,
                         ),
-                  
-                        const SizedBox(height: 12,),
+
+                        const SizedBox(height: 12),
                         TextFormField(
                           controller: brandController,
                           decoration: InputDecoration(
@@ -106,7 +105,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                             fillColor: Colors.grey[100],
                             labelStyle: TextStyle(
                               color: Colors.grey, // هنا تختار اللون اللي تحبه
-                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontWeight:
+                                  FontWeight.w500, // اختياري لو عايز سمك مختلف
                               fontSize: 16, // اختياري لو عايز حجم مختلف
                             ),
                             border: OutlineInputBorder(
@@ -116,8 +116,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                           ),
                           validator: (v) => v!.isEmpty ? "Required" : null,
                         ),
-                  
-                        const SizedBox(height: 12,),
+
+                        const SizedBox(height: 12),
                         TextFormField(
                           controller: brandController,
                           decoration: InputDecoration(
@@ -126,7 +126,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                             fillColor: Colors.grey[100],
                             labelStyle: TextStyle(
                               color: Colors.grey, // هنا تختار اللون اللي تحبه
-                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontWeight:
+                                  FontWeight.w500, // اختياري لو عايز سمك مختلف
                               fontSize: 16, // اختياري لو عايز حجم مختلف
                             ),
                             border: OutlineInputBorder(
@@ -137,8 +138,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                           validator: (v) => v!.isEmpty ? "Required" : null,
                           keyboardType: TextInputType.number,
                         ),
-                  
-                        const SizedBox(height: 12,),
+
+                        const SizedBox(height: 12),
                         TextFormField(
                           controller: brandController,
                           decoration: InputDecoration(
@@ -147,7 +148,8 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                             fillColor: Colors.grey[100],
                             labelStyle: TextStyle(
                               color: Colors.grey, // هنا تختار اللون اللي تحبه
-                              fontWeight: FontWeight.w500, // اختياري لو عايز سمك مختلف
+                              fontWeight:
+                                  FontWeight.w500, // اختياري لو عايز سمك مختلف
                               fontSize: 16, // اختياري لو عايز حجم مختلف
                             ),
                             border: OutlineInputBorder(
@@ -157,15 +159,19 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                           ),
                           validator: (v) => v!.isEmpty ? "Required" : null,
                         ),
-                  
-                        const SizedBox(height: 12,),
+
+                        const SizedBox(height: 12),
                         DropdownButtonFormField2<String>(
-                          value: null, // null عشان يظهر placeholder بدل القيمة الافتراضية
+                          value:
+                              null, // null عشان يظهر placeholder بدل القيمة الافتراضية
                           decoration: InputDecoration(
                             // labelText: "Type", // كلمة placeholder
                             filled: true,
                             fillColor: Colors.grey[100], // خلفية رمادية للحقل
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 0,
+                              vertical: 8,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -177,14 +183,18 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                             style: TextStyle(color: Colors.grey),
                           ),
                           items: ["Car", "Motorcycle", "Truck"]
-                              .map((item) => DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Text(item),
-                                  ))
+                              .map(
+                                (item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                ),
+                              )
                               .toList(),
                           dropdownStyleData: DropdownStyleData(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12), // ريدياس للقائمة
+                              borderRadius: BorderRadius.circular(
+                                12,
+                              ), // ريدياس للقائمة
                               color: Colors.grey[100], // خلفية بيضاء
                             ),
                             elevation: 4,
@@ -195,7 +205,7 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                             });
                           },
                         ),
-                  
+
                         SizedBox(height: 25),
                       ],
                     ),
@@ -223,8 +233,10 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                               coordinates: [],
                             ),
                           );
-                                      
-                          context.read<CreateDeviceCubit>().createDevice(device);
+
+                          context.read<CreateDeviceCubit>().createDevice(
+                            device,
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -232,14 +244,17 @@ class _CreateDevicePageState extends State<CreateDevicePage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadiusGeometry.circular(12),
                         ),
-                        backgroundColor: const Color.fromARGB(255, 96, 182, 253),
+                        backgroundColor: const Color.fromARGB(
+                          255,
+                          96,
+                          182,
+                          253,
+                        ),
                         elevation: 4,
                       ),
-                      child: Text("Create Device", 
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
+                      child: Text(
+                        "Create Device",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
                   ),
