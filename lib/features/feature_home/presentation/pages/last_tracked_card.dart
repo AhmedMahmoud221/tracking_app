@@ -58,11 +58,8 @@ class LastTrackedCard extends StatelessWidget {
                   icon: const Icon(Icons.location_searching),
                   label: const Text('Track Now'),
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.blue[200], // ← الخلفية بيضا
-                    foregroundColor: Colors.black, // ← النص / الأيقونة أسود
-                    side: const BorderSide(
-                      color: Colors.blue,
-                    ), // ← تعديل البوردر لو تحب
+                    backgroundColor: Colors.blue[200],
+                    foregroundColor: Colors.black,
                   ),
                 ),
                 const SizedBox(width: 8),

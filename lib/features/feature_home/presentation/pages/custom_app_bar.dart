@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({
-    super.key,
-  });
+  const CustomAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor:Colors.white,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
       title: Center(
         child: RichText(
           text: TextSpan(
@@ -37,6 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
     );
   }
-   @override
+
+  @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
