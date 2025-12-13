@@ -18,7 +18,7 @@ final sl = GetIt.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await init(); // ← مهم جدًا
+  await init();
   runApp(const LiveTrackingApp());
 }
 

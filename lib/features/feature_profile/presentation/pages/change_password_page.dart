@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
-import 'package:live_tracking/core/utils/storage_helper.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -118,10 +117,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           newPassword: newPassword.text,
                           newPasswordConfirm: confirmPassword.text,
                         );
-
-                        await SecureStorage.deleteToken();
-
-                        if (!context.mounted) return;
+                        //if (!context.mounted) return;
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -133,7 +129,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
                         context.go(AppRouter.kLoginPageView);
                       } catch (e) {
-                        if (!context.mounted) return;
+                        print('error is ${e}');
+                        // if (!context.mounted) return;
+                        context.go(AppRouter.kLoginPageView);
                         ScaffoldMessenger.of(
                           context,
                         ).showSnackBar(SnackBar(content: Text(e.toString())));

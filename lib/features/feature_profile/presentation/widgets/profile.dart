@@ -77,7 +77,7 @@ class Profile extends StatelessWidget {
                 title: "Change Password",
                 icon: Icons.lock,
                 onTap: () {
-                  context.push(AppRouter.kChangePassword);
+                  context.go(AppRouter.kChangePassword);
                 },
               ),
 
