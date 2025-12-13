@@ -5,9 +5,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/views/device_details_page.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/widgets/custom_bottom_sheet.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/widgets/device_details_popup.dart';
 
 class GoogleMapPage extends StatefulWidget {
   final DeviceEntity? initialDevice;
@@ -100,16 +102,39 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
               if (loading) const Center(child: CircularProgressIndicator()),
               Positioned(
                 bottom: 20,
-                left: 20,
+                right: 20,
                 child: CustomBottomSheet(
                   devices: devices,
                   onSelect: (device) {
                     context.read<DevicesCubit>().selectDevice(device);
+                    _showDeviceDetails(device);
                   },
                 ),
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _showDeviceDetails(DeviceEntity device) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DeviceDetailsPopup(
+          device: device,
+          onMore: () {
+            Navigator.pop(context); // تقفل البوب أب
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DeviceDetailsPage(device: device),
+              ),
+            );
+          },
         );
       },
     );

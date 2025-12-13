@@ -90,7 +90,7 @@ class DeviceDetailsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Last Location: ${device.lastLocation}',
+                    'Last Location: ${device.lastLocation.coordinates[1]}, ${device.lastLocation.coordinates[0]}',
                     style: TextStyle(fontSize: 16, color: subTextColor),
                   ),
                   const SizedBox(height: 8),
