@@ -1,46 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:live_tracking/core/constants/theme_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/core/theme/theme_cubit.dart';
+import 'package:live_tracking/core/theme/theme_state.dart';
 
 class CustomToggle extends StatelessWidget {
-  const CustomToggle({
-    super.key,
-    required this.theme,
-  });
-
-  final ThemeData theme;
+  const CustomToggle({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          'Dark Mode',
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white     // dark mode ( white color )
-                  : const Color(0xFF7B7B7B), // light mode ( dark grey color )
-            ),
-        ),
-        Switch(
-          value: theme.brightness == Brightness.dark,
-          
-          // theme colors
-          activeThumbColor: Colors.lightBlueAccent,  //circle color when Dark Mode is on
-          activeTrackColor: Colors.blueGrey,  // background color when Dark Mode is on
-    
-          inactiveThumbColor: Colors.grey[700],   // circle color in Light Mode
-          inactiveTrackColor: Colors.grey[300],    // background color in Light Mode
-          
-          splashRadius: 0, // Remove splash effect
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        final bool isDark = state == ThemeState.dark;
 
-          onChanged: (value) {
-            ThemeProvider.toggleTheme(); 
-          },
-        ),
-      ],
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Dark Mode',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white : const Color(0xFF7B7B7B),
+              ),
+            ),
+            Switch(
+              value: isDark,
+              onChanged: (value) {
+                context.read<ThemeCubit>().toggleTheme(value);
+              },
+              activeColor: isDark
+                  ? Colors.black
+                  : Colors.red, // الديرة المتحركة
+              activeTrackColor: isDark
+                  ? Colors.grey
+                  : Colors.red.shade100, // الخلفية
+            ),
+          ],
+        );
+      },
     );
   }
 }

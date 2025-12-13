@@ -9,13 +9,22 @@ class DeviceDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark ? Colors.black : Colors.white;
+    final cardColor = isDark ? Colors.grey[900] : Colors.white;
+    final borderColor = isDark ? Colors.white24 : Colors.grey.withOpacity(0.3);
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white70 : Colors.black54;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text('Device Details'),
+        backgroundColor: bgColor,
+        iconTheme: IconThemeData(color: textColor),
+        title: Text('Device Details', style: TextStyle(color: textColor)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -29,7 +38,7 @@ class DeviceDetailsPage extends StatelessWidget {
               height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 241, 241, 241),
+                color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(12),
                 image: DecorationImage(
                   image: AssetImage(AssetsData.caricon),
@@ -40,8 +49,12 @@ class DeviceDetailsPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             Text(
-              ' ${device.brand}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              device.brand,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
             ),
             const SizedBox(height: 8),
 
@@ -49,54 +62,41 @@ class DeviceDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.grey.withOpacity(0.3), // بوردر خفيف
-                ),
+                border: Border.all(color: borderColor),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // الموديل
                   Text(
                     'Model: ${device.model}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
-
-                  // السنة
                   Text(
                     'Year: ${device.year}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
-
-                  // رقم اللوحة
                   Text(
                     'Plate Number: ${device.plateNumber}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
-
-                  // الحالة
                   Text(
                     'Status: ${device.status}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
-
-                  // اللوكيشن
                   Text(
                     'Last Location: ${device.lastLocation}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: subTextColor),
                   ),
                   const SizedBox(height: 8),
-
-                  // السرعة
                   Text(
                     'Speed: ${device.speed}',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: textColor),
                   ),
                 ],
               ),

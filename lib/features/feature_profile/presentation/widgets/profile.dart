@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
+import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_profile/data/datasources/user_profile_api.dart';
 import 'package:live_tracking/features/feature_profile/data/repositories/user_profile_repository_impl.dart';
@@ -22,23 +23,16 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff5f5f7),
       body: MultiBlocProvider(
         providers: [
-          // Cubit الخاص بالـ logout
           BlocProvider(
             create: (_) => ProfileCubit(LogoutUseCase(AuthService())),
           ),
 
-          // Cubit الخاص ببيانات البروفايل
           BlocProvider(
             create: (_) => ProfileDataCubit(
               GetUserProfileUseCase(
-                UserProfileRepositoryImpl(
-                  UserProfileApi(
-                    ApiConstants.baseUrl, // <=== حط هنا الـ base URL الصح
-                  ),
-                ),
+                UserProfileRepositoryImpl(UserProfileApi(ApiConstants.baseUrl)),
               ),
             )..fetchProfile(),
           ),
@@ -66,7 +60,7 @@ class Profile extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: CustomToggle(theme: Theme.of(context)),
+                child: CustomToggle(),
               ),
 
               CustomProfileitems(
@@ -82,18 +76,19 @@ class Profile extends StatelessWidget {
               CustomProfileitems(
                 title: "Change Password",
                 icon: Icons.lock,
-                onTap: () {},
+                onTap: () {
+                  context.push(AppRouter.kChangePassword);
+                },
               ),
 
               BlocListener<ProfileCubit, ProfileState>(
                 listener: (context, state) {
                   if (state is LogoutSuccessState) {
-                    // بعد نجاح logout، نروح للـ login
-                    context.go('/login'); // لو بتستخدم GoRouter
+                    context.go('/login');
                   } else if (state is LogoutErrorState) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(state.message)));
                   }
                 },
                 child: BlocBuilder<ProfileCubit, ProfileState>(

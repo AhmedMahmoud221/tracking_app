@@ -31,44 +31,47 @@ class _DevicesPageState extends State<DevicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DevicesCubit, DevicesState>(
-      builder: (context, state) {
-        int count = 0; 
+    return RefreshIndicator(
+      onRefresh: () async {
+        await context.read<DevicesCubit>().fetchDevices();
+      },
+      child: BlocBuilder<DevicesCubit, DevicesState>(
+        builder: (context, state) {
+          int count = 0;
+          if (state is DevicesLoaded) {
+            count = state.devices.length;
+          }
+          final isDark = Theme.of(context).brightness == Brightness.dark;
 
-        if ( state is DevicesLoaded) {
-          count = state.devices.length;
-        }
-
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: _SearchBar(),
-                ),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 4,
+          return Scaffold(
+            backgroundColor: isDark ? Colors.black : Colors.white,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: _SearchBar(isDark: isDark),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'All Devices : $count ',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 4,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'All Devices : $count',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: isDark ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        child: ElevatedButton.icon(
+                        ElevatedButton.icon(
                           onPressed: () async {
                             final result = await context.push('/create-device');
                             if (result == true) {
@@ -96,67 +99,77 @@ class _DevicesPageState extends State<DevicesPage> {
                             elevation: 3,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: BlocBuilder<DevicesCubit, DevicesState>(
-                    builder: (context, state) {
-                      if (state is DevicesLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (state is DevicesLoaded) {
-                        final devices = state.devices;
-                        if (devices.isEmpty) {
-                          return const Center(child: Text("No Devices Found"));
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: BlocBuilder<DevicesCubit, DevicesState>(
+                      builder: (context, state) {
+                        if (state is DevicesLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
-
-                        return GridView.builder(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, // جهازين في الصف
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio: 0.75,
+                        if (state is DevicesLoaded) {
+                          final devices = state.devices;
+                          if (devices.isEmpty) {
+                            return Center(
+                              child: Text(
+                                "No Devices Found",
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
                               ),
-                          itemCount: devices.length,
-                          itemBuilder: (context, index) {
-                            return DeviceCardGrid(device: devices[index]);
-                          },
-                        );
-                      }
-
-                      if (state is DevicesError) {
-                        return Center(
-                          child: Text(
-                            "Error: ${state.message}",
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        );
-                      }
-
-                      return const SizedBox();
-                    },
+                            );
+                          }
+                          return GridView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: 0.75,
+                                ),
+                            itemCount: devices.length,
+                            itemBuilder: (context, index) {
+                              return DeviceCardGrid(
+                                device: devices[index],
+                              ); // DeviceCardGrid نفسه هيتعامل مع الداكن
+                            },
+                          );
+                        }
+                        if (state is DevicesError) {
+                          return Center(
+                            child: Text(
+                              "Error: ${state.message}",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
 
 class _SearchBar extends StatelessWidget {
   final TextEditingController controller = TextEditingController();
+  final bool isDark;
+
+  _SearchBar({required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -167,14 +180,21 @@ class _SearchBar extends StatelessWidget {
       },
       decoration: InputDecoration(
         hintText: "Search devices...",
-        prefixIcon: const Icon(Icons.search),
+        hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
+        prefixIcon: Icon(
+          Icons.search,
+          color: isDark ? Colors.white : Colors.grey,
+        ),
         filled: true,
-        fillColor: const Color.fromARGB(255, 243, 242, 242),
+        fillColor: isDark
+            ? Colors.grey[850]
+            : const Color.fromARGB(255, 243, 242, 242),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
         ),
       ),
+      style: TextStyle(color: isDark ? Colors.white : Colors.black),
     );
   }
 }

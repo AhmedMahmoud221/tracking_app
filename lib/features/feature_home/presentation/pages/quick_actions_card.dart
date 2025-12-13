@@ -1,4 +1,3 @@
-// -------------------------- QUICK ACTIONS CARD --------------------------
 import 'package:flutter/material.dart';
 
 class QuickActionsCard extends StatelessWidget {
@@ -6,8 +5,10 @@ class QuickActionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Card(
-      color: Colors.grey[100],
+      color: isDark ? Colors.grey[850] : Colors.grey[100],
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: Padding(
@@ -15,18 +16,22 @@ class QuickActionsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Quick Actions',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black,
+              ),
             ),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _quickAction(Icons.list, 'Devices'),
-                _quickAction(Icons.map, 'Map'),
-                _quickAction(Icons.add, 'Add'),
-                _quickAction(Icons.person, 'Profile'),
+                _quickAction(context, Icons.list, 'Devices'),
+                _quickAction(context, Icons.map, 'Map'),
+                _quickAction(context, Icons.add, 'Add'),
+                _quickAction(context, Icons.person, 'Profile'),
               ],
             ),
           ],
@@ -35,16 +40,24 @@ class QuickActionsCard extends StatelessWidget {
     );
   }
 
-  Widget _quickAction(IconData icon, String label) {
+  Widget _quickAction(BuildContext context, IconData icon, String label) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         CircleAvatar(
           radius: 22,
-          backgroundColor: Colors.white, // ← هنا خليتها بيضا
+          backgroundColor: isDark ? Colors.grey[700] : Colors.white,
           child: Icon(icon, size: 22, color: Colors.blue),
         ),
         const SizedBox(height: 6),
-        Text(label, style: const TextStyle(fontSize: 12)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: isDark ? Colors.white : Colors.black,
+          ),
+        ),
       ],
     );
   }

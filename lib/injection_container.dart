@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/features/feature_devices/data/Repository/device_repo_impl.dart';
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
@@ -21,13 +22,17 @@ Future<void> init() async {
   // Cubit
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthService>()));
 
-  sl.registerFactory<ProfileDataCubit>(() => ProfileDataCubit(sl<GetUserProfileUseCase>()));
+  sl.registerFactory<ProfileDataCubit>(
+    () => ProfileDataCubit(sl<GetUserProfileUseCase>()),
+  );
 
   sl.registerFactory(() => DevicesCubit(sl<GetDevicesList>()));
 
   sl.registerFactory(() => CreateDeviceCubit(sl<CreateDeviceUseCase>()));
 
   sl.registerLazySingleton(() => CreateDeviceUseCase(sl<DeviceRepository>()));
+
+  sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
 
   // -------------------------------
   // Use Case
@@ -37,9 +42,13 @@ Future<void> init() async {
 
   // -------------------------------
   // Repository
-  sl.registerLazySingleton<DeviceRepository>(() => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>()));
+  sl.registerLazySingleton<DeviceRepository>(
+    () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>()),
+  );
 
   // -------------------------------
   // Data source
-  sl.registerLazySingleton<DeviceRemoteDataSource>(() => DeviceRemoteDataSourceImpl(sl<Dio>()),);
+  sl.registerLazySingleton<DeviceRemoteDataSource>(
+    () => DeviceRemoteDataSourceImpl(sl<Dio>()),
+  );
 }

@@ -10,6 +10,7 @@ import 'package:live_tracking/features/feature_login/presentation/widgets/login_
 import 'package:live_tracking/features/feature_login/presentation/widgets/signup_page_view.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
+import 'package:live_tracking/features/feature_profile/presentation/pages/change_password_page.dart';
 import 'package:live_tracking/features/feature_profile/presentation/widgets/profile.dart';
 import 'package:live_tracking/features/feature_splash/presentation/widgets/splash_view.dart';
 
@@ -22,6 +23,7 @@ class AppRouter {
   static const kGoogleMap = '/google-map';
   static const kCreateDevice = '/create-device';
   static const kDeviceDetails = '/device-details';
+  static const kChangePassword = '/change-password';
 
   static final router = GoRouter(
     initialLocation: '/', //splash first
@@ -63,6 +65,10 @@ class AppRouter {
           final device = state.extra as DeviceEntity;
           return DeviceDetailsPage(device: device);
         },
+      ),
+      GoRoute(
+        path: '/change-password',
+        builder: (context, state) => const ChangePasswordPage(),
       ),
     ],
   );

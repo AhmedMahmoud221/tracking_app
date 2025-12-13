@@ -5,13 +5,11 @@ import 'package:live_tracking/features/feature_profile/domain/entities/user_prof
 class CustomProfileHeader extends StatelessWidget {
   final UserProfile profile;
 
-
-  const CustomProfileHeader({
-    super.key, required this.profile,
-  });
+  const CustomProfileHeader({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40),
@@ -39,22 +37,21 @@ class CustomProfileHeader extends StatelessWidget {
           Text(
             profile.name,
             style: TextStyle(
-              color: Colors.white,
+              color: isDark ? Colors.black : Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
-             profile.email,
+            profile.email,
             style: TextStyle(
-              color: Colors.white70,
+              color: isDark ? Colors.black54 : Colors.white70,
               fontSize: 15,
             ),
           ),
           const SizedBox(height: 15),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),

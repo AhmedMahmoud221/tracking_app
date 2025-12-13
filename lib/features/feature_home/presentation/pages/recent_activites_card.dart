@@ -1,4 +1,3 @@
-// -------------------------- RECENT ACTIVITIES CARD --------------------------
 import 'package:flutter/material.dart';
 
 class RecentActivitiesCard extends StatelessWidget {
@@ -6,6 +5,8 @@ class RecentActivitiesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     final activities = [
       'Nissan Sunny → Started moving',
       'Toyota Hilux → GPS updated',
@@ -13,7 +14,7 @@ class RecentActivitiesCard extends StatelessWidget {
     ];
 
     return Card(
-      color: Colors.grey[100],
+      color: isDark ? Colors.grey[850] : Colors.grey[100],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       elevation: 2,
       child: Padding(
@@ -21,18 +22,33 @@ class RecentActivitiesCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Recent Activities',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black,
+              ),
             ),
             const SizedBox(height: 12),
             ...activities.map(
               (a) => ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.history, color: Colors.blue),
-                title: Text(a),
-                trailing: const Text('3m ago', style: TextStyle(fontSize: 12)),
+                leading: Icon(Icons.history, color: Colors.blue),
+                title: Text(
+                  a,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                trailing: Text(
+                  '3m ago',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white70 : Colors.grey,
+                  ),
+                ),
               ),
             ),
           ],

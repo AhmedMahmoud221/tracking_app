@@ -14,6 +14,11 @@ class CustomBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? Colors.grey[850] : Colors.white;
+    final sheetBgColor = isDark ? Colors.grey[900] : Colors.grey[100];
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return InkWell(
       onTap: () {
         showMaterialModalBottomSheet(
@@ -23,9 +28,11 @@ class CustomBottomSheet extends StatelessWidget {
             return Container(
               height: 650,
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
               ),
               child: Column(
                 children: [
@@ -38,18 +45,26 @@ class CustomBottomSheet extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Devices',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
                   ),
-                  //const SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Expanded(
                     child: ListView.separated(
-                      padding: EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.only(top: 16),
                       itemCount: devices.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final d = devices[index];
+                        final statusColor = d.status.toLowerCase() == "moving"
+                            ? Colors.green
+                            : Colors.red;
+
                         return InkWell(
                           onTap: () {
                             Navigator.pop(context); // close sheet
@@ -62,44 +77,47 @@ class CustomBottomSheet extends StatelessWidget {
                             ),
                             margin: EdgeInsets.zero,
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color: sheetBgColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.directions_car,
                                   size: 32,
+                                  color: textColor,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
                                           Text(
                                             d.brand,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
+                                              color: textColor,
                                             ),
                                           ),
-                                          SizedBox(width: 6,),
+                                          const SizedBox(width: 6),
                                           Text(
                                             d.model,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
+                                              color: textColor,
                                             ),
                                           ),
                                         ],
                                       ),
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          'Speed : ${d.speed}',
-                                        
-                                        ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Speed: ${d.speed}',
+                                        style: TextStyle(color: textColor),
                                       ),
                                     ],
                                   ),
@@ -110,19 +128,17 @@ class CustomBottomSheet extends StatelessWidget {
                                       width: 12,
                                       height: 12,
                                       decoration: BoxDecoration(
-                                        color: d.status == "Moving"
-                                            ? Colors.green
-                                            : Colors.red,
+                                        color: statusColor,
                                         shape: BoxShape.circle,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      d.status == "Moving" ? 'Online' : 'Offline',
+                                      d.status.toLowerCase() == "moving"
+                                          ? 'Online'
+                                          : 'Offline',
                                       style: TextStyle(
-                                        color: d.status == "Moving"
-                                            ? Colors.green
-                                            : Colors.red,
+                                        color: statusColor,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),

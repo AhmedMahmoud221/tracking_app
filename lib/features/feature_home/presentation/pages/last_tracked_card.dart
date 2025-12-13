@@ -1,4 +1,3 @@
-// -------------------------- LAST TRACKED CARD --------------------------
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,9 +8,10 @@ class LastTrackedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lastDevice = device; // الجهاز الأخير
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
-      color: Colors.grey[100],
+      color: isDark ? Colors.grey[850] : Colors.grey[100],
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: Padding(
@@ -19,30 +19,56 @@ class LastTrackedCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Last Tracked Device',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               device != null ? '${device.brand} ${device.model}' : 'No Device',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
             ),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
-              children: const [
+              children: [
                 Chip(
-                  label: Text('Online', style: TextStyle(fontSize: 12)),
-                  backgroundColor: Colors.white,
+                  label: Text(
+                    'Online',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  backgroundColor: isDark ? Colors.grey[700] : Colors.white,
                 ),
                 Chip(
-                  label: Text('Moving 42 km/h', style: TextStyle(fontSize: 12)),
-                  backgroundColor: Colors.white,
+                  label: Text(
+                    'Moving 42 km/h',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  backgroundColor: isDark ? Colors.grey[700] : Colors.white,
                 ),
                 Chip(
-                  label: Text('Batt 76%', style: TextStyle(fontSize: 12)),
-                  backgroundColor: Colors.white,
+                  label: Text(
+                    'Batt 76%',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  backgroundColor: isDark ? Colors.grey[700] : Colors.white,
                 ),
               ],
             ),
@@ -57,27 +83,28 @@ class LastTrackedCard extends StatelessWidget {
                   },
                   icon: const Icon(Icons.location_searching),
                   label: const Text('Track Now'),
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.blue[200],
-                    foregroundColor: Colors.black,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton.icon(
                   onPressed: () {
                     if (lastDevice != null) {
-                      // لو عايز تروح لصفحة التفاصيل
                       context.push('/device-details', extra: lastDevice);
                     }
                   },
                   icon: const Icon(Icons.info_outline),
                   label: const Text('Details'),
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.grey[300], // ← الخلفية بيضا
-                    foregroundColor: Colors.black, // ← النص / الأيقونة أسود
-                    side: const BorderSide(
-                      color: Colors.grey,
-                    ), // ← تعديل البوردر لو تحب
+                    backgroundColor: isDark
+                        ? Colors.grey[800]
+                        : Colors.grey[300],
+                    foregroundColor: isDark ? Colors.white : Colors.black,
+                    side: BorderSide(
+                      color: isDark ? Colors.white54 : Colors.grey,
+                    ),
                   ),
                 ),
               ],

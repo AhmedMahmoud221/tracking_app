@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
@@ -9,7 +9,7 @@ import 'package:live_tracking/features/feature_devices/presentation/cubit/device
 import 'package:live_tracking/features/feature_google-map/presentation/widgets/custom_bottom_sheet.dart';
 
 class GoogleMapPage extends StatefulWidget {
-  final DeviceEntity? initialDevice; // الجهاز اللي عايز تعرضه
+  final DeviceEntity? initialDevice;
   const GoogleMapPage({super.key, this.initialDevice});
 
   @override
@@ -23,18 +23,29 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   @override
   void initState() {
     super.initState();
+    _controllerCompleter = Completer();
 
-    // لو جاي من زرار "Track Now"
     final initialDevice = widget.initialDevice;
     if (initialDevice != null) {
       context.read<DevicesCubit>().selectDevice(initialDevice);
     } else {
-      // لو مش محدد، جلب كل الأجهزة
       context.read<DevicesCubit>().fetchDevices();
     }
+  }
 
-    _controllerCompleter = Completer();
-    context.read<DevicesCubit>().fetchDevices();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // لو Theme اتغير، حدث ستايل الماب
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final style = isDark
+          ? await rootBundle.loadString(
+              'assets/google_map_theme/dark_map_style.json',
+            )
+          : null;
+      await _mapController?.setMapStyle(style);
+    });
   }
 
   @override
@@ -49,14 +60,10 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         }
       },
       builder: (context, state) {
-        List<DeviceEntity> devices = [];
-        bool loading = false;
-
-        if (state is DevicesLoading) {
-          loading = true;
-        } else if (state is DevicesLoaded) {
-          devices = state.devices;
-        }
+        final devices = state is DevicesLoaded
+            ? state.devices
+            : <DeviceEntity>[];
+        final loading = state is DevicesLoading;
 
         final markers = context.read<DevicesCubit>().getMarkers();
 
@@ -64,22 +71,32 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           body: Stack(
             children: [
               GoogleMap(
+                zoomControlsEnabled: false,
                 initialCameraPosition: const CameraPosition(
                   target: LatLng(30.0, 31.0),
                   zoom: 12,
                 ),
                 markers: markers,
-                onMapCreated: (controller) {
-                  if (!_controllerCompleter.isCompleted) {
-                    _controllerCompleter.complete(controller);
-                  }
+                onMapCreated: (controller) async {
                   _mapController = controller;
+                  if (!_controllerCompleter.isCompleted)
+                    _controllerCompleter.complete(controller);
+
+                  final isDark =
+                      Theme.of(context).brightness == Brightness.dark;
+                  final style = isDark
+                      ? await rootBundle.loadString(
+                          'assets/google_map_theme/dark_map_style.json',
+                        )
+                      : null;
+
+                  await _mapController!.setMapStyle(style);
                 },
               ),
               if (loading) const Center(child: CircularProgressIndicator()),
               Positioned(
                 bottom: 20,
-                left: 20,
+                right: 20,
                 child: CustomBottomSheet(
                   devices: devices,
                   onSelect: (device) {
@@ -94,12 +111,3 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     );
   }
 }
-
-
-
-
-// final DeviceEntity? device;
-//     // خذ الـ device.coordinates وحطه على initialCameraPosition
-//         final initialPosition = device != null
-//             ? LatLng(device!.lastLocation.coordinates[1], device!.lastLocation.coordinates[0])
-//             : LatLng(0, 0);

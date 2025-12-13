@@ -15,7 +15,7 @@ class CustomBottomBar extends StatelessWidget {
     return Container(
       height: 90,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor, // نفس خلفية الثيم
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -27,17 +27,23 @@ class CustomBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          buildItem(Icons.home, "Home", 0),
-          buildItem(Icons.directions_car, "Devices", 1),
-          buildItem(Icons.gps_fixed, "Live", 2),
-          buildItem(Icons.person, "Profile", 3),
+          buildItem(context, Icons.home, "Home", 0),
+          buildItem(context, Icons.directions_car, "Devices", 1),
+          buildItem(context, Icons.gps_fixed, "Live", 2),
+          buildItem(context, Icons.person, "Profile", 3),
         ],
       ),
     );
   }
 
-  Widget buildItem(IconData icon, String label, int index) {
+  Widget buildItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    int index,
+  ) {
     final bool isActive = currentIndex == index;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
       onTap: () => onTap(index),
@@ -49,7 +55,7 @@ class CustomBottomBar extends StatelessWidget {
           vertical: isActive ? 10 : 8,
         ),
         decoration: BoxDecoration(
-          color: isActive ? Colors.blue.shade50 : Colors.transparent,
+          color: isActive ? Colors.blue[400] : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -60,7 +66,9 @@ class CustomBottomBar extends StatelessWidget {
               curve: Curves.easeOutBack,
               child: Icon(
                 icon,
-                color: isActive ? Colors.blue : Colors.grey,
+                color: isActive
+                    ? Colors.white
+                    : colorScheme.onBackground.withOpacity(0.5),
                 size: 26,
               ),
             ),
@@ -76,8 +84,8 @@ class CustomBottomBar extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
                       label,
-                      style: const TextStyle(
-                        color: Colors.blue,
+                      style: TextStyle(
+                        color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),

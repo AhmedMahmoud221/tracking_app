@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/devices_page.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/custom_app_bar.dart';
@@ -18,21 +20,26 @@ class _HomePageViewState extends State<HomePageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CustomAppBar(),
-      body: IndexedStack(
-        index: selectedIndex,
-        children: [
-          HomePageBody(),
-          DevicesPage(isActive: selectedIndex == 1),
-          GoogleMapPage(),
-          Profile(),
-        ],
-      ),
-      bottomNavigationBar: CustomBottomBar(
-        currentIndex: selectedIndex,
-        onTap: (index) => setState(() => selectedIndex = index),
+    return RefreshIndicator(
+      onRefresh: () async {
+        await context.read<DevicesCubit>().fetchDevices();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: CustomAppBar(),
+        body: IndexedStack(
+          index: selectedIndex,
+          children: [
+            HomePageBody(),
+            DevicesPage(isActive: selectedIndex == 1),
+            GoogleMapPage(),
+            Profile(),
+          ],
+        ),
+        bottomNavigationBar: CustomBottomBar(
+          currentIndex: selectedIndex,
+          onTap: (index) => setState(() => selectedIndex = index),
+        ),
       ),
     );
   }

@@ -25,16 +25,19 @@ class DeviceCardGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () => context.push('/device-details', extra: device),
-
       child: LayoutBuilder(
         builder: (context, constraints) {
           final cardWidth = constraints.maxWidth;
-          final imageHeight = cardWidth * 0.70; // responsive ratio
+          final imageHeight = cardWidth * 0.70;
 
           return Card(
-            color: const Color.fromARGB(252, 252, 252, 252),
+            color: isDark
+                ? Colors.grey[850]
+                : const Color.fromARGB(252, 252, 252, 252),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -44,17 +47,16 @@ class DeviceCardGrid extends StatelessWidget {
               children: [
                 // صورة الجهاز
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   height: imageHeight,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: isDark ? Colors.grey[300] : Colors.grey[100],
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
                     image: DecorationImage(
                       image: AssetImage(AssetsData.caricon),
-                      //fit: BoxFit.cover, // مهم جداً
                     ),
                   ),
                 ),
@@ -82,6 +84,7 @@ class DeviceCardGrid extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: cardWidth < 180 ? 15 : 18,
                                 fontWeight: FontWeight.w600,
+                                color: isDark ? Colors.white : Colors.black,
                               ),
                             ),
                             const SizedBox(height: 3),
@@ -91,7 +94,7 @@ class DeviceCardGrid extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: cardWidth < 180 ? 13 : 16,
-                                color: Colors.black87,
+                                color: isDark ? Colors.white70 : Colors.black87,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -126,8 +129,6 @@ class DeviceCardGrid extends StatelessWidget {
                   ),
                 ),
 
-                //const SizedBox(height: 8),
-
                 // Plate Number
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -137,7 +138,7 @@ class DeviceCardGrid extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: cardWidth * 0.08,
-                      color: Colors.grey[600],
+                      color: isDark ? Colors.white70 : Colors.grey[600],
                       fontWeight: FontWeight.w500,
                     ),
                   ),

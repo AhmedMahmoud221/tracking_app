@@ -1,5 +1,3 @@
-// Stateless Widgets منفصلة للـ Home Page
-
 import 'package:flutter/material.dart';
 
 // -------------------------- STAT CARD --------------------------
@@ -17,8 +15,10 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Card(
-      color: Colors.grey[100],
+      color: isDark ? Colors.grey[850] : Colors.grey[100],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       elevation: 2,
       child: Padding(
@@ -27,20 +27,27 @@ class StatCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 24,
+              backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100],
               child: Icon(icon, size: 26, color: Colors.blue),
-              backgroundColor: Colors.grey[100],
             ),
             const SizedBox(width: 6),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(title, style: const TextStyle(fontSize: 14)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                  ),
+                ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
               ],

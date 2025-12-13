@@ -14,6 +14,8 @@ class CustomProfileitems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -21,19 +23,21 @@ class CustomProfileitems extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey[900] : Colors.white,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              spreadRadius: 2,
-              blurRadius: 10,
-            ),
+            BoxShadow(color: Colors.black12, spreadRadius: 2, blurRadius: 10),
           ],
         ),
         child: Row(
           children: [
-            Icon(icon, size: 28, color: Color.fromARGB(255, 0, 92, 121)),
+            Icon(
+              icon,
+              size: 28,
+              color: isDark
+                  ? Colors.white
+                  : const Color.fromARGB(255, 0, 92, 121),
+            ),
             const SizedBox(width: 18),
             Expanded(
               child: Text(
@@ -41,11 +45,15 @@ class CustomProfileitems extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade800,
+                  color: isDark ? Colors.white : Colors.grey.shade800,
                 ),
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 18,
+              color: isDark ? Colors.white : Colors.grey,
+            ),
           ],
         ),
       ),

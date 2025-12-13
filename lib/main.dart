@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:live_tracking/core/theme/app_theme.dart';
+import 'package:live_tracking/core/theme/theme_cubit.dart';
+import 'package:live_tracking/core/theme/theme_state.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
@@ -30,16 +33,23 @@ class LiveTrackingApp extends StatelessWidget {
         BlocProvider<ProfileDataCubit>(create: (_) => sl<ProfileDataCubit>()),
         BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>()),
         BlocProvider<CreateDeviceCubit>(create: (_) => sl<CreateDeviceCubit>()),
-        // Profile provider
         BlocProvider(create: (_) => ProfileCubit(LogoutUseCase(AuthService()))),
-
-        // Devices provider
         BlocProvider(create: (_) => sl<DevicesCubit>()..fetchDevices()),
+        BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
       ],
-      child: MaterialApp.router(
-        routerConfig: AppRouter.router,
-        debugShowCheckedModeBanner: false,
-        title: 'Live Tracking App',
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            routerConfig: AppRouter.router,
+            debugShowCheckedModeBanner: false,
+            title: 'Live Tracking App',
+            theme: AppThemes.light,
+            darkTheme: AppThemes.dark,
+            themeMode: state == ThemeState.dark
+                ? ThemeMode.dark
+                : ThemeMode.light,
+          );
+        },
       ),
     );
   }
