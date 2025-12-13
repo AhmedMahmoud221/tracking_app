@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/widgets/custom_bottom_sheet.dart';
+import 'package:live_tracking/core/theme/theme_cubit.dart';
+import 'package:live_tracking/core/theme/theme_state.dart';
 
 class GoogleMapPage extends StatefulWidget {
   final DeviceEntity? initialDevice;
@@ -33,23 +34,26 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // لو Theme اتغير، حدث ستايل الماب
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final style = isDark
-          ? await rootBundle.loadString(
-              'assets/google_map_theme/dark_map_style.json',
-            )
-          : null;
-      await _mapController?.setMapStyle(style);
-    });
+  Future<void> _setMapStyle(bool isDark) async {
+    if (_mapController == null) return;
+    final style = isDark
+        ? await DefaultAssetBundle.of(
+            context,
+          ).loadString('assets/google_map_theme/dark_map_style.json')
+        : null;
+    await _mapController!.setMapStyle(style);
   }
 
   @override
   Widget build(BuildContext context) {
+    // استمع لتغير ThemeCubit
+    final isDark = context.watch<ThemeCubit>().state == ThemeState.dark;
+
+    // حدث style مباشرة بعد أي build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setMapStyle(isDark);
+    });
+
     return BlocConsumer<DevicesCubit, DevicesState>(
       listener: (context, state) async {
         if (state is DevicesLoaded && state.selectedDevice != null) {
@@ -60,43 +64,43 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         }
       },
       builder: (context, state) {
-        final devices = state is DevicesLoaded
-            ? state.devices
-            : <DeviceEntity>[];
-        final loading = state is DevicesLoading;
+        List<DeviceEntity> devices = [];
+        bool loading = false;
+        if (state is DevicesLoading) loading = true;
+        if (state is DevicesLoaded) devices = state.devices;
 
         final markers = context.read<DevicesCubit>().getMarkers();
+
+        final initialPosition = widget.initialDevice != null
+            ? LatLng(
+                widget.initialDevice!.lastLocation.coordinates[1],
+                widget.initialDevice!.lastLocation.coordinates[0],
+              )
+            : const LatLng(30.0, 31.0);
 
         return Scaffold(
           body: Stack(
             children: [
               GoogleMap(
                 zoomControlsEnabled: false,
-                initialCameraPosition: const CameraPosition(
-                  target: LatLng(30.0, 31.0),
+                initialCameraPosition: CameraPosition(
+                  target: initialPosition,
                   zoom: 12,
                 ),
                 markers: markers,
-                onMapCreated: (controller) async {
+                onMapCreated: (controller) {
                   _mapController = controller;
-                  if (!_controllerCompleter.isCompleted)
+                  if (!_controllerCompleter.isCompleted) {
                     _controllerCompleter.complete(controller);
-
-                  final isDark =
-                      Theme.of(context).brightness == Brightness.dark;
-                  final style = isDark
-                      ? await rootBundle.loadString(
-                          'assets/google_map_theme/dark_map_style.json',
-                        )
-                      : null;
-
-                  await _mapController!.setMapStyle(style);
+                  }
+                  // عند الإنشاء حدث style مباشرة
+                  _setMapStyle(isDark);
                 },
               ),
               if (loading) const Center(child: CircularProgressIndicator()),
               Positioned(
                 bottom: 20,
-                right: 20,
+                left: 20,
                 child: CustomBottomSheet(
                   devices: devices,
                   onSelect: (device) {
