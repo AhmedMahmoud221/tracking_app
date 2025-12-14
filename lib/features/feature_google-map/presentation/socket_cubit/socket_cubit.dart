@@ -84,7 +84,7 @@ class SocketCubit extends Cubit<SocketState> {
     _socket.onConnect((_) {
       print('✅ Socket Connected');
       emit(SocketConnected()); // ✅ استخدام Cubit.emit لإطلاق حالة
-      joinTrackingRoom();
+      //joinTrackingRoom();
     });
 
     _socket.onDisconnect((_) {
@@ -102,13 +102,13 @@ class SocketCubit extends Cubit<SocketState> {
     });
   }
   
-  void joinTrackingRoom() {
-    // 4. إرسال البيانات مباشرة باستخدام _socket
-    if (_socket.connected) {
-      _socket.emit('join:device-room', '693693f8c8c7e61c807e0860');
-      print('🚀 Sent join_room request for devices:');
-    }
-  }
+  // void joinTrackingRoom() {
+  //   // 4. إرسال البيانات مباشرة باستخدام _socket
+  //   if (_socket.connected) {
+  //     _socket.emit('join:device-room', '693693f8c8c7e61c807e0860');
+  //     print('🚀 Sent join_room request for devices:');
+  //   }
+  // }
 
   // void joinTrackingRoom() {
   //   // 4. استخدام الدالة المصححة لإرسال البيانات
