@@ -7,7 +7,7 @@ class DeviceEntity {
   final String plateNumber;
   final String type;
   final String status;
-  final int speed;
+  final dynamic speed;
   final LastLocationEntity lastLocation;
 
   DeviceEntity({

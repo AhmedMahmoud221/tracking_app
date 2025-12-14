@@ -6,6 +6,7 @@ import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
@@ -36,6 +37,7 @@ class LiveTrackingApp extends StatelessWidget {
         BlocProvider(create: (_) => ProfileCubit(LogoutUseCase(AuthService()))),
         BlocProvider(create: (_) => sl<DevicesCubit>()..fetchDevices()),
         BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
+        BlocProvider(create: (_) => SocketCubit()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
