@@ -20,7 +20,7 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
     final token = await SecureStorage.readToken() ?? "";
 
     final response = await dio.get(
-      'https://r8c974qv-5000.uks1.devtunnels.ms/api/user/device',
+      'https://v05j2rv7-5000.euw.devtunnels.ms/api/user/device',
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
@@ -38,7 +38,7 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
   Future<DeviceModel> createDevice(CreateDeviceModel device) async {
     final token = await SecureStorage.readToken() ?? "";
     final response = await dio.post(
-      'https://r8c974qv-5000.uks1.devtunnels.ms/api/user/device',
+      'https://v05j2rv7-5000.euw.devtunnels.ms/api/user/device',
       data: device.toJson(),
       options: Options(
         headers: {

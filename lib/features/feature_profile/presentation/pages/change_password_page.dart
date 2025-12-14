@@ -57,6 +57,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           "Change Password",
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.pop();
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
