@@ -28,7 +28,7 @@ class CustomToggle extends StatelessWidget {
               onChanged: (value) {
                 context.read<ThemeCubit>().toggleTheme(value);
               },
-              activeColor: isDark
+              activeThumbColor: isDark
                   ? Colors.black
                   : Colors.red, // الديرة المتحركة
               activeTrackColor: isDark

@@ -68,7 +68,7 @@ class CustomBottomBar extends StatelessWidget {
                 icon,
                 color: isActive
                     ? Colors.white
-                    : colorScheme.onBackground.withOpacity(0.5),
+                    : colorScheme.onSurface.withOpacity(0.5),
                 size: 26,
               ),
             ),

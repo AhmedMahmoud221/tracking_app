@@ -42,7 +42,7 @@ class LastTrackedCard extends StatelessWidget {
               children: [
                 Chip(
                   label: Text(
-                    'Online',
+                    '${device.status}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,
@@ -52,7 +52,7 @@ class LastTrackedCard extends StatelessWidget {
                 ),
                 Chip(
                   label: Text(
-                    'Moving 42 km/h',
+                    'Moving ${device.speed} km/h',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,
@@ -62,7 +62,7 @@ class LastTrackedCard extends StatelessWidget {
                 ),
                 Chip(
                   label: Text(
-                    'Batt 76%',
+                    '${device.plateNumber}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,

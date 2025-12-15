@@ -53,11 +53,8 @@
 // }
 
 
-// في ملف SocketCubit.dart
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_state.dart';
-// 💡 استيراد مكتبة Socket IO هنا مباشرة
 import 'package:socket_io_client/socket_io_client.dart' as IO; 
 
 class SocketCubit extends Cubit<SocketState> {
@@ -83,7 +80,7 @@ class SocketCubit extends Cubit<SocketState> {
     // 2. تسجيل المستمعين مباشرة على كائن _socket
     _socket.onConnect((_) {
       print('✅ Socket Connected');
-      emit(SocketConnected()); // ✅ استخدام Cubit.emit لإطلاق حالة
+      emit(SocketConnected()); 
       //joinTrackingRoom();
     });
 

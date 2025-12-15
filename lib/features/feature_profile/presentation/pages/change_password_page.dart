@@ -25,7 +25,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    InputDecoration _buildDecoration(
+    InputDecoration buildDecoration(
       String label,
       bool obscureText,
       VoidCallback toggle,
@@ -74,7 +74,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               TextFormField(
                 controller: oldPassword,
                 obscureText: _obscureOld,
-                decoration: _buildDecoration("Old Password", _obscureOld, () {
+                decoration: buildDecoration("Old Password", _obscureOld, () {
                   setState(() => _obscureOld = !_obscureOld);
                 }),
                 validator: (v) => v!.isEmpty ? "Required" : null,
@@ -84,7 +84,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               TextFormField(
                 controller: newPassword,
                 obscureText: _obscureNew,
-                decoration: _buildDecoration("New Password", _obscureNew, () {
+                decoration: buildDecoration("New Password", _obscureNew, () {
                   setState(() => _obscureNew = !_obscureNew);
                 }),
                 validator: (v) => v!.isEmpty ? "Required" : null,
@@ -95,7 +95,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 child: TextFormField(
                   controller: confirmPassword,
                   obscureText: _obscureConfirm,
-                  decoration: _buildDecoration(
+                  decoration: buildDecoration(
                     "Confirm Password",
                     _obscureConfirm,
                     () {
@@ -135,7 +135,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
                         context.go(AppRouter.kLoginPageView);
                       } catch (e) {
-                        print('error is ${e}');
+                        print('error is $e');
                         // if (!context.mounted) return;
                         context.go(AppRouter.kLoginPageView);
                         ScaffoldMessenger.of(

@@ -66,6 +66,8 @@ flutter:
   assets:
     - assets/images/
     - assets/google_map_theme/dark_map_style.json
+    - assets/images/map_Icon.png
+    - assets/images/gps.png
     # - assets/images/splash.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -30,6 +30,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   final Map<String, List<LatLng>> _devicePaths = {};
   final Map<String, Polyline> _polylines = {};
 
+  // BitmapDescriptor? _customMarker;
+
   bool _socketConnected = false;
 
   @override
@@ -37,18 +39,43 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     super.initState();
     _controllerCompleter = Completer();
 
+    // _loadCustomMarker();
+
     final initialDevice = widget.initialDevice;
     if (initialDevice != null) {
       context.read<DevicesCubit>().selectDevice(initialDevice);
+        _initializeMarkersAndPaths([initialDevice]);
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLng(
+            LatLng( 
+              initialDevice.lastLocation.coordinates[1],
+              initialDevice.lastLocation.coordinates[0],
+            ),
+          ),
+        );
+      });
     } else {
       context.read<DevicesCubit>().fetchDevices();
     }
 
-    // 💡 الخطوة الجديدة: جلب التوكن والاتصال بالـ Socket
     _connectSocketWithToken();
   }
 
-  // في ملف google_map_page.dart، داخل دالة _connectSocketWithToken()
+  // Future<void> _loadCustomMarker() async {
+  //   final marker = await BitmapDescriptor.fromAssetImage(
+  //     const ImageConfiguration(size: Size(48, 48)),
+  //     'assets/images/car-placeholder.png',
+  //   );
+
+  //   if (!mounted) return;
+
+  //   setState(() {
+  //     _customMarker = marker;
+  //   });
+  // }
+
+
 
 Future<void> _connectSocketWithToken() async {
   if (_socketConnected) return;
@@ -72,7 +99,7 @@ Future<void> _connectSocketWithToken() async {
 }
   
   void _initializeMarkersAndPaths(List<DeviceEntity> devices) {
-    if (_deviceMarkers.isNotEmpty) return; 
+    // if (_deviceMarkers.isNotEmpty) return; 
 
     setState(() {
       _deviceMarkers.clear();
@@ -88,6 +115,7 @@ Future<void> _connectSocketWithToken() async {
         _deviceMarkers[deviceId] = Marker(
           markerId: MarkerId(deviceId),
           position: initialPos,
+          // icon: _customMarker ?? BitmapDescriptor.defaultMarker,
           // 💡 هنا استخدمنا `device.name` بناءً على تصحيحك السابق
           infoWindow: InfoWindow(
             title: device.model,
@@ -164,6 +192,7 @@ Future<void> _connectSocketWithToken() async {
 
       _deviceMarkers[deviceId] = oldMarker.copyWith(
         positionParam: newPos, 
+        // iconParam: _customMarker,
         infoWindowParam: InfoWindow(
           title: deviceName,
           snippet: 'Speed: $speed km/h',
@@ -205,7 +234,10 @@ Future<void> _connectSocketWithToken() async {
         BlocListener<DevicesCubit, DevicesState>(
           listener: (context, state) async {
             if (state is DevicesLoaded) {
-              _initializeMarkersAndPaths(state.devices);
+              // إذا لم يكن لدينا جهاز محدد مسبقًا
+              if (widget.initialDevice == null) {
+                _initializeMarkersAndPaths(state.devices);
+              }
 
               if (state.selectedDevice != null) {
                 final coords = state.selectedDevice!.lastLocation.coordinates;
@@ -244,7 +276,7 @@ Future<void> _connectSocketWithToken() async {
                   zoomControlsEnabled: false,
                   initialCameraPosition: CameraPosition(
                     target: initialPosition,
-                    zoom: 12,
+                    zoom: 15,
                   ),
                   markers: _deviceMarkers.values.toSet(), 
                   polylines: _polylines.values.toSet(),
