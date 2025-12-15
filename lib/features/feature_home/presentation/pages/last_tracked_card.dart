@@ -85,7 +85,7 @@ class LastTrackedCard extends StatelessWidget {
                   label: const Text('Track Now'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    foregroundColor: isDark ? Colors.white : Colors.black,
+                    foregroundColor: isDark ? Colors.white : Colors.white,
                   ),
                 ),
                 const SizedBox(width: 8),

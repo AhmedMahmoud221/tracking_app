@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 
@@ -15,7 +16,7 @@ class DeviceDetailsPage extends StatelessWidget {
     final cardColor = isDark ? Colors.grey[900] : Colors.white;
     final borderColor = isDark ? Colors.white24 : Colors.grey.withOpacity(0.3);
     final textColor = isDark ? Colors.white : Colors.black87;
-    final subTextColor = isDark ? Colors.white70 : Colors.black54;
+    //final subTextColor = isDark ? Colors.white70 : Colors.black54;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -47,15 +48,6 @@ class DeviceDetailsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
-            Text(
-              device.brand,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
             const SizedBox(height: 8),
 
             Container(
@@ -70,34 +62,85 @@ class DeviceDetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Model: ${device.model}',
+                    'Brand : ${device.brand}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Model : ${device.model}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Year: ${device.year}',
+                    'Year : ${device.year}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Plate Number: ${device.plateNumber}',
+                    'Plate Number : ${device.plateNumber}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Status: ${device.status}',
+                    'Status : ${device.status}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Last Location: ${device.lastLocation.coordinates[1]}, ${device.lastLocation.coordinates[0]}',
-                    style: TextStyle(fontSize: 16, color: subTextColor),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Speed: ${device.speed}',
+                    'Speed : ${device.speed}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
+                  const SizedBox(height: 8),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 0.5,
+                  ),
+                  Text(
+                    'Last Location',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: borderColor),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(
+                            device.lastLocation.coordinates[1], 
+                            device.lastLocation.coordinates[0],
+                          ),
+                          zoom: 14,
+                        ),
+                        markers: {
+                          Marker(
+                            markerId: MarkerId(device.id),
+                            position: LatLng(
+                              device.lastLocation.coordinates[1], 
+                              device.lastLocation.coordinates[0],
+                            ),
+                          ),
+                        },
+                        zoomControlsEnabled: false,
+                        scrollGesturesEnabled: false,
+                        tiltGesturesEnabled: false,
+                        rotateGesturesEnabled: false,
+                        mapToolbarEnabled: false,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
