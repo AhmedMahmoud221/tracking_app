@@ -18,6 +18,36 @@ class DeviceDetailsPopup extends StatelessWidget {
     final textColor = isDark ? Colors.white : Colors.black87;
     final bgColor = isDark ? Colors.grey[900] : Colors.white;
 
+    Color statusColor;
+    String statusText;
+
+    switch (device.status.toLowerCase()) {
+      case 'moving':
+        statusColor = Colors.green;
+        statusText = 'Moving';
+        break;
+
+      case 'parking':
+        statusColor = Colors.blue;
+        statusText = 'Parking';
+        break;
+
+      case 'idling':
+        statusColor = Colors.orange;
+        statusText = 'Idling';
+        break;
+
+      case 'towed':
+        statusColor = Colors.red;
+        statusText = 'Towed';
+        break;
+
+      default:
+        statusColor = Colors.grey;
+        statusText = device.status;
+    }
+
+
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -86,17 +116,19 @@ class DeviceDetailsPopup extends StatelessWidget {
                       Icon(
                         Icons.circle,
                         size: 12,
-                        color: device.status.toLowerCase() == "moving"
-                            ? Colors.green
-                            : Colors.red,
+                        color: statusColor,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Status: ${device.status}',
-                        style: TextStyle(color: textColor),
+                        'Status: $statusText',
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 8),
 
                   // Last location
@@ -129,6 +161,13 @@ class DeviceDetailsPopup extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                ElevatedButton(
+                  onPressed: onMore,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                  child: Text('More', style: TextStyle(color: Colors.white)),
+                ),
                 OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
@@ -143,15 +182,6 @@ class DeviceDetailsPopup extends StatelessWidget {
                       color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: onMore,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark
-                        ? Colors.grey[700]
-                        : Colors.blueAccent,
-                  ),
-                  child: Text('More', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
