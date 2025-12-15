@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/last_tracked_card.dart';
-import 'package:live_tracking/features/feature_home/presentation/pages/quick_actions_card.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/recent_activites_card.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/state_card.dart';
 
@@ -85,8 +84,8 @@ class _HomePageBodyState extends State<HomePageBody> {
                     const SizedBox(height: 20),
 
                     LastTrackedCard(device: lastDevice),
-                    const SizedBox(height: 16),
-                    QuickActionsCard(),
+                    // const SizedBox(height: 16),
+                    // QuickActionsCard(),
 
                     const SizedBox(height: 20),
 

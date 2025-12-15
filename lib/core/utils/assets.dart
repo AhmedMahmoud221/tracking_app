@@ -7,5 +7,5 @@ class AssetsData {
   static const caricon = 'assets/images/car_icon.png';
   static const mapcar = 'assets/images/map_Icon.png';
   static const flag ='assets/images/flag.png';
-  static const flagtest ='assets/images/flag_test.png';
+  static const slimplification ='assets/images/Simplification.svg';
 }

@@ -1,6 +1,9 @@
 import 'dart:async';
+// import 'dart:typed_data';
+// import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/core/utils/storage_helper.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
@@ -30,7 +33,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   final Map<String, List<LatLng>> _devicePaths = {};
   final Map<String, Polyline> _polylines = {};
 
-  // BitmapDescriptor? _customMarker;
+  BitmapDescriptor? _customMarker;
 
   bool _socketConnected = false;
 
@@ -39,13 +42,17 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     super.initState();
     _controllerCompleter = Completer();
 
-    // _loadCustomMarker();
+    _loadCustomMarker();
 
     final initialDevice = widget.initialDevice;
     if (initialDevice != null) {
       context.read<DevicesCubit>().selectDevice(initialDevice);
-        _initializeMarkersAndPaths([initialDevice]);
+        // _initializeMarkersAndPaths([initialDevice]);
       WidgetsBinding.instance.addPostFrameCallback((_) async {
+        
+        await _waitForMarkerLoad();
+        _initializeMarkersAndPaths([initialDevice]);
+
         _mapController?.animateCamera(
           CameraUpdate.newLatLng(
             LatLng( 
@@ -56,24 +63,61 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         );
       });
     } else {
-      context.read<DevicesCubit>().fetchDevices();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await _waitForMarkerLoad(); 
+        context.read<DevicesCubit>().fetchDevices(); // جلب الأجهزة بعد التحميل
+      });
+      // context.read<DevicesCubit>().fetchDevices();
     }
 
     _connectSocketWithToken();
   }
 
-  // Future<void> _loadCustomMarker() async {
-  //   final marker = await BitmapDescriptor.fromAssetImage(
-  //     const ImageConfiguration(size: Size(48, 48)),
-  //     'assets/images/car-placeholder.png',
-  //   );
+  Future<void> _waitForMarkerLoad() async {
+  // انتظر حتى يتم تحميل الأيقونة المخصصة (أو لمدة قصيرة كحد أقصى)
+    while (_customMarker == null) {
+      await Future.delayed(const Duration(milliseconds: 50)); 
+    }
+  }
 
-  //   if (!mounted) return;
+  // **التعديل الضروري:** استبدل امتداد .svg بـ .png
+  Future<void> _loadCustomMarker() async {
+    final marker = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(size: Size(64, 64)),
+      'assets/images/Simplification_2.png', // تم التعديل إلى PNG
+    );
 
-  //   setState(() {
-  //     _customMarker = marker;
-  //   });
+    if (!mounted) return;
+
+    setState(() {
+      _customMarker = marker;
+    });
+  }
+
+  // Future<BitmapDescriptor> _getBitmapDescriptorFromSvg(String assetName, {double size = 100}) async {
+  //   final pictureInfo = await vg.loadPicture(SvgAssetLoader(assetName), null);
+
+  //   final image = await pictureInfo.picture.toImage(size.toInt(), size.toInt());
+  //   final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  //   final Uint8List bytes = byteData!.buffer.asUint8List();
+
+  //   return BitmapDescriptor.fromBytes(bytes);
   // }
+
+// تعديل دالة التحميل لاستخدام دالة التحويل الجديدة
+// Future<void> _loadCustomMarker() async {
+//   final String assetName = 'assets/images/Simplification_2.png';
+//   final double desiredSize = 100;
+  
+//   // قم بتحديد حجم الأيقونة هنا (مثلاً 100x100)
+//   final marker = await _getBitmapDescriptorFromSvg(assetName, size: desiredSize); 
+
+//   if (!mounted) return;
+
+//   setState(() {
+//     _customMarker = marker;
+//   });
+// }
 
 
 
@@ -81,7 +125,6 @@ Future<void> _connectSocketWithToken() async {
   if (_socketConnected) return;
 
   try {
-    // 💡 الآن نستخدم دالة readToken() الثابتة من الكلاس SecureStorage
     final token = await SecureStorage.readToken(); 
 
     if (token != null && token.isNotEmpty) {
@@ -115,8 +158,7 @@ Future<void> _connectSocketWithToken() async {
         _deviceMarkers[deviceId] = Marker(
           markerId: MarkerId(deviceId),
           position: initialPos,
-          // icon: _customMarker ?? BitmapDescriptor.defaultMarker,
-          // 💡 هنا استخدمنا `device.name` بناءً على تصحيحك السابق
+          icon: _customMarker ?? BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: device.model,
             snippet: 'Status: ${device.status}',
@@ -179,20 +221,18 @@ Future<void> _connectSocketWithToken() async {
       String deviceName = 'Device $deviceId';
       final devicesState = context.read<DevicesCubit>().state;
       if (devicesState is DevicesLoaded) {
-          // 💡 تم استخدام firstOrNull لتجنب خطأ orElse المعقد
           final foundDevice = devicesState.devices
               .where((d) => d.id == deviceId)
               .firstOrNull; 
 
           if (foundDevice != null) {
-              // 💡 الآن نعتمد على أن 'name' موجودة في DeviceEntity
               deviceName = foundDevice.id; 
           }
       }
 
       _deviceMarkers[deviceId] = oldMarker.copyWith(
         positionParam: newPos, 
-        // iconParam: _customMarker,
+        iconParam: _customMarker,
         infoWindowParam: InfoWindow(
           title: deviceName,
           snippet: 'Speed: $speed km/h',
@@ -219,9 +259,6 @@ Future<void> _connectSocketWithToken() async {
 
     return MultiBlocListener(
       listeners: [
-        // 💡 تم حذف BlocListener<AuthCubit, AuthState> واستبداله بـ _connectSocketWithToken في initState
-
-        // 1. استماع لـ SocketCubit لتحديث الموقع
         BlocListener<SocketCubit, SocketState>(
           listener: (context, state) {
             if (state is SocketLocationUpdated) {
@@ -230,11 +267,9 @@ Future<void> _connectSocketWithToken() async {
           },
         ),
 
-        // 2. استماع لـ DevicesCubit لتهيئة العلامات وتحريك الكاميرا
         BlocListener<DevicesCubit, DevicesState>(
           listener: (context, state) async {
             if (state is DevicesLoaded) {
-              // إذا لم يكن لدينا جهاز محدد مسبقًا
               if (widget.initialDevice == null) {
                 _initializeMarkersAndPaths(state.devices);
               }
@@ -245,20 +280,12 @@ Future<void> _connectSocketWithToken() async {
                   CameraUpdate.newLatLng(LatLng(coords[1], coords[0])),
                 );
               }
-              // 🎯 الخطوة الجديدة: الانضمام إلى الغرفة فور تحميل الأجهزة
-              // نجمع قائمة بـ IDs جميع الأجهزة التي تم تحميلها
-              // final List<String> loadedDeviceIds = 
-              //     state.devices.map((d) => d.id).toList();
-
-              // نستدعي دالة الانضمام من SocketCubit
-              // context.read<SocketCubit>().joinTrackingRoom(loadedDeviceIds);
             }
           },
         ),
       ],
       child: BlocBuilder<DevicesCubit, DevicesState>(
         builder: (context, state) {
-          // ... (بقية الـ builder بدون تغيير كبير)
           List<DeviceEntity> devices = [];
           bool loading = false;
           if (state is DevicesLoading) loading = true;
@@ -276,7 +303,7 @@ Future<void> _connectSocketWithToken() async {
                   zoomControlsEnabled: false,
                   initialCameraPosition: CameraPosition(
                     target: initialPosition,
-                    zoom: 15,
+                    zoom: 12,
                   ),
                   markers: _deviceMarkers.values.toSet(), 
                   polylines: _polylines.values.toSet(),
@@ -309,7 +336,6 @@ Future<void> _connectSocketWithToken() async {
   }
 
   void _showDeviceDetails(DeviceEntity device) {
-    // ... (هذه الدالة لم تتغير)
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
