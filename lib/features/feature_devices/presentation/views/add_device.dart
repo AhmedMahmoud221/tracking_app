@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/features/feature_devices/domain/entities/user_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_state.dart';
@@ -237,13 +238,10 @@ class _AddDeviceState extends State<AddDevice> {
                                 year: int.parse(yearController.text),
                                 plateNumber: plateController.text,
                                 type: selectedType,
-                                user: "",
+                                user: UserEntity(id: '', name: '', email: ''),
                                 status: "",
-                                speed: 0,
-                                lastLocation: LastLocationEntity(
-                                  type: "",
-                                  coordinates: [],
-                                ),
+                                //speed: 0,
+                                lastRecord: null,
                               );
 
                               context.read<CreateDeviceCubit>().createDevice(

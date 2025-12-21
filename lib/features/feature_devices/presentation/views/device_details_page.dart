@@ -91,20 +91,14 @@ class DeviceDetailsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Speed : ${device.speed}',
+                    'Speed : ${device.lastRecord?.speed}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
-                  Divider(
-                    color: Colors.grey,
-                    thickness: 0.5,
-                  ),
+                  Divider(color: Colors.grey, thickness: 0.5),
                   Text(
                     'Last Location',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: textColor,
-                    ),
+                    style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 12),
                   Container(
@@ -118,21 +112,25 @@ class DeviceDetailsPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: GoogleMap(
                         initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                            device.lastLocation.coordinates[1], 
-                            device.lastLocation.coordinates[0],
-                          ),
+                          target: device.lastRecord != null
+                              ? LatLng(
+                                  device.lastRecord!.lat,
+                                  device.lastRecord!.lng,
+                                )
+                              : const LatLng(30.0, 31.0), // fallback
                           zoom: 14,
                         ),
-                        markers: {
-                          Marker(
-                            markerId: MarkerId(device.id),
-                            position: LatLng(
-                              device.lastLocation.coordinates[1], 
-                              device.lastLocation.coordinates[0],
-                            ),
-                          ),
-                        },
+                        markers: device.lastRecord != null
+                            ? {
+                                Marker(
+                                  markerId: MarkerId(device.id),
+                                  position: LatLng(
+                                    device.lastRecord!.lat,
+                                    device.lastRecord!.lng,
+                                  ),
+                                ),
+                              }
+                            : {},
                         zoomControlsEnabled: false,
                         scrollGesturesEnabled: false,
                         tiltGesturesEnabled: false,
@@ -140,7 +138,7 @@ class DeviceDetailsPage extends StatelessWidget {
                         mapToolbarEnabled: false,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

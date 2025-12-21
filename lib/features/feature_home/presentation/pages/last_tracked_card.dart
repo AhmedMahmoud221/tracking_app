@@ -52,7 +52,7 @@ class LastTrackedCard extends StatelessWidget {
                 ),
                 Chip(
                   label: Text(
-                    'Moving ${device.speed} km/h',
+                    'Moving ${device.lastRecord?.speed ?? 0} km/h',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,

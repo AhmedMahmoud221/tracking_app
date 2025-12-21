@@ -65,7 +65,7 @@ class DevicesCubit extends Cubit<DevicesState> {
     emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
   }
 
-   /// تحديد جهاز معين
+  /// تحديد جهاز معين
   void selectDevice(DeviceEntity device) {
     selectedDevice = device;
     emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
@@ -73,14 +73,15 @@ class DevicesCubit extends Cubit<DevicesState> {
 
   /// تحويل الأجهزة إلى Markers
   Set<Marker> getMarkers() {
-    return _allDevices.map((device) {
-      final coords = device.lastLocation.coordinates;
+    return _allDevices.where((device) => device.lastRecord != null).map((
+      device,
+    ) {
+      final record = device.lastRecord!;
       return Marker(
         markerId: MarkerId(device.id),
-        position: LatLng(coords[1], coords[0]),
+        position: LatLng(record.lat, record.lng),
         infoWindow: InfoWindow(title: device.brand),
       );
     }).toSet();
   }
 }
-

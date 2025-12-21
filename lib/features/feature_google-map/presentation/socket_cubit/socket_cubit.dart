@@ -13,7 +13,7 @@
 //   void connect(String token) {
 //     // 2. ابدأ الاتصال (هنا يتم تهيئة socket)
 //     socketService.connect(token);
-    
+
 //     // 3. سجل المستمعين هنا (بعد بدء التهيئة)
 //     socketService.onConnect((_) {
 //       print('✅ Socket Connected');
@@ -29,19 +29,19 @@
 //       emit(SocketLocationUpdated(data));
 //     });
 //   }
-  
+
 //   // 🎯 4. استخدام الدالة العامة socketService.emit (يحل LateInitializationError هنا أيضاً)
 //   void joinTrackingRoom( ) {
 //     // if (deviceIds.isEmpty) {
 //     //   print('⚠️ Cannot join room: Device IDs list is empty.');
 //     //   return;
 //     // }
-    
+
 //     // ✅ تصحيح: استخدام الدالة العامة
 //     socketService.emit('join:device-room',
 //       '693693f8c8c7e61c807e0860',
 //     );
-    
+
 //     print('🚀 Sent join_room request for devices:');
 //   }
 
@@ -52,14 +52,13 @@
 //   }
 // }
 
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_state.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO; 
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketCubit extends Cubit<SocketState> {
   // 💡 نقل كائن الـ Socket إلى هنا
-  late IO.Socket _socket; 
+  late IO.Socket _socket;
 
   // 🎯 Constructor لا يحتاج لـ SocketService الآن
   SocketCubit() : super(SocketInitial());
@@ -76,11 +75,11 @@ class SocketCubit extends Cubit<SocketState> {
     );
 
     _socket.connect();
-    
+
     // 2. تسجيل المستمعين مباشرة على كائن _socket
     _socket.onConnect((_) {
       print('✅ Socket Connected');
-      emit(SocketConnected()); 
+      emit(SocketConnected());
       //joinTrackingRoom();
     });
 
@@ -98,7 +97,7 @@ class SocketCubit extends Cubit<SocketState> {
       emit(SocketLocationUpdated(data));
     });
   }
-  
+
   // void joinTrackingRoom() {
   //   // 4. إرسال البيانات مباشرة باستخدام _socket
   //   if (_socket.connected) {

@@ -116,7 +116,7 @@ class CustomBottomSheet extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Speed: ${d.speed}',
+                                        'Speed: ${d.lastRecord?.speed}',
                                         style: TextStyle(color: textColor),
                                       ),
                                     ],

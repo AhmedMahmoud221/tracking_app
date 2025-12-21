@@ -47,7 +47,6 @@ class DeviceDetailsPopup extends StatelessWidget {
         statusText = device.status;
     }
 
-
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -113,11 +112,7 @@ class DeviceDetailsPopup extends StatelessWidget {
                   // Status
                   Row(
                     children: [
-                      Icon(
-                        Icons.circle,
-                        size: 12,
-                        color: statusColor,
-                      ),
+                      Icon(Icons.circle, size: 12, color: statusColor),
                       const SizedBox(width: 6),
                       Text(
                         'Status: $statusText',
@@ -138,7 +133,9 @@ class DeviceDetailsPopup extends StatelessWidget {
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          'Last location: ${device.lastLocation.coordinates[1]}, ${device.lastLocation.coordinates[0]}',
+                          device.lastRecord != null
+                              ? 'Last location: ${device.lastRecord!.lat}, ${device.lastRecord!.lng}'
+                              : 'Last location: Not available',
                           style: TextStyle(color: textColor),
                         ),
                       ),
@@ -148,7 +145,7 @@ class DeviceDetailsPopup extends StatelessWidget {
 
                   // Speed
                   Text(
-                    'Speed: ${device.speed}',
+                    'Speed: ${device.lastRecord?.speed}',
                     style: TextStyle(color: textColor),
                   ),
                 ],

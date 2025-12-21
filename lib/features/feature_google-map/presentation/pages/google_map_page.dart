@@ -28,7 +28,7 @@ class GoogleMapPage extends StatefulWidget {
 class _GoogleMapPageState extends State<GoogleMapPage> {
   late final Completer<GoogleMapController> _controllerCompleter;
   GoogleMapController? _mapController;
-  
+
   final Map<String, Marker> _deviceMarkers = {};
   final Map<String, List<LatLng>> _devicePaths = {};
   final Map<String, Polyline> _polylines = {};
@@ -47,24 +47,25 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     final initialDevice = widget.initialDevice;
     if (initialDevice != null) {
       context.read<DevicesCubit>().selectDevice(initialDevice);
-        // _initializeMarkersAndPaths([initialDevice]);
+      // _initializeMarkersAndPaths([initialDevice]);
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        
         await _waitForMarkerLoad();
         _initializeMarkersAndPaths([initialDevice]);
 
-        _mapController?.animateCamera(
-          CameraUpdate.newLatLng(
-            LatLng( 
-              initialDevice.lastLocation.coordinates[1],
-              initialDevice.lastLocation.coordinates[0],
+        if (initialDevice.lastRecord != null) {
+          _mapController?.animateCamera(
+            CameraUpdate.newLatLng(
+              LatLng(
+                initialDevice.lastRecord!.lat,
+                initialDevice.lastRecord!.lng,
+              ),
             ),
-          ),
-        );
+          );
+        }
       });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await _waitForMarkerLoad(); 
+        await _waitForMarkerLoad();
         context.read<DevicesCubit>().fetchDevices(); // جلب الأجهزة بعد التحميل
       });
       // context.read<DevicesCubit>().fetchDevices();
@@ -74,9 +75,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   }
 
   Future<void> _waitForMarkerLoad() async {
-  // انتظر حتى يتم تحميل الأيقونة المخصصة (أو لمدة قصيرة كحد أقصى)
+    // انتظر حتى يتم تحميل الأيقونة المخصصة (أو لمدة قصيرة كحد أقصى)
     while (_customMarker == null) {
-      await Future.delayed(const Duration(milliseconds: 50)); 
+      await Future.delayed(const Duration(milliseconds: 50));
     }
   }
 
@@ -104,64 +105,71 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   //   return BitmapDescriptor.fromBytes(bytes);
   // }
 
-// تعديل دالة التحميل لاستخدام دالة التحويل الجديدة
-// Future<void> _loadCustomMarker() async {
-//   final String assetName = 'assets/images/Simplification_2.png';
-//   final double desiredSize = 100;
-  
-//   // قم بتحديد حجم الأيقونة هنا (مثلاً 100x100)
-//   final marker = await _getBitmapDescriptorFromSvg(assetName, size: desiredSize); 
+  // تعديل دالة التحميل لاستخدام دالة التحويل الجديدة
+  // Future<void> _loadCustomMarker() async {
+  //   final String assetName = 'assets/images/Simplification_2.png';
+  //   final double desiredSize = 100;
 
-//   if (!mounted) return;
+  //   // قم بتحديد حجم الأيقونة هنا (مثلاً 100x100)
+  //   final marker = await _getBitmapDescriptorFromSvg(assetName, size: desiredSize);
 
-//   setState(() {
-//     _customMarker = marker;
-//   });
-// }
+  //   if (!mounted) return;
 
+  //   setState(() {
+  //     _customMarker = marker;
+  //   });
+  // }
 
+  Future<void> _connectSocketWithToken() async {
+    if (_socketConnected) return;
 
-Future<void> _connectSocketWithToken() async {
-  if (_socketConnected) return;
+    try {
+      final token = await SecureStorage.readToken();
 
-  try {
-    final token = await SecureStorage.readToken(); 
-
-    if (token != null && token.isNotEmpty) {
-      if (mounted) {
-        context.read<SocketCubit>().connect(token);
-        _socketConnected = true;
-        debugPrint('💡 Socket Connection Attempt: Started successfully with token.');
+      if (token != null && token.isNotEmpty) {
+        if (mounted) {
+          context.read<SocketCubit>().connect(token);
+          _socketConnected = true;
+          debugPrint(
+            '💡 Socket Connection Attempt: Started successfully with token.',
+          );
+        }
+      } else {
+        debugPrint(
+          '❌ Socket Connection Attempt: Token not found in Secure Storage.',
+        );
       }
-    } else {
-      debugPrint('❌ Socket Connection Attempt: Token not found in Secure Storage.');
+    } catch (e) {
+      debugPrint('❌ Error reading token or connecting socket: $e');
     }
-  } catch (e) {
-    debugPrint('❌ Error reading token or connecting socket: $e');
   }
-}
-  
+
   void _initializeMarkersAndPaths(List<DeviceEntity> devices) {
-    // if (_deviceMarkers.isNotEmpty) return; 
+    // if (_deviceMarkers.isNotEmpty) return;
 
     setState(() {
       _deviceMarkers.clear();
       _devicePaths.clear();
       _polylines.clear();
-      
+
       for (final device in devices) {
         final deviceId = device.id;
-        final lat = device.lastLocation.coordinates[1];
-        final lng = device.lastLocation.coordinates[0];
+        final record = device.lastRecord;
+
+        // لو الجهاز لسه ما بعتش موقع
+        if (record == null) continue;
+
+        final lat = record.lat;
+        final lng = record.lng;
         final initialPos = LatLng(lat, lng);
-        
+
         _deviceMarkers[deviceId] = Marker(
           markerId: MarkerId(deviceId),
           position: initialPos,
           icon: _customMarker ?? BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: device.model,
-            snippet: 'Status: ${device.status}',
+            snippet: 'Status: ${record.status}', // أو device.status
           ),
           onTap: () {
             context.read<DevicesCubit>().selectDevice(device);
@@ -170,7 +178,7 @@ Future<void> _connectSocketWithToken() async {
         );
 
         _devicePaths[deviceId] = [initialPos];
-        
+
         _polylines[deviceId] = Polyline(
           polylineId: PolylineId(deviceId),
           points: _devicePaths[deviceId]!,
@@ -184,14 +192,15 @@ Future<void> _connectSocketWithToken() async {
   Future<void> _setMapStyle(bool isDark) async {
     if (_mapController == null) return;
     final style = isDark
-        ? await DefaultAssetBundle.of(context)
-            .loadString('assets/google_map_theme/dark_map_style.json')
+        ? await DefaultAssetBundle.of(
+            context,
+          ).loadString('assets/google_map_theme/dark_map_style.json')
         : null;
     await _mapController!.setMapStyle(style);
   }
 
   void _updateDeviceLocation(dynamic data) {
-    final deviceId = data['deviceId']?.toString(); 
+    final deviceId = data['deviceId']?.toString();
     final lat = data['lat'];
     final lng = data['lng'];
     final speed = data['speed'] ?? 0;
@@ -201,8 +210,8 @@ Future<void> _connectSocketWithToken() async {
     final newPos = LatLng(lat, lng);
 
     if (!_deviceMarkers.containsKey(deviceId)) {
-        debugPrint('Update received for unknown device ID: $deviceId');
-        return;
+      debugPrint('Update received for unknown device ID: $deviceId');
+      return;
     }
 
     setState(() {
@@ -217,21 +226,21 @@ Future<void> _connectSocketWithToken() async {
       );
 
       final oldMarker = _deviceMarkers[deviceId]!;
-      
+
       String deviceName = 'Device $deviceId';
       final devicesState = context.read<DevicesCubit>().state;
       if (devicesState is DevicesLoaded) {
-          final foundDevice = devicesState.devices
-              .where((d) => d.id == deviceId)
-              .firstOrNull; 
+        final foundDevice = devicesState.devices
+            .where((d) => d.id == deviceId)
+            .firstOrNull;
 
-          if (foundDevice != null) {
-              deviceName = foundDevice.id; 
-          }
+        if (foundDevice != null) {
+          deviceName = foundDevice.id;
+        }
       }
 
       _deviceMarkers[deviceId] = oldMarker.copyWith(
-        positionParam: newPos, 
+        positionParam: newPos,
         iconParam: _customMarker,
         infoWindowParam: InfoWindow(
           title: deviceName,
@@ -240,10 +249,10 @@ Future<void> _connectSocketWithToken() async {
       );
     });
 
-    final selectedDevice = context.read<DevicesCubit>().state is DevicesLoaded 
+    final selectedDevice = context.read<DevicesCubit>().state is DevicesLoaded
         ? (context.read<DevicesCubit>().state as DevicesLoaded).selectedDevice
         : null;
-        
+
     if (selectedDevice?.id == deviceId) {
       _mapController?.animateCamera(CameraUpdate.newLatLng(newPos));
     }
@@ -274,10 +283,10 @@ Future<void> _connectSocketWithToken() async {
                 _initializeMarkersAndPaths(state.devices);
               }
 
-              if (state.selectedDevice != null) {
-                final coords = state.selectedDevice!.lastLocation.coordinates;
+              final record = state.selectedDevice!.lastRecord;
+              if (record != null) {
                 await _mapController?.animateCamera(
-                  CameraUpdate.newLatLng(LatLng(coords[1], coords[0])),
+                  CameraUpdate.newLatLng(LatLng(record.lat, record.lng)),
                 );
               }
             }
@@ -291,10 +300,12 @@ Future<void> _connectSocketWithToken() async {
           if (state is DevicesLoading) loading = true;
           if (state is DevicesLoaded) devices = state.devices;
 
-          final initialPosition = widget.initialDevice != null
-              ? LatLng(widget.initialDevice!.lastLocation.coordinates[1],
-                  widget.initialDevice!.lastLocation.coordinates[0])
-              : const LatLng(30.0, 31.0); 
+          final initialPosition = widget.initialDevice?.lastRecord != null
+              ? LatLng(
+                  widget.initialDevice!.lastRecord!.lat,
+                  widget.initialDevice!.lastRecord!.lng,
+                )
+              : const LatLng(30.0, 31.0);
 
           return Scaffold(
             body: Stack(
@@ -305,7 +316,7 @@ Future<void> _connectSocketWithToken() async {
                     target: initialPosition,
                     zoom: 12,
                   ),
-                  markers: _deviceMarkers.values.toSet(), 
+                  markers: _deviceMarkers.values.toSet(),
                   polylines: _polylines.values.toSet(),
                   onMapCreated: (controller) {
                     _mapController = controller;
