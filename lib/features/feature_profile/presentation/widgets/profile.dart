@@ -8,6 +8,7 @@ import 'package:live_tracking/features/feature_profile/data/datasources/user_pro
 import 'package:live_tracking/features/feature_profile/data/repositories/user_profile_repository_impl.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
+import 'package:live_tracking/features/feature_profile/presentation/cubit/language_cubit/languageCubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_state.dart';
@@ -15,6 +16,7 @@ import 'package:live_tracking/features/feature_profile/presentation/pages/custom
 import 'package:live_tracking/features/feature_profile/presentation/pages/custom_profile_header.dart';
 import 'package:live_tracking/features/feature_profile/presentation/pages/custom_profile_item.dart';
 import 'package:live_tracking/features/feature_profile/presentation/pages/custom_toggle.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -64,17 +66,44 @@ class Profile extends StatelessWidget {
               ),
 
               CustomProfileitems(
-                title: "Notification",
+                title: AppLocalizations.of(context)!.notification,
                 icon: Icons.notifications,
                 onTap: () {},
               ),
               CustomProfileitems(
-                title: "Language",
+                title: AppLocalizations.of(context)!.language,
                 icon: Icons.language,
-                onTap: () {},
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          title: Text(' English'),
+                          onTap: () {
+                            context.read<LanguageCubit>().changeLanguage(
+                              const Locale('en'),
+                            );
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ListTile(
+                          title: Text(' عربي'),
+                          onTap: () {
+                            context.read<LanguageCubit>().changeLanguage(
+                              const Locale('ar'),
+                            );
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
               CustomProfileitems(
-                title: "Change Password",
+                title: AppLocalizations.of(context)!.changePassword,
                 icon: Icons.lock,
                 onTap: () {
                   context.push(AppRouter.kChangePassword);

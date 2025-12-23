@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class CustomToggle extends StatelessWidget {
   const CustomToggle({super.key});
@@ -16,7 +17,7 @@ class CustomToggle extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Dark Mode',
+              AppLocalizations.of(context)!.darkmode,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,

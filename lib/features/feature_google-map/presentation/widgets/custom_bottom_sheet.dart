@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class CustomBottomSheet extends StatelessWidget {
@@ -46,7 +47,7 @@ class CustomBottomSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Devices',
+                    AppLocalizations.of(context)!.devices,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

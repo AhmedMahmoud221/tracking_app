@@ -5,6 +5,7 @@ import 'package:live_tracking/features/feature_devices/presentation/cubit/device
 import 'package:live_tracking/features/feature_home/presentation/pages/last_tracked_card.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/recent_activites_card.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/state_card.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key});
@@ -58,22 +59,22 @@ class _HomePageBodyState extends State<HomePageBody> {
                       mainAxisSpacing: 12,
                       children: [
                         StatCard(
-                          title: 'Total Devices',
+                          title: AppLocalizations.of(context)!.totaldevices,
                           value: '$total',
                           icon: Icons.directions_car,
                         ),
                         StatCard(
-                          title: 'Online',
+                          title: AppLocalizations.of(context)!.online,
                           value: '$moving',
                           icon: Icons.wifi,
                         ),
                         StatCard(
-                          title: 'Offline',
+                          title: AppLocalizations.of(context)!.offline,
                           value: '$offline',
                           icon: Icons.wifi_off,
                         ),
                         StatCard(
-                          title: 'Moving',
+                          title: AppLocalizations.of(context)!.moving,
                           value: '$moving',
                           icon: Icons.speed,
                         ),

@@ -40,8 +40,8 @@ class DotsJumpAnimationState extends State<DotsJumpAnimation>
               return Transform.translate(
                 offset: Offset(0, -10 * Curves.easeOut.transform(value)),
                 child: const CircleAvatar(
-                  radius: 6,
-                  backgroundColor: Color.fromARGB(255, 58, 58, 58),
+                  radius: 4,
+                  backgroundColor: Colors.white,
                 ),
               );
             },

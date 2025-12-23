@@ -11,9 +11,11 @@ import 'package:live_tracking/features/feature_home/presentation/cubit/create_de
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
+import 'package:live_tracking/features/feature_profile/presentation/cubit/language_cubit/languageCubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 import 'package:live_tracking/injection_container.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 final sl = GetIt.instance;
 
@@ -38,18 +40,34 @@ class LiveTrackingApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<DevicesCubit>()..fetchDevices()),
         BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
         BlocProvider(create: (_) => SocketCubit()),
+        BlocProvider<LanguageCubit>(create: (_) => LanguageCubit()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
-          return MaterialApp.router(
-            routerConfig: AppRouter.router,
-            debugShowCheckedModeBanner: false,
-            title: 'Live Tracking App',
-            theme: AppThemes.light,
-            darkTheme: AppThemes.dark,
-            themeMode: state == ThemeState.dark
-                ? ThemeMode.dark
-                : ThemeMode.light,
+          return BlocBuilder<LanguageCubit, Locale>(
+            builder: (context, locale) {
+              return MaterialApp.router(
+                routerConfig: AppRouter.router,
+                debugShowCheckedModeBanner: false,
+                title: 'Live Tracking App',
+                theme: AppThemes.light,
+                darkTheme: AppThemes.dark,
+                themeMode: state == ThemeState.dark
+                    ? ThemeMode.dark
+                    : ThemeMode.light,
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                builder: (context, child) {
+                  return Directionality(
+                    textDirection: locale.languageCode == 'ar'
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
+                    child: child!,
+                  );
+                },
+              );
+            },
           );
         },
       ),

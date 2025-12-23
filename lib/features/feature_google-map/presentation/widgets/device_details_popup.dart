@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class DeviceDetailsPopup extends StatelessWidget {
   final DeviceEntity device;
@@ -115,7 +116,7 @@ class DeviceDetailsPopup extends StatelessWidget {
                       Icon(Icons.circle, size: 12, color: statusColor),
                       const SizedBox(width: 6),
                       Text(
-                        'Status: $statusText',
+                        '${AppLocalizations.of(context)!.status} : $statusText',
                         style: TextStyle(
                           color: statusColor,
                           fontWeight: FontWeight.w500,
@@ -134,8 +135,8 @@ class DeviceDetailsPopup extends StatelessWidget {
                       Expanded(
                         child: Text(
                           device.lastRecord != null
-                              ? 'Last location: ${device.lastRecord!.lat}, ${device.lastRecord!.lng}'
-                              : 'Last location: Not available',
+                              ? '${AppLocalizations.of(context)!.lastlocation} : ${device.lastRecord!.lat}, ${device.lastRecord!.lng}'
+                              : '${AppLocalizations.of(context)!.lastlocation} : Not available',
                           style: TextStyle(color: textColor),
                         ),
                       ),
@@ -145,7 +146,7 @@ class DeviceDetailsPopup extends StatelessWidget {
 
                   // Speed
                   Text(
-                    'Speed: ${device.lastRecord?.speed}',
+                    '${AppLocalizations.of(context)!.speed} : ${device.lastRecord?.speed}',
                     style: TextStyle(color: textColor),
                   ),
                 ],
@@ -163,7 +164,10 @@ class DeviceDetailsPopup extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
                   ),
-                  child: Text('More', style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    AppLocalizations.of(context)!.more,
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 OutlinedButton(
                   onPressed: () => Navigator.pop(context),
@@ -174,7 +178,7 @@ class DeviceDetailsPopup extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Close',
+                    AppLocalizations.of(context)!.close,
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black,
                     ),

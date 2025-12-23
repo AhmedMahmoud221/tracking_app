@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class CustomBottomBar extends StatelessWidget {
   final int currentIndex;
@@ -15,7 +16,7 @@ class CustomBottomBar extends StatelessWidget {
     return Container(
       height: 90,
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor, // نفس خلفية الثيم
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -27,10 +28,25 @@ class CustomBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          buildItem(context, Icons.home, "Home", 0),
-          buildItem(context, Icons.directions_car, "Devices", 1),
-          buildItem(context, Icons.gps_fixed, "Live", 2),
-          buildItem(context, Icons.person, "Profile", 3),
+          buildItem(context, Icons.home, AppLocalizations.of(context)!.home, 0),
+          buildItem(
+            context,
+            Icons.directions_car,
+            AppLocalizations.of(context)!.devices,
+            1,
+          ),
+          buildItem(
+            context,
+            Icons.gps_fixed,
+            AppLocalizations.of(context)!.live,
+            2,
+          ),
+          buildItem(
+            context,
+            Icons.person,
+            AppLocalizations.of(context)!.profile,
+            3,
+          ),
         ],
       ),
     );
@@ -72,6 +88,7 @@ class CustomBottomBar extends StatelessWidget {
                 size: 26,
               ),
             ),
+            if (isActive) const SizedBox(width: 6),
             if (isActive)
               AnimatedSlide(
                 duration: const Duration(milliseconds: 280),

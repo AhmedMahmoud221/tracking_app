@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class RecentActivitiesCard extends StatelessWidget {
   const RecentActivitiesCard({super.key});
@@ -23,7 +24,7 @@ class RecentActivitiesCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Recent Activities',
+              AppLocalizations.of(context)!.recentactivities,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

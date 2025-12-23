@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class LogoutButton extends StatelessWidget {
   final bool isLoading;
@@ -34,7 +35,7 @@ class LogoutButton extends StatelessWidget {
             const SizedBox(width: 18),
             Expanded(
               child: Text(
-                "Logout",
+                AppLocalizations.of(context)!.logout,
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.grey.shade800,
                   fontSize: 16,

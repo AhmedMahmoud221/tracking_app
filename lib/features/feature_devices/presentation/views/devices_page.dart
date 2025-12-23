@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_devices/presentation/widgets/device_card.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class DevicesPage extends StatefulWidget {
   final bool isActive;
@@ -63,7 +64,7 @@ class _DevicesPageState extends State<DevicesPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            'All Devices : $count',
+                            '${AppLocalizations.of(context)!.alldevices} : $count',
                             style: TextStyle(
                               fontSize: 20,
                               color: isDark ? Colors.white : Colors.black,
@@ -83,8 +84,8 @@ class _DevicesPageState extends State<DevicesPage> {
                             size: 18,
                             color: Colors.white,
                           ),
-                          label: const Text(
-                            'Add Device',
+                          label: Text(
+                            AppLocalizations.of(context)!.adddevice,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -116,7 +117,7 @@ class _DevicesPageState extends State<DevicesPage> {
                           if (devices.isEmpty) {
                             return Center(
                               child: Text(
-                                "No Devices Found",
+                                AppLocalizations.of(context)!.nodevicesfound,
                                 style: TextStyle(
                                   color: isDark ? Colors.white : Colors.black,
                                 ),

@@ -14,7 +14,7 @@ class SplashViewBody extends StatefulWidget {
 }
 
 class _SplashViewBodyState extends State<SplashViewBody>
-  with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<Offset> slidingAnimation;
 
@@ -29,25 +29,74 @@ class _SplashViewBodyState extends State<SplashViewBody>
 
   @override
   void dispose() {
-    animationController
-        .dispose();
-    
-    super.dispose(); //Unsubscribe from streams and close network connections to avoid memory leaks and ensure the application functions efficiently.
+    animationController.dispose();
+
+    super
+        .dispose(); //Unsubscribe from streams and close network connections to avoid memory leaks and ensure the application functions efficiently.
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(
-          width: 200,
-          height: 200,
-          child: Image.asset(AssetsData.splash),
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF005C79), Color(0xFF4FE5FF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-        DotsJumpAnimation(),
-      ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SlideTransition(
+              position:
+                  Tween<Offset>(
+                    begin: const Offset(0, 1.8),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animationController,
+                      curve: Curves.easeOutBack,
+                    ),
+                  ),
+              child: Image.asset(
+                AssetsData.freepik,
+                width: 200,
+                fit: BoxFit.contain,
+              ),
+              //const Icon(
+              //   Icons.location_on,
+              //   size: 110,
+              //   color: Colors.white,
+              // ),
+            ),
+            const SizedBox(height: 16),
+            FadeTransition(
+              opacity: animationController,
+              child: Column(
+                children: [
+                  Text(
+                    'Live Tracking',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  DotsJumpAnimation(),
+                  // Text(
+                  //   'Tracking in real time',
+                  //   style: TextStyle(fontSize: 14, color: Colors.black),
+                  // ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -81,5 +130,5 @@ class _SplashViewBodyState extends State<SplashViewBody>
       // ignore: use_build_context_synchronously
       GoRouter.of(context).go(AppRouter.kLoginPageView); // لو مش موجود → Login
     }
-  }  
+  }
 }

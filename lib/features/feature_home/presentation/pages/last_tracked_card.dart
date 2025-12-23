@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class LastTrackedCard extends StatelessWidget {
   final dynamic device; // هتربطه بالـ DeviceEntity بعدين
@@ -20,7 +21,7 @@ class LastTrackedCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Last Tracked Device',
+              AppLocalizations.of(context)!.lasttrackeddevice,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -82,7 +83,7 @@ class LastTrackedCard extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.location_searching),
-                  label: const Text('Track Now'),
+                  label: Text(AppLocalizations.of(context)!.tracknow),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: isDark ? Colors.white : Colors.white,
@@ -96,7 +97,7 @@ class LastTrackedCard extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.info_outline),
-                  label: const Text('Details'),
+                  label: Text(AppLocalizations.of(context)!.details),
                   style: OutlinedButton.styleFrom(
                     backgroundColor: isDark
                         ? Colors.grey[800]
