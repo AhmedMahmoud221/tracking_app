@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
-import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/core/utils/storage_helper.dart';
-import 'package:live_tracking/features/feature_splash/presentation/pages/animation.dart';
 
 class SplashViewBody extends StatefulWidget {
   final String nextRoute;
@@ -17,14 +15,34 @@ class _SplashViewBodyState extends State<SplashViewBody>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<Offset> slidingAnimation;
+  late Animation<double> glowAnimation;
+  late Animation<double> shakeAnimation;
+  late Animation<double> routeOpacity;
 
   @override
   void initState() {
     super.initState();
 
-    initSlidingAnimation();
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
 
-    navigateToNextPage(); // Async navigation after checking token
+    glowAnimation = Tween<double>(begin: 0.7, end: 1.1).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
+    );
+
+    shakeAnimation = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.elasticIn),
+    );
+
+    routeOpacity = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.easeIn),
+    );
+
+    animationController.repeat(reverse: true);
+
+    navigateToNextPage();
   }
 
   @override
@@ -40,57 +58,87 @@ class _SplashViewBodyState extends State<SplashViewBody>
     return Scaffold(
       body: Container(
         width: double.infinity,
+        height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF005C79), Color(0xFF4FE5FF)],
+            colors: [
+              Color.fromARGB(255, 0, 92, 121),
+              Color.fromARGB(255, 79, 229, 255),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center, // منتصف طولياً
+          crossAxisAlignment: CrossAxisAlignment.center, // منتصف عرضياً
           children: [
-            SlideTransition(
-              position:
-                  Tween<Offset>(
-                    begin: const Offset(0, 1.8),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: animationController,
-                      curve: Curves.easeOutBack,
+            // ✨ Glow + Shake + Car
+            AnimatedBuilder(
+              animation: animationController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(shakeAnimation.value, 0),
+                  child: Transform.scale(
+                    scale: glowAnimation.value,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.cyanAccent.withOpacity(0.6),
+                            blurRadius: 30,
+                            spreadRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.location_pin,
+                        size: 110,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-              child: Image.asset(
-                AssetsData.freepik,
-                width: 200,
-                fit: BoxFit.contain,
-              ),
-              //const Icon(
-              //   Icons.location_on,
-              //   size: 110,
-              //   color: Colors.white,
-              // ),
+                );
+              },
             ),
-            const SizedBox(height: 16),
+
+            const SizedBox(height: 20),
+
+            // 🛣️ Route Line متحرك
+            FadeTransition(
+              opacity: routeOpacity,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.10,
+                height: 2,
+                decoration: BoxDecoration(
+                  color: Colors.white54,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.cyanAccent.withOpacity(0.6),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // 📝 النص
             FadeTransition(
               opacity: animationController,
               child: Column(
-                children: [
+                children: const [
                   Text(
                     'Live Tracking',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
+                      letterSpacing: 1.3,
                     ),
                   ),
-                  SizedBox(height: 12),
-                  DotsJumpAnimation(),
-                  // Text(
-                  //   'Tracking in real time',
-                  //   style: TextStyle(fontSize: 14, color: Colors.black),
-                  // ),
                 ],
               ),
             ),
