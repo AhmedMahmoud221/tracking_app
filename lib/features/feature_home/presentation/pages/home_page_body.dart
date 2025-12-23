@@ -16,7 +16,6 @@ class HomePageBody extends StatefulWidget {
 class _HomePageBodyState extends State<HomePageBody> {
   @override
   Widget build(BuildContext context) {
-    // نجيب لون الخلفية حسب الوضع الحالي
     final backgroundColor = Theme.of(context).brightness == Brightness.dark
         ? Colors.black
         : Colors.white;
@@ -31,9 +30,9 @@ class _HomePageBodyState extends State<HomePageBody> {
             final allDevices = state.devices;
 
             final total = allDevices.length;
-            final online = allDevices
-                .where((d) => d.status.toLowerCase() == 'online')
-                .length;
+            //final online = allDevices
+            // .where((d) => d.status.toLowerCase() == 'online')
+            // .length;
             final offline = allDevices
                 .where((d) => d.status.toLowerCase() != 'online')
                 .length;
@@ -65,7 +64,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                         ),
                         StatCard(
                           title: 'Online',
-                          value: '$online',
+                          value: '$moving',
                           icon: Icons.wifi,
                         ),
                         StatCard(
@@ -84,9 +83,9 @@ class _HomePageBodyState extends State<HomePageBody> {
                     const SizedBox(height: 20),
 
                     LastTrackedCard(device: lastDevice),
+
                     // const SizedBox(height: 16),
                     // QuickActionsCard(),
-
                     const SizedBox(height: 20),
 
                     RecentActivitiesCard(),

@@ -18,7 +18,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       await logoutUseCase(token);
 
       emit(LogoutSuccessState());
-
     } catch (e) {
       emit(LogoutErrorState(e.toString()));
     }

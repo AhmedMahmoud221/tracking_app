@@ -32,8 +32,9 @@ class _SignupPageBodyState extends State<SignupPageBody> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
         } else if (state is AuthSuccess) {
           GoRouter.of(context).go(AppRouter.kLoginPageView);
         }
@@ -56,7 +57,6 @@ class _SignupPageBodyState extends State<SignupPageBody> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            const SizedBox(height: 20),
                             const LiveTrackingText(),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(16),
@@ -87,7 +87,9 @@ class _SignupPageBodyState extends State<SignupPageBody> {
                               controller: _passwordCtrl,
                               isPassword: true,
                             ),
-                            const CustomTextFeildHead(title: 'Confirm Password'),
+                            const CustomTextFeildHead(
+                              title: 'Confirm Password',
+                            ),
                             CustomTextField(
                               hint: 'Confirm Password',
                               controller: _confirmCtrl,
@@ -95,8 +97,9 @@ class _SignupPageBodyState extends State<SignupPageBody> {
                             ),
                             CustomAccountOption(
                               onPressed: () {
-                                GoRouter.of(context)
-                                    .go(AppRouter.kLoginPageView);
+                                GoRouter.of(
+                                  context,
+                                ).go(AppRouter.kLoginPageView);
                               },
                               text1: 'Already have an account ?',
                               text2: 'Sign In',
@@ -126,14 +129,16 @@ class _SignupPageBodyState extends State<SignupPageBody> {
         _emailCtrl.text.isEmpty ||
         _passwordCtrl.text.isEmpty ||
         _confirmCtrl.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return false;
     }
 
     if (_passwordCtrl.text != _confirmCtrl.text) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return false;
     }
 
@@ -148,6 +153,11 @@ class _SignupPageBodyState extends State<SignupPageBody> {
     final password = _passwordCtrl.text.trim();
     final passwordConfirm = _confirmCtrl.text.trim();
 
-    context.read<AuthCubit>().signup(name: name, email: email, password: password, passwordConfirm: passwordConfirm);
+    context.read<AuthCubit>().signup(
+      name: name,
+      email: email,
+      password: password,
+      passwordConfirm: passwordConfirm,
+    );
   }
 }
