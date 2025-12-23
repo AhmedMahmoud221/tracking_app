@@ -29,8 +29,9 @@ class _LoginPageBodyState extends State<LoginPageBody> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
         } else if (state is AuthSuccess) {
           GoRouter.of(context).go(AppRouter.kHomePage); // navigate to MainPage
         }
@@ -80,8 +81,9 @@ class _LoginPageBodyState extends State<LoginPageBody> {
                             ),
                             CustomAccountOption(
                               onPressed: () {
-                                GoRouter.of(context)
-                                    .go(AppRouter.kSignupPageView);
+                                GoRouter.of(
+                                  context,
+                                ).go(AppRouter.kSignupPageView);
                               },
                               text1: 'You don\'t have an account ?',
                               text2: 'Sign Up',
@@ -91,10 +93,7 @@ class _LoginPageBodyState extends State<LoginPageBody> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    CustomButton(
-                      buttonText: 'Sign In',
-                      onTap: _onLoginPressed,
-                    ),
+                    CustomButton(buttonText: 'Sign In', onTap: _onLoginPressed),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -111,9 +110,9 @@ class _LoginPageBodyState extends State<LoginPageBody> {
     final password = _passwordCtrl.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
 

@@ -6,6 +6,7 @@ import 'package:live_tracking/features/feature_devices/presentation/views/device
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
+import 'package:live_tracking/features/feature_login/presentation/pages/forget_password_screen.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/login_page_view.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/signup_page_view.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
@@ -24,6 +25,7 @@ class AppRouter {
   static const kCreateDevice = '/create-device';
   static const kDeviceDetails = '/device-details';
   static const kChangePassword = '/change-password';
+  static const kForgotPassword = '/forgotPassword';
 
   static final router = GoRouter(
     initialLocation: '/', //splash first
@@ -40,6 +42,10 @@ class AppRouter {
       GoRoute(
         path: '/signup',
         builder: (context, state) => const SignupPageView(),
+      ),
+      GoRoute(
+        path: kForgotPassword,
+        builder: (context, state) => ForgotPasswordScreen(),
       ),
       GoRoute(path: '/home', builder: (context, state) => const HomePage()),
       GoRoute(

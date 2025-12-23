@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/core/utils/styles.dart';
 
 class CustomAccountOption extends StatelessWidget {
@@ -20,7 +22,8 @@ class CustomAccountOption extends StatelessWidget {
         Text(
           text1,
           style: Styles.textStyle16.copyWith(
-            color: Colors.black54.withValues(alpha:  0.3),
+            color: Colors.black54.withValues(alpha: 0.3),
+            fontSize: 12,
           ),
         ),
         TextButton(
@@ -30,6 +33,20 @@ class CustomAccountOption extends StatelessWidget {
             style: Styles.textStyle16.copyWith(
               color: Colors.blue,
               fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            GoRouter.of(context).push(AppRouter.kForgotPassword);
+          },
+          child: Text(
+            "Forgot Password?",
+            style: Styles.textStyle14.copyWith(
+              color: Colors.blue,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
             ),
           ),
         ),

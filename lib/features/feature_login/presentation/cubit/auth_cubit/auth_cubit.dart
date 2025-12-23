@@ -13,7 +13,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final token = await authService.login(email: email, password: password);
       await SecureStorage.saveToken(token); // ← هنا
-            print(token);
+      print(token);
       emit(AuthSuccess(token: token));
     } catch (e) {
       emit(AuthFailure(e.toString()));
@@ -36,6 +36,16 @@ class AuthCubit extends Cubit<AuthState> {
       );
       await SecureStorage.saveToken(token); // for save token to secure storage
       emit(AuthSuccess(token: token));
+    } catch (e) {
+      emit(AuthFailure(e.toString()));
+    }
+  }
+
+  Future<void> forgetPassword({required String email}) async {
+    emit(AuthLoading());
+    try {
+      await authService.forgetPassword(email: email);
+      emit(ForgetPasswordSuccess());
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }

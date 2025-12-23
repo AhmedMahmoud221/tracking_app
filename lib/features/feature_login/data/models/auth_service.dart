@@ -106,4 +106,21 @@ class AuthService {
   Future<void> forceLogout() async {
     await SecureStorage.deleteToken();
   }
+
+  // forgetPassword
+  Future<void> forgetPassword({required String email}) async {
+    final url = Uri.parse('${ApiConstants.baseUrl}/api/user/forgot-password');
+
+    final response = await client.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+
+    if (response.statusCode != 200) {
+      final error =
+          jsonDecode(response.body)['message'] ?? 'Failed to reset password';
+      throw Exception(error);
+    }
+  }
 }
