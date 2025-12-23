@@ -70,10 +70,9 @@ class _SplashViewBodyState extends State<SplashViewBody>
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // منتصف طولياً
-          crossAxisAlignment: CrossAxisAlignment.center, // منتصف عرضياً
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ✨ Glow + Shake + Car
             AnimatedBuilder(
               animation: animationController,
               builder: (context, child) {
@@ -86,7 +85,12 @@ class _SplashViewBodyState extends State<SplashViewBody>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.cyanAccent.withOpacity(0.6),
+                            color: Color.fromARGB(
+                              255,
+                              79,
+                              229,
+                              255,
+                            ).withOpacity(0.6),
                             blurRadius: 30,
                             spreadRadius: 6,
                           ),
@@ -105,7 +109,6 @@ class _SplashViewBodyState extends State<SplashViewBody>
 
             const SizedBox(height: 20),
 
-            // 🛣️ Route Line متحرك
             FadeTransition(
               opacity: routeOpacity,
               child: Container(
@@ -115,7 +118,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                   color: Colors.white54,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyanAccent.withOpacity(0.6),
+                      color: Color.fromARGB(255, 79, 229, 255).withOpacity(0.6),
                       blurRadius: 8,
                     ),
                   ],
@@ -125,7 +128,6 @@ class _SplashViewBodyState extends State<SplashViewBody>
 
             const SizedBox(height: 20),
 
-            // 📝 النص
             FadeTransition(
               opacity: animationController,
               child: Column(
@@ -163,20 +165,18 @@ class _SplashViewBodyState extends State<SplashViewBody>
   }
 
   void navigateToNextPage() async {
-    // تأكد إن الـ widget موجود قبل أي navigation
     await Future.delayed(const Duration(seconds: 5));
 
     if (!mounted) return;
 
-    // جلب الـ token من SecureStorage
     final token = await SecureStorage.readToken();
 
     if (token != null) {
       // ignore: use_build_context_synchronously
-      GoRouter.of(context).go(AppRouter.kHomePage); // لو موجود → Home
+      GoRouter.of(context).go(AppRouter.kHomePage);
     } else {
       // ignore: use_build_context_synchronously
-      GoRouter.of(context).go(AppRouter.kLoginPageView); // لو مش موجود → Login
+      GoRouter.of(context).go(AppRouter.kLoginPageView);
     }
   }
 }
