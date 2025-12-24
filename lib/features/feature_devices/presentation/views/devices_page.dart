@@ -180,7 +180,7 @@ class _SearchBar extends StatelessWidget {
         context.read<DevicesCubit>().searchDevices(query);
       },
       decoration: InputDecoration(
-        hintText: "Search devices...",
+        hintText: "${AppLocalizations.of(context)!.searchdevices}...",
         hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
         prefixIcon: Icon(
           Icons.search,

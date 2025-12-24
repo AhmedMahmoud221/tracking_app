@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/core/extensions/status_localization_extension.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
 
 class LastTrackedCard extends StatelessWidget {
@@ -43,7 +44,7 @@ class LastTrackedCard extends StatelessWidget {
               children: [
                 Chip(
                   label: Text(
-                    '${device.status.localized(context)}',
+                    "${device.status}".localized(context),
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,

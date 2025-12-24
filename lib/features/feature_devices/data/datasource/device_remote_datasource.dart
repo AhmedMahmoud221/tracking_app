@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/core/utils/storage_helper.dart';
 import 'package:live_tracking/features/feature_devices/data/models/device_model.dart';
 import 'package:live_tracking/features/feature_home/data/models/create_device_model.dart';
@@ -20,7 +21,7 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
     final token = await SecureStorage.readToken() ?? "";
 
     final response = await dio.get(
-      'https://v05j2rv7-5000.euw.devtunnels.ms/api/user/device',
+      '${ApiConstants.baseUrl}/api/user/device',
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
@@ -38,7 +39,7 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
   Future<DeviceModel> createDevice(CreateDeviceModel device) async {
     final token = await SecureStorage.readToken() ?? "";
     final response = await dio.post(
-      'https://v05j2rv7-5000.euw.devtunnels.ms/api/user/device',
+      '${ApiConstants.baseUrl}/api/user/device',
       data: device.toJson(),
       options: Options(
         headers: {

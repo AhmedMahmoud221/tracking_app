@@ -66,7 +66,7 @@ class SocketCubit extends Cubit<SocketState> {
   void connect(String token) {
     // 1. إنشاء كائن الـ Socket وتهيئته هنا مباشرة
     _socket = IO.io(
-      'https://v05j2rv7-3000.euw.devtunnels.ms/',
+      'https://r8c974qv-3000.uks1.devtunnels.ms/',
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .enableAutoConnect()
