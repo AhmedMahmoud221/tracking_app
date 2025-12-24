@@ -9,6 +9,7 @@ import 'package:live_tracking/features/feature_home/presentation/cubit/create_de
 import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_state.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class AddDevice extends StatefulWidget {
   const AddDevice({super.key});
@@ -42,7 +43,7 @@ class _AddDeviceState extends State<AddDevice> {
             backgroundColor: backgroundColor,
             iconTheme: IconThemeData(color: fieldTextColor),
             title: Text(
-              "Create Device",
+              "${AppLocalizations.of(context)!.createdevice}",
               style: TextStyle(color: fieldTextColor),
             ),
           ),
@@ -91,7 +92,8 @@ class _AddDeviceState extends State<AddDevice> {
                             TextFormField(
                               controller: brandController,
                               decoration: InputDecoration(
-                                labelText: "Brand",
+                                labelText:
+                                    "${AppLocalizations.of(context)!.brand}",
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -113,7 +115,8 @@ class _AddDeviceState extends State<AddDevice> {
                             TextFormField(
                               controller: modelController,
                               decoration: InputDecoration(
-                                labelText: "Model",
+                                labelText:
+                                    "${AppLocalizations.of(context)!.model}",
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -135,7 +138,8 @@ class _AddDeviceState extends State<AddDevice> {
                             TextFormField(
                               controller: yearController,
                               decoration: InputDecoration(
-                                labelText: "Year",
+                                labelText:
+                                    "${AppLocalizations.of(context)!.year}",
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -158,7 +162,8 @@ class _AddDeviceState extends State<AddDevice> {
                             TextFormField(
                               controller: plateController,
                               decoration: InputDecoration(
-                                labelText: "Plate Number",
+                                labelText:
+                                    "${AppLocalizations.of(context)!.platenumber}",
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -188,20 +193,27 @@ class _AddDeviceState extends State<AddDevice> {
                                 ),
                               ),
                               hint: Text(
-                                "Type",
+                                "${AppLocalizations.of(context)!.type}",
                                 style: TextStyle(color: fieldLabelColor),
                               ),
-                              items: ["Car", "Motorcycle", "Truck"]
-                                  .map(
-                                    (item) => DropdownMenuItem<String>(
-                                      value: item,
-                                      child: Text(
-                                        item,
-                                        style: TextStyle(color: fieldTextColor),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
+                              items:
+                                  [
+                                        "${AppLocalizations.of(context)!.car}",
+                                        "${AppLocalizations.of(context)!.motorcycle}",
+                                        "${AppLocalizations.of(context)!.truck}",
+                                      ]
+                                      .map(
+                                        (item) => DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Text(
+                                            item,
+                                            style: TextStyle(
+                                              color: fieldTextColor,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
                               dropdownStyleData: DropdownStyleData(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -257,8 +269,8 @@ class _AddDeviceState extends State<AddDevice> {
                             backgroundColor: Colors.blue,
                             elevation: 4,
                           ),
-                          child: const Text(
-                            "Create Device",
+                          child: Text(
+                            '${AppLocalizations.of(context)!.createdevice}',
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),

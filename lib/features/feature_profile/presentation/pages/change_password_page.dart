@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -54,7 +55,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         backgroundColor: isDark ? Colors.grey[900] : Colors.white,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black),
         title: Text(
-          "Change Password",
+          "${AppLocalizations.of(context)!.changePassword}",
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         leading: IconButton(
@@ -74,20 +75,32 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               TextFormField(
                 controller: oldPassword,
                 obscureText: _obscureOld,
-                decoration: buildDecoration("Old Password", _obscureOld, () {
-                  setState(() => _obscureOld = !_obscureOld);
-                }),
-                validator: (v) => v!.isEmpty ? "Required" : null,
+                decoration: buildDecoration(
+                  "${AppLocalizations.of(context)!.oldpassword}",
+                  _obscureOld,
+                  () {
+                    setState(() => _obscureOld = !_obscureOld);
+                  },
+                ),
+                validator: (v) => v!.isEmpty
+                    ? "${AppLocalizations.of(context)!.required}"
+                    : null,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
               const SizedBox(height: 18),
               TextFormField(
                 controller: newPassword,
                 obscureText: _obscureNew,
-                decoration: buildDecoration("New Password", _obscureNew, () {
-                  setState(() => _obscureNew = !_obscureNew);
-                }),
-                validator: (v) => v!.isEmpty ? "Required" : null,
+                decoration: buildDecoration(
+                  "${AppLocalizations.of(context)!.newpassword}",
+                  _obscureNew,
+                  () {
+                    setState(() => _obscureNew = !_obscureNew);
+                  },
+                ),
+                validator: (v) => v!.isEmpty
+                    ? "${AppLocalizations.of(context)!.required}"
+                    : null,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
               const SizedBox(height: 18),
@@ -96,15 +109,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   controller: confirmPassword,
                   obscureText: _obscureConfirm,
                   decoration: buildDecoration(
-                    "Confirm Password",
+                    "${AppLocalizations.of(context)!.confirmpassword}",
                     _obscureConfirm,
                     () {
                       setState(() => _obscureConfirm = !_obscureConfirm);
                     },
                   ),
                   validator: (v) {
-                    if (v == null || v.isEmpty) return "Required";
-                    if (v != newPassword.text) return "Passwords do not match";
+                    if (v == null || v.isEmpty)
+                      return "${AppLocalizations.of(context)!.required}";
+                    if (v != newPassword.text)
+                      return "${AppLocalizations.of(context)!.passwordsdonotmatch}";
                     return null;
                   },
                   style: TextStyle(color: isDark ? Colors.white : Colors.black),
@@ -152,8 +167,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    "Change Password",
+                  child: Text(
+                    "${AppLocalizations.of(context)!.changePassword}",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),

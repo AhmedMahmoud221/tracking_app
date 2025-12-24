@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_profile/domain/entities/user_profile.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomProfileHeader extends StatefulWidget {
@@ -68,7 +69,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
                     _pickImage(ImageSource.camera);
                   },
                 ),
-                const Text('Camera'),
+                Text('${AppLocalizations.of(context)!.camera}'),
               ],
             ),
             Column(
@@ -81,7 +82,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
                     _pickImage(ImageSource.gallery);
                   },
                 ),
-                const Text('Gallery'),
+                Text('${AppLocalizations.of(context)!.gallery}'),
               ],
             ),
           ],

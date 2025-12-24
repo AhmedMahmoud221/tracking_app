@@ -250,6 +250,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Live'**
   String get live;
+
+  /// No description provided for @parking.
+  ///
+  /// In en, this message translates to:
+  /// **'Parking'**
+  String get parking;
+
+  /// No description provided for @idling.
+  ///
+  /// In en, this message translates to:
+  /// **'Idling'**
+  String get idling;
+
+  /// No description provided for @towed.
+  ///
+  /// In en, this message translates to:
+  /// **'Towed'**
+  String get towed;
+
+  /// No description provided for @number.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get number;
+
+  /// No description provided for @devicedetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Details'**
+  String get devicedetails;
+
+  /// No description provided for @brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get brand;
+
+  /// No description provided for @model.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get model;
+
+  /// No description provided for @year.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get year;
+
+  /// No description provided for @platenumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate Number'**
+  String get platenumber;
+
+  /// No description provided for @searchdevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Devices'**
+  String get searchdevices;
+
+  /// No description provided for @createdevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Device'**
+  String get createdevice;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @car.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get car;
+
+  /// No description provided for @motorcycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Motorcycle'**
+  String get motorcycle;
+
+  /// No description provided for @truck.
+  ///
+  /// In en, this message translates to:
+  /// **'Truck'**
+  String get truck;
+
+  /// No description provided for @startedmoving.
+  ///
+  /// In en, this message translates to:
+  /// **'Started moving'**
+  String get startedmoving;
+
+  /// No description provided for @gpsupdated.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS updated'**
+  String get gpsupdated;
+
+  /// No description provided for @wentoffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Went offline'**
+  String get wentoffline;
+
+  /// No description provided for @mintago.
+  ///
+  /// In en, this message translates to:
+  /// **'mint ago'**
+  String get mintago;
+
+  /// No description provided for @oldpassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Old Password'**
+  String get oldpassword;
+
+  /// No description provided for @newpassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newpassword;
+
+  /// No description provided for @confirmpassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmpassword;
+
+  /// No description provided for @passwordsdonotmatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsdonotmatch;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get required;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

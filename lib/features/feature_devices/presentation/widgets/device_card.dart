@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/core/extensions/status_localization_extension.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class DeviceCardGrid extends StatelessWidget {
   final DeviceEntity device;
@@ -56,7 +58,7 @@ class DeviceCardGrid extends StatelessWidget {
                       top: Radius.circular(12),
                     ),
                     image: DecorationImage(
-                      image: AssetImage(AssetsData.caricon),
+                      image: AssetImage(AssetsData.freepik),
                     ),
                   ),
                 ),
@@ -116,7 +118,7 @@ class DeviceCardGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            device.status,
+                            device.status.localized(context),
                             style: TextStyle(
                               fontSize: cardWidth < 180 ? 12 : 14,
                               color: _getStatusColor(device.status),
@@ -133,7 +135,7 @@ class DeviceCardGrid extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
-                    'Number : ${device.plateNumber}',
+                    '${AppLocalizations.of(context)!.number} : ${device.plateNumber}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

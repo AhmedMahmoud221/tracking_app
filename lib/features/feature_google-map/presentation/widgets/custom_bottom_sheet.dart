@@ -117,7 +117,7 @@ class CustomBottomSheet extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Speed: ${d.lastRecord?.speed}',
+                                        '${AppLocalizations.of(context)!.speed} : ${d.lastRecord?.speed}',
                                         style: TextStyle(color: textColor),
                                       ),
                                     ],
@@ -136,8 +136,8 @@ class CustomBottomSheet extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     Text(
                                       d.status.toLowerCase() == "moving"
-                                          ? 'Online'
-                                          : 'Offline',
+                                          ? '${AppLocalizations.of(context)!.online}'
+                                          : '${AppLocalizations.of(context)!.offline}',
                                       style: TextStyle(
                                         color: statusColor,
                                         fontWeight: FontWeight.w600,

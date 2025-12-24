@@ -25,22 +25,22 @@ class DeviceDetailsPopup extends StatelessWidget {
     switch (device.status.toLowerCase()) {
       case 'moving':
         statusColor = Colors.green;
-        statusText = 'Moving';
+        statusText = '${AppLocalizations.of(context)!.moving}';
         break;
 
       case 'parking':
         statusColor = Colors.blue;
-        statusText = 'Parking';
+        statusText = '${AppLocalizations.of(context)!.parking}';
         break;
 
       case 'idling':
         statusColor = Colors.orange;
-        statusText = 'Idling';
+        statusText = '${AppLocalizations.of(context)!.idling}';
         break;
 
       case 'towed':
         statusColor = Colors.red;
-        statusText = 'Towed';
+        statusText = '${AppLocalizations.of(context)!.towed}';
         break;
 
       default:
@@ -68,12 +68,16 @@ class DeviceDetailsPopup extends StatelessWidget {
           children: [
             // صورة الجهاز
             Center(
-              child: CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.grey[300],
-                backgroundImage: AssetImage(AssetsData.caricon),
+              child: ClipOval(
+                child: Image.asset(
+                  AssetsData.freepik,
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
+
             const SizedBox(height: 16),
 
             // اسم الماركة والموديل
@@ -145,9 +149,15 @@ class DeviceDetailsPopup extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   // Speed
-                  Text(
-                    '${AppLocalizations.of(context)!.speed} : ${device.lastRecord?.speed}',
-                    style: TextStyle(color: textColor),
+                  Row(
+                    children: [
+                      Icon(Icons.speed, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${AppLocalizations.of(context)!.speed} : ${device.lastRecord?.speed}',
+                        style: TextStyle(color: textColor),
+                      ),
+                    ],
                   ),
                 ],
               ),

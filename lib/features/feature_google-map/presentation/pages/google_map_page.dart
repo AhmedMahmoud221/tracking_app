@@ -1,10 +1,8 @@
 import 'dart:async';
-// import 'dart:typed_data';
-// import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:live_tracking/core/extensions/status_localization_extension.dart';
 import 'package:live_tracking/core/utils/storage_helper.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
@@ -16,6 +14,7 @@ import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/widgets/device_details_popup.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/device_details_page.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class GoogleMapPage extends StatefulWidget {
   final DeviceEntity? initialDevice;
@@ -47,7 +46,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     final initialDevice = widget.initialDevice;
     if (initialDevice != null) {
       context.read<DevicesCubit>().selectDevice(initialDevice);
-      // _initializeMarkersAndPaths([initialDevice]);
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await _waitForMarkerLoad();
         _initializeMarkersAndPaths([initialDevice]);
@@ -66,26 +64,23 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await _waitForMarkerLoad();
-        context.read<DevicesCubit>().fetchDevices(); // جلب الأجهزة بعد التحميل
+        context.read<DevicesCubit>().fetchDevices();
       });
-      // context.read<DevicesCubit>().fetchDevices();
     }
 
     _connectSocketWithToken();
   }
 
   Future<void> _waitForMarkerLoad() async {
-    // انتظر حتى يتم تحميل الأيقونة المخصصة (أو لمدة قصيرة كحد أقصى)
     while (_customMarker == null) {
       await Future.delayed(const Duration(milliseconds: 50));
     }
   }
 
-  // **التعديل الضروري:** استبدل امتداد .svg بـ .png
   Future<void> _loadCustomMarker() async {
     final marker = await BitmapDescriptor.fromAssetImage(
       const ImageConfiguration(size: Size(64, 64)),
-      'assets/images/Simplification_2.png', // تم التعديل إلى PNG
+      'assets/images/Simplification_2.png',
     );
 
     if (!mounted) return;
@@ -94,31 +89,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
       _customMarker = marker;
     });
   }
-
-  // Future<BitmapDescriptor> _getBitmapDescriptorFromSvg(String assetName, {double size = 100}) async {
-  //   final pictureInfo = await vg.loadPicture(SvgAssetLoader(assetName), null);
-
-  //   final image = await pictureInfo.picture.toImage(size.toInt(), size.toInt());
-  //   final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-  //   final Uint8List bytes = byteData!.buffer.asUint8List();
-
-  //   return BitmapDescriptor.fromBytes(bytes);
-  // }
-
-  // تعديل دالة التحميل لاستخدام دالة التحويل الجديدة
-  // Future<void> _loadCustomMarker() async {
-  //   final String assetName = 'assets/images/Simplification_2.png';
-  //   final double desiredSize = 100;
-
-  //   // قم بتحديد حجم الأيقونة هنا (مثلاً 100x100)
-  //   final marker = await _getBitmapDescriptorFromSvg(assetName, size: desiredSize);
-
-  //   if (!mounted) return;
-
-  //   setState(() {
-  //     _customMarker = marker;
-  //   });
-  // }
 
   Future<void> _connectSocketWithToken() async {
     if (_socketConnected) return;
@@ -145,8 +115,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   }
 
   void _initializeMarkersAndPaths(List<DeviceEntity> devices) {
-    // if (_deviceMarkers.isNotEmpty) return;
-
     setState(() {
       _deviceMarkers.clear();
       _devicePaths.clear();
@@ -169,7 +137,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           icon: _customMarker ?? BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: device.model,
-            snippet: 'Status: ${record.status}', // أو device.status
+            snippet:
+                '${AppLocalizations.of(context)!.status} : ${record.status.localized(context)}',
           ),
           onTap: () {
             context.read<DevicesCubit>().selectDevice(device);
@@ -244,7 +213,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         iconParam: _customMarker,
         infoWindowParam: InfoWindow(
           title: deviceName,
-          snippet: 'Speed: $speed km/h',
+          snippet: '${AppLocalizations.of(context)!.speed} : $speed km/h',
         ),
       );
     });

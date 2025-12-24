@@ -85,4 +85,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get live => 'Live';
+
+  @override
+  String get parking => 'Parking';
+
+  @override
+  String get idling => 'Idling';
+
+  @override
+  String get towed => 'Towed';
+
+  @override
+  String get number => 'Number';
+
+  @override
+  String get devicedetails => 'Device Details';
+
+  @override
+  String get brand => 'Brand';
+
+  @override
+  String get model => 'Model';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get platenumber => 'Plate Number';
+
+  @override
+  String get searchdevices => 'Search Devices';
+
+  @override
+  String get createdevice => 'Create Device';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get car => 'Car';
+
+  @override
+  String get motorcycle => 'Motorcycle';
+
+  @override
+  String get truck => 'Truck';
+
+  @override
+  String get startedmoving => 'Started moving';
+
+  @override
+  String get gpsupdated => 'GPS updated';
+
+  @override
+  String get wentoffline => 'Went offline';
+
+  @override
+  String get mintago => 'mint ago';
+
+  @override
+  String get oldpassword => 'Old Password';
+
+  @override
+  String get newpassword => 'New Password';
+
+  @override
+  String get confirmpassword => 'Confirm Password';
+
+  @override
+  String get passwordsdonotmatch => 'Passwords do not match';
+
+  @override
+  String get required => 'Required';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
 }

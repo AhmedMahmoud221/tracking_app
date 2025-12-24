@@ -85,4 +85,82 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get live => 'مباشر';
+
+  @override
+  String get parking => 'متوقف';
+
+  @override
+  String get idling => 'Idling';
+
+  @override
+  String get towed => 'Towed';
+
+  @override
+  String get number => 'الرقم';
+
+  @override
+  String get devicedetails => 'تفاصيل الجهاز';
+
+  @override
+  String get brand => 'ماركة';
+
+  @override
+  String get model => 'نموذج';
+
+  @override
+  String get year => 'سنة';
+
+  @override
+  String get platenumber => 'رقم اللوحة';
+
+  @override
+  String get searchdevices => 'بحث عن الأجهزة';
+
+  @override
+  String get createdevice => 'إنشاء جهاز';
+
+  @override
+  String get type => 'النوع';
+
+  @override
+  String get car => 'سيارة';
+
+  @override
+  String get motorcycle => 'دراجة نارية';
+
+  @override
+  String get truck => 'شاحنة';
+
+  @override
+  String get startedmoving => 'بدأ التحرك';
+
+  @override
+  String get gpsupdated => 'تحديث نظام تحديد المواقع';
+
+  @override
+  String get wentoffline => 'تم قطع الاتصال بالإنترنت';
+
+  @override
+  String get mintago => 'منذ دقيقة';
+
+  @override
+  String get oldpassword => 'كلمة المرور القديمة';
+
+  @override
+  String get newpassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get confirmpassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get passwordsdonotmatch => 'Passwords do not match';
+
+  @override
+  String get required => 'مطلوب';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
 }

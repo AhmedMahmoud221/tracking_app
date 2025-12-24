@@ -91,4 +91,4 @@ flutter:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/ic_launcher.png.png"
+  image_path: "assets/images/CarModels.png"

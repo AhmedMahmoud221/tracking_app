@@ -43,7 +43,7 @@ class LastTrackedCard extends StatelessWidget {
               children: [
                 Chip(
                   label: Text(
-                    '${device.status}',
+                    '${device.status.localized(context)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,
@@ -53,7 +53,7 @@ class LastTrackedCard extends StatelessWidget {
                 ),
                 Chip(
                   label: Text(
-                    'Moving ${device.lastRecord?.speed ?? 0} km/h',
+                    '${AppLocalizations.of(context)!.moving} ${device.lastRecord?.speed ?? 0} km/h',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.white : Colors.black,

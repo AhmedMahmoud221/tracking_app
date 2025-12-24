@@ -9,5 +9,6 @@ class AssetsData {
   static const flag = 'assets/images/flag.png';
   static const slimplification = 'assets/images/Simplification.svg';
   static const automotive = 'assets/images/splash22.png';
-  static const freepik = 'assets/images/freepik.png';
+  static const freepik = 'assets/images/dodge0.png';
+  static const dodge = 'assets/images/dodge.jpg';
 }

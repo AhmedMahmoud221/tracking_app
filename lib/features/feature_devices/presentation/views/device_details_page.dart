@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:live_tracking/core/extensions/status_localization_extension.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class DeviceDetailsPage extends StatelessWidget {
   final DeviceEntity device;
@@ -23,7 +25,10 @@ class DeviceDetailsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: bgColor,
         iconTheme: IconThemeData(color: textColor),
-        title: Text('Device Details', style: TextStyle(color: textColor)),
+        title: Text(
+          '${AppLocalizations.of(context)!.devicedetails}',
+          style: TextStyle(color: textColor),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: () => Navigator.pop(context),
@@ -42,7 +47,7 @@ class DeviceDetailsPage extends StatelessWidget {
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(12),
                 image: DecorationImage(
-                  image: AssetImage(AssetsData.caricon),
+                  image: AssetImage(AssetsData.dodge),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -62,7 +67,7 @@ class DeviceDetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Brand : ${device.brand}',
+                    '${AppLocalizations.of(context)!.brand} : ${device.brand}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -71,33 +76,33 @@ class DeviceDetailsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Model : ${device.model}',
+                    '${AppLocalizations.of(context)!.model} : ${device.model}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Year : ${device.year}',
+                    '${AppLocalizations.of(context)!.year} : ${device.year}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Plate Number : ${device.plateNumber}',
+                    '${AppLocalizations.of(context)!.platenumber} : ${device.plateNumber}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Status : ${device.status}',
+                    '${AppLocalizations.of(context)!.status} : ${device.status.localized(context)}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Speed : ${device.lastRecord?.speed}',
+                    '${AppLocalizations.of(context)!.speed} : ${device.lastRecord?.speed}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 8),
                   Divider(color: Colors.grey, thickness: 0.5),
                   Text(
-                    'Last Location',
+                    '${AppLocalizations.of(context)!.lastlocation}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 12),

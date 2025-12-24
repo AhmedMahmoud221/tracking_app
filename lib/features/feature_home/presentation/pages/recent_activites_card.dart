@@ -9,9 +9,9 @@ class RecentActivitiesCard extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     final activities = [
-      'Nissan Sunny → Started moving',
-      'Toyota Hilux → GPS updated',
-      'Honda Civic → Went offline',
+      'Nissan Sunny → ${AppLocalizations.of(context)!.startedmoving}',
+      'Toyota Hilux → ${AppLocalizations.of(context)!.gpsupdated}',
+      'Honda Civic → ${AppLocalizations.of(context)!.wentoffline}',
     ];
 
     return Card(
@@ -44,7 +44,7 @@ class RecentActivitiesCard extends StatelessWidget {
                   ),
                 ),
                 trailing: Text(
-                  '3m ago',
+                  '${AppLocalizations.of(context)!.mintago}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? Colors.white70 : Colors.grey,
