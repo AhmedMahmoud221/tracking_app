@@ -51,5 +51,6 @@
   "Passwordsdonotmatch": "كلمات المرور غير متطابقة",
   "required": "مطلوب",
   "camera": "الكاميرا",
-  "gallery": "المعرض"
+  "gallery": "المعرض",
+  "editprofile": "تعديل الملف الشخصي "
 }

@@ -163,4 +163,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gallery => 'Gallery';
+
+  @override
+  String get editprofile => 'Edit Profile';
 }

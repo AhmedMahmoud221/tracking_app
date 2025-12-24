@@ -166,8 +166,8 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              "Edit Profile",
+            child: Text(
+              "${AppLocalizations.of(context)!.editprofile}",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,

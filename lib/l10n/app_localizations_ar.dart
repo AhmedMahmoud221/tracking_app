@@ -163,4 +163,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get gallery => 'المعرض';
+
+  @override
+  String get editprofile => 'تعديل الملف الشخصي ';
 }

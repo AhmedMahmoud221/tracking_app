@@ -406,6 +406,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gallery'**
   String get gallery;
+
+  /// No description provided for @editprofile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editprofile;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

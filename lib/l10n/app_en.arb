@@ -51,5 +51,6 @@
   "passwordsdonotmatch": "Passwords do not match",
   "required": "Required",
   "camera": "Camera",
-  "gallery": "Gallery"
+  "gallery": "Gallery",
+  "editprofile": "Edit Profile"
 }
