@@ -136,8 +136,8 @@ class CustomBottomSheet extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     Text(
                                       d.status.toLowerCase() == "moving"
-                                          ? AppLocalizations.of(context)!.online
-                                          : AppLocalizations.of(context)!.offline,
+                                          ? '${AppLocalizations.of(context)!.online}'
+                                          : '${AppLocalizations.of(context)!.offline}',
                                       style: TextStyle(
                                         color: statusColor,
                                         fontWeight: FontWeight.w600,
