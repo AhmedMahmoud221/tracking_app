@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:live_tracking/core/extensions/status_localization_extension.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class DeviceDetailsPage extends StatefulWidget {
   final DeviceEntity device;
@@ -68,7 +70,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                 child: AppBar(
                   backgroundColor: Colors.transparent,
                   title: Text(
-                    'Device Details',
+                    '${AppLocalizations.of(context)!.devicedetails}',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w500,
@@ -91,10 +93,10 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                           value: 1,
                           child: Row(
                             children: [
-                              Icon(Icons.edit, size: 20, color: Colors.orange),
+                              Icon(Icons.edit, size: 20, color: Colors.grey),
                               const SizedBox(width: 6),
                               Text(
-                                "Edit",
+                                "${AppLocalizations.of(context)!.edit}",
                                 style: TextStyle(
                                     color: isDark ? Colors.white : Colors.grey[700]),
                               ),
@@ -108,7 +110,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                               Icon(Icons.delete, size: 20, color: Colors.red),
                               const SizedBox(width: 6),
                               Text(
-                                "Delete",
+                                "${AppLocalizations.of(context)!.delete}",
                                 style: TextStyle(
                                     color: isDark ? Colors.white : Colors.grey[700]),
                               ),
@@ -129,7 +131,8 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
             child: Align(
               alignment: Alignment.topLeft,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     device.brand,
@@ -166,9 +169,9 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
-            tabs: const [
-              Tab(text: "Details"),
-              Tab(text: "Last Location"),
+            tabs: [
+              Tab(text: "${AppLocalizations.of(context)!.details}"),
+              Tab(text: "${AppLocalizations.of(context)!.lastlocation}"),
             ],
           ),
           Expanded(
@@ -196,34 +199,34 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 2.2,
+          childAspectRatio: 2,
         ),
         children: [
           _infoCard(
             icon: Icons.calendar_today,
-            title: 'Year',
+            title: '${AppLocalizations.of(context)!.year}',
             value: device.year.toString(),
             iconColor: Colors.blue,
             isDark: isDark,
           ),
           _infoCard(
             icon: Icons.numbers,
-            title: 'Plate number',
+            title: '${AppLocalizations.of(context)!.platenumber}',
             value: device.plateNumber,
             iconColor: Colors.grey,
             isDark: isDark,
           ),
           _infoCard(
             icon: Icons.info_outline,
-            title: 'Status',
-            value: device.status,
+            title: '${AppLocalizations.of(context)!.status}',
+            value: device.status.localized(context),
             iconColor:
                 device.status == 'active' ? Colors.green : Colors.red,
             isDark: isDark,
           ),
           _infoCard(
             icon: Icons.speed,
-            title: 'Speed',
+            title: '${AppLocalizations.of(context)!.speed}',
             value:
                 '${device.lastRecord?.speed.toString() ?? '-'} km/h',
             iconColor: Colors.orange,
@@ -335,7 +338,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                 icon:_carMarker ?? BitmapDescriptor.defaultMarker, // لو الصورة لسه محملة استخدم الديفولت
                 infoWindow: InfoWindow(
                   title: device.model,
-                  snippet: 'Plate: ${device.plateNumber}', // هنا يظهر كود العربية
+                  snippet: '${device.plateNumber}', // هنا يظهر كود العربية
                 ),
               ),
             },

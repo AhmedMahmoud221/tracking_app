@@ -52,5 +52,7 @@
   "required": "Required",
   "camera": "Camera",
   "gallery": "Gallery",
-  "editprofile": "Edit Profile"
+  "editprofile": "Edit Profile",
+  "edit": "Edit",
+  "delete": "Delete"
 }

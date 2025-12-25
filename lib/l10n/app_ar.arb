@@ -52,5 +52,7 @@
   "required": "مطلوب",
   "camera": "الكاميرا",
   "gallery": "المعرض",
-  "editprofile": "تعديل الملف الشخصي "
+  "editprofile": "تعديل الملف الشخصي ",
+  "edit": "تعديل",
+  "delete": "مسح"
 }

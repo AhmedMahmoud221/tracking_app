@@ -166,4 +166,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get editprofile => 'تعديل الملف الشخصي ';
+
+  @override
+  String get edit => 'تعديل';
+
+  @override
+  String get delete => 'مسح';
 }
