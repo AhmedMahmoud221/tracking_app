@@ -43,7 +43,7 @@ class _AddDeviceState extends State<AddDevice> {
             backgroundColor: backgroundColor,
             iconTheme: IconThemeData(color: fieldTextColor),
             title: Text(
-              "${AppLocalizations.of(context)!.createdevice}",
+              AppLocalizations.of(context)!.createdevice,
               style: TextStyle(color: fieldTextColor),
             ),
           ),
@@ -93,7 +93,7 @@ class _AddDeviceState extends State<AddDevice> {
                               controller: brandController,
                               decoration: InputDecoration(
                                 labelText:
-                                    "${AppLocalizations.of(context)!.brand}",
+                                    AppLocalizations.of(context)!.brand,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -116,7 +116,7 @@ class _AddDeviceState extends State<AddDevice> {
                               controller: modelController,
                               decoration: InputDecoration(
                                 labelText:
-                                    "${AppLocalizations.of(context)!.model}",
+                                    AppLocalizations.of(context)!.model,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -139,7 +139,7 @@ class _AddDeviceState extends State<AddDevice> {
                               controller: yearController,
                               decoration: InputDecoration(
                                 labelText:
-                                    "${AppLocalizations.of(context)!.year}",
+                                    AppLocalizations.of(context)!.year,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -163,7 +163,7 @@ class _AddDeviceState extends State<AddDevice> {
                               controller: plateController,
                               decoration: InputDecoration(
                                 labelText:
-                                    "${AppLocalizations.of(context)!.platenumber}",
+                                    AppLocalizations.of(context)!.platenumber,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -193,14 +193,14 @@ class _AddDeviceState extends State<AddDevice> {
                                 ),
                               ),
                               hint: Text(
-                                "${AppLocalizations.of(context)!.type}",
+                                AppLocalizations.of(context)!.type,
                                 style: TextStyle(color: fieldLabelColor),
                               ),
                               items:
                                   [
-                                        "${AppLocalizations.of(context)!.car}",
-                                        "${AppLocalizations.of(context)!.motorcycle}",
-                                        "${AppLocalizations.of(context)!.truck}",
+                                        AppLocalizations.of(context)!.car,
+                                        AppLocalizations.of(context)!.motorcycle,
+                                        AppLocalizations.of(context)!.truck,
                                       ]
                                       .map(
                                         (item) => DropdownMenuItem<String>(
@@ -270,7 +270,7 @@ class _AddDeviceState extends State<AddDevice> {
                             elevation: 4,
                           ),
                           child: Text(
-                            '${AppLocalizations.of(context)!.createdevice}',
+                            AppLocalizations.of(context)!.createdevice,
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),

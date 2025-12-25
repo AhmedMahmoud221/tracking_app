@@ -58,10 +58,22 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
               SizedBox(
                 height: 400,
                 width: double.infinity,
-                child: Image.asset(
-                  AssetsData.dodge,
-                  fit: BoxFit.fill,
-                ),
+                child: device.image != null
+                    ? Image.network(
+                        device.image!,
+                        fit: BoxFit.fill,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator());
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(child: Icon(Icons.broken_image, size: 50));
+                        },
+                      )
+                    : Image.asset(
+                        AssetsData.dodge, // صورة افتراضية لو مفيش صورة من السيرفر
+                        fit: BoxFit.fill,
+                      ),
               ),
               Positioned(
                 top: 0,
@@ -70,7 +82,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                 child: AppBar(
                   backgroundColor: Colors.transparent,
                   title: Text(
-                    '${AppLocalizations.of(context)!.devicedetails}',
+                    AppLocalizations.of(context)!.devicedetails,
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w500,
@@ -90,13 +102,16 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                       offset: const Offset(0, 40),
                       itemBuilder: (context) => [
                         PopupMenuItem(
+                          onTap: () {
+
+                          },
                           value: 1,
                           child: Row(
                             children: [
                               Icon(Icons.edit, size: 20, color: Colors.grey),
                               const SizedBox(width: 6),
                               Text(
-                                "${AppLocalizations.of(context)!.edit}",
+                                AppLocalizations.of(context)!.edit,
                                 style: TextStyle(
                                     color: isDark ? Colors.white : Colors.grey[700]),
                               ),
@@ -104,13 +119,16 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                           ),
                         ),
                         PopupMenuItem(
+                          onTap: () {
+                            
+                          },
                           value: 2,
                           child: Row(
                             children: [
                               Icon(Icons.delete, size: 20, color: Colors.red),
                               const SizedBox(width: 6),
                               Text(
-                                "${AppLocalizations.of(context)!.delete}",
+                                AppLocalizations.of(context)!.delete,
                                 style: TextStyle(
                                     color: isDark ? Colors.white : Colors.grey[700]),
                               ),
@@ -170,8 +188,8 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
               fontWeight: FontWeight.w500,
             ),
             tabs: [
-              Tab(text: "${AppLocalizations.of(context)!.details}"),
-              Tab(text: "${AppLocalizations.of(context)!.lastlocation}"),
+              Tab(text: AppLocalizations.of(context)!.details),
+              Tab(text: AppLocalizations.of(context)!.lastlocation),
             ],
           ),
           Expanded(
@@ -204,21 +222,21 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
         children: [
           _infoCard(
             icon: Icons.calendar_today,
-            title: '${AppLocalizations.of(context)!.year}',
+            title: AppLocalizations.of(context)!.year,
             value: device.year.toString(),
             iconColor: Colors.blue,
             isDark: isDark,
           ),
           _infoCard(
             icon: Icons.numbers,
-            title: '${AppLocalizations.of(context)!.platenumber}',
+            title: AppLocalizations.of(context)!.platenumber,
             value: device.plateNumber,
             iconColor: Colors.grey,
             isDark: isDark,
           ),
           _infoCard(
             icon: Icons.info_outline,
-            title: '${AppLocalizations.of(context)!.status}',
+            title: AppLocalizations.of(context)!.status,
             value: device.status.localized(context),
             iconColor:
                 device.status == 'active' ? Colors.green : Colors.red,
@@ -226,7 +244,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
           ),
           _infoCard(
             icon: Icons.speed,
-            title: '${AppLocalizations.of(context)!.speed}',
+            title: AppLocalizations.of(context)!.speed,
             value:
                 '${device.lastRecord?.speed.toString() ?? '-'} km/h',
             iconColor: Colors.orange,
@@ -251,7 +269,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black54 : Colors.black.withOpacity(0.05),
+            color: isDark ? Colors.black54 : Colors.black.withAlpha((0.1 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -266,7 +284,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withAlpha((0.1 * 255).round()),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -307,15 +325,15 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
 
   Widget _buildLocation() {
     final device = widget.device;
-    GoogleMapController? _mapController;
+    GoogleMapController? mapController;
     final isDark = Theme.of(context).brightness == Brightness.dark;
    
-    void _setMapStyle() async {
-      if (_mapController == null) return;
+    void setMapStyle() async {
+      if (mapController == null) return;
       final style = isDark
           ? await DefaultAssetBundle.of(context).loadString('assets/google_map_theme/dark_map_style.json')
           : null;
-      await _mapController!.setMapStyle(style);
+      await mapController!.setMapStyle(style);
     }
 
     return Padding(
@@ -338,7 +356,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                 icon:_carMarker ?? BitmapDescriptor.defaultMarker, // لو الصورة لسه محملة استخدم الديفولت
                 infoWindow: InfoWindow(
                   title: device.model,
-                  snippet: '${device.plateNumber}', // هنا يظهر كود العربية
+                  snippet: device.plateNumber, // هنا يظهر كود العربية
                 ),
               ),
             },
@@ -348,8 +366,8 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
           rotateGesturesEnabled: false,
           mapToolbarEnabled: false,
           onMapCreated: (GoogleMapController controller) {
-            _mapController = controller;
-            _setMapStyle();
+            mapController = controller;
+            setMapStyle();
           },
         ),
       ),

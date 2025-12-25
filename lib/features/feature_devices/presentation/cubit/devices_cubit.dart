@@ -84,4 +84,7 @@ class DevicesCubit extends Cubit<DevicesState> {
       );
     }).toSet();
   }
+
+  /// delete device
+  
 }

@@ -2,6 +2,8 @@ import 'package:live_tracking/features/feature_devices/domain/entities/device_en
 import 'package:live_tracking/features/feature_login/data/models/user_model.dart';
 
 class DeviceModel extends DeviceEntity {
+  final String? image; // هنا أضفنا خاصية الصورة
+
   DeviceModel({
     required super.id,
     required super.brand,
@@ -11,8 +13,8 @@ class DeviceModel extends DeviceEntity {
     required super.plateNumber,
     required super.type,
     required super.status,
-    //required super.speed,
     required super.lastRecord,
+    this.image, // أضفناها للكونستركتور
   });
 
   factory DeviceModel.fromJson(Map<String, dynamic> json) {
@@ -25,11 +27,26 @@ class DeviceModel extends DeviceEntity {
       plateNumber: json['plateNumber'],
       type: json['type'],
       status: json['status'],
-      //speed: json['speed'],
       lastRecord: json['lastRecord'] != null
           ? LastRecordModel.fromJson(json['lastRecord'])
           : null,
+      image: json['image'], // جلبنا الصورة من JSON
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'brand': brand,
+      'model': model,
+      'year': year,
+      'user': user,
+      'plateNumber': plateNumber,
+      'type': type,
+      'status': status,
+      'lastRecord': lastRecord,
+      'image': image, // إضافة الصورة للـ JSON
+    };
   }
 }
 
@@ -52,5 +69,16 @@ class LastRecordModel extends LastRecordEntity {
       rotation: (json['rotation'] as num).toDouble(),
       timestamp: DateTime.parse(json['timestamp']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'lat': lat,
+      'lng': lng,
+      'speed': speed,
+      'status': status,
+      'rotation': rotation,
+      'timestamp': timestamp.toIso8601String(),
+    };
   }
 }

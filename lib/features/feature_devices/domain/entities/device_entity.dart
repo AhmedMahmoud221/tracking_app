@@ -9,8 +9,8 @@ class DeviceEntity {
   final String plateNumber;
   final String type;
   final String status;
-  //final dynamic speed;
   final LastRecordEntity? lastRecord;
+  final String? image; // أضفنا الصورة
 
   DeviceEntity({
     required this.id,
@@ -21,8 +21,8 @@ class DeviceEntity {
     required this.plateNumber,
     required this.type,
     required this.status,
-    //required this.speed,
     required this.lastRecord,
+    this.image, // الكونستركتور دلوقتي يشمل الصورة
   });
 }
 

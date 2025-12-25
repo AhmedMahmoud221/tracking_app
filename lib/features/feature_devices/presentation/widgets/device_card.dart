@@ -57,9 +57,15 @@ class DeviceCardGrid extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
-                    image: DecorationImage(
-                      image: AssetImage(AssetsData.freepik),
-                    ),
+                    image: device.image != null
+                        ? DecorationImage(
+                            image: NetworkImage(device.image!),
+                            fit: BoxFit.cover,
+                          )
+                        : DecorationImage(
+                            image: AssetImage(AssetsData.freepik), // الصورة الافتراضية
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
 
@@ -114,7 +120,7 @@ class DeviceCardGrid extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: _getStatusColor(
                               device.status,
-                            ).withOpacity(0.12),
+                            ).withAlpha((0.12 * 255).round()),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(

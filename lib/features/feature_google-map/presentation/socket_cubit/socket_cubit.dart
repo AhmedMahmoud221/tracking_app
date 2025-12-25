@@ -78,22 +78,22 @@ class SocketCubit extends Cubit<SocketState> {
 
     // 2. تسجيل المستمعين مباشرة على كائن _socket
     _socket.onConnect((_) {
-      print('✅ Socket Connected');
+      // print('✅ Socket Connected');
       emit(SocketConnected());
       //joinTrackingRoom();
     });
 
     _socket.onDisconnect((_) {
-      print('❌ Socket Disconnected');
+      // print('❌ Socket Disconnected');
     });
 
     _socket.on('joined', (data) {
-      print('Joined device room $data');
+      // print('Joined device room $data');
     });
 
     // 3. الاستماع لـ 'device:live' وتوجيه الحالة
     _socket.on('device:live', (data) {
-      print('New location: $data');
+      // print('New location: $data');
       emit(SocketLocationUpdated(data));
     });
   }
