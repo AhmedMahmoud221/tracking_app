@@ -80,7 +80,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                 left: 0,
                 right: 0,
                 child: AppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: Colors.black12,
                   title: Text(
                     AppLocalizations.of(context)!.devicedetails,
                     style: TextStyle(
