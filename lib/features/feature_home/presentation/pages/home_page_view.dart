@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/devices_page.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
@@ -17,6 +18,7 @@ class HomePageView extends StatefulWidget {
 
 class _HomePageViewState extends State<HomePageView> {
   int selectedIndex = 0;
+  DeviceEntity? selectedDevice;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,14 @@ class _HomePageViewState extends State<HomePageView> {
         body: IndexedStack(
           index: selectedIndex,
           children: [
-            HomePageBody(),
+            HomePageBody(
+              onTrackLastDevice: (device) {
+                setState(() {
+                  selectedDevice = device; // الجهاز المختار
+                  selectedIndex = 2;       // Tab الماب
+                });
+              },
+            ),
             DevicesPage(isActive: selectedIndex == 1),
             GoogleMapPage(),
             Profile(),

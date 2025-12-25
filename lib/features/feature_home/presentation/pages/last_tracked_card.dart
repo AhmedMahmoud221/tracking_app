@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/extensions/status_localization_extension.dart';
+import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
 
 class LastTrackedCard extends StatelessWidget {
   final dynamic device; // هتربطه بالـ DeviceEntity بعدين
-  const LastTrackedCard({super.key, this.device});
+  final void Function(DeviceEntity device) onTrack;
+  
+  const LastTrackedCard({super.key, this.device, required this.onTrack});
 
   @override
   Widget build(BuildContext context) {
@@ -78,11 +83,14 @@ class LastTrackedCard extends StatelessWidget {
             Row(
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {
-                    if (device != null) {
-                      context.push('/google-map', extra: device);
-                    }
-                  },
+                  onPressed: device == null
+                    ? null
+                    : () {
+                        onTrack(device!);
+                        // حدّد الجهاز الأخير في DevicesCubit
+                        context.read<DevicesCubit>().selectDevice(device);
+                        // optional: scroll أو تركيز الماب
+                      },
                   icon: const Icon(Icons.location_searching),
                   label: Text(AppLocalizations.of(context)!.tracknow),
                   style: ElevatedButton.styleFrom(

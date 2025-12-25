@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/last_tracked_card.dart';
@@ -8,7 +9,9 @@ import 'package:live_tracking/features/feature_home/presentation/pages/state_car
 import 'package:live_tracking/l10n/app_localizations.dart';
 
 class HomePageBody extends StatefulWidget {
-  const HomePageBody({super.key});
+  final void Function(DeviceEntity device) onTrackLastDevice;
+  
+  const HomePageBody({super.key, required this.onTrackLastDevice});
 
   @override
   State<HomePageBody> createState() => _HomePageBodyState();
@@ -83,8 +86,10 @@ class _HomePageBodyState extends State<HomePageBody> {
 
                     const SizedBox(height: 20),
 
-                    LastTrackedCard(device: lastDevice),
-
+                    LastTrackedCard(
+                      device: lastDevice,
+                      onTrack: widget.onTrackLastDevice
+                    ),
                     // const SizedBox(height: 16),
                     // QuickActionsCard(),
                     const SizedBox(height: 20),

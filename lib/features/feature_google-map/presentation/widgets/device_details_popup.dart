@@ -25,22 +25,22 @@ class DeviceDetailsPopup extends StatelessWidget {
     switch (device.status.toLowerCase()) {
       case 'moving':
         statusColor = Colors.green;
-        statusText = '${AppLocalizations.of(context)!.moving}';
+        statusText = AppLocalizations.of(context)!.moving;
         break;
 
       case 'parking':
         statusColor = Colors.blue;
-        statusText = '${AppLocalizations.of(context)!.parking}';
+        statusText = AppLocalizations.of(context)!.parking;
         break;
 
       case 'idling':
         statusColor = Colors.orange;
-        statusText = '${AppLocalizations.of(context)!.idling}';
+        statusText = AppLocalizations.of(context)!.idling;
         break;
 
       case 'towed':
         statusColor = Colors.red;
-        statusText = '${AppLocalizations.of(context)!.towed}';
+        statusText = AppLocalizations.of(context)!.towed;
         break;
 
       default:

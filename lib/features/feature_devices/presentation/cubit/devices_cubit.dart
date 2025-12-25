@@ -17,7 +17,7 @@ class DevicesCubit extends Cubit<DevicesState> {
   DevicesCubit(this.getDevicesList) : super(DevicesInitial());
 
   Future<void> fetchDevices() async {
-    emit(DevicesLoading());
+    // emit(DevicesLoading());
 
     try {
       final devices = await getDevicesList();

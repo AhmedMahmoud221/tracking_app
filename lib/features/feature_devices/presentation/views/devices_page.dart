@@ -32,136 +32,132 @@ class _DevicesPageState extends State<DevicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await context.read<DevicesCubit>().fetchDevices();
-      },
-      child: BlocBuilder<DevicesCubit, DevicesState>(
-        builder: (context, state) {
-          int count = 0;
-          if (state is DevicesLoaded) {
-            count = state.devices.length;
-          }
-          final isDark = Theme.of(context).brightness == Brightness.dark;
-
-          return Scaffold(
-            backgroundColor: isDark ? Colors.black : Colors.white,
-            body: SafeArea(
-              child: Column(
-                children: [
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: _SearchBar(isDark: isDark),
+    return BlocBuilder<DevicesCubit, DevicesState>(
+      builder: (context, state) {
+        int count = 0;
+        // if (state is DevicesLoaded) {
+        //   count = state.devices.length;
+        // }
+        
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+        return Scaffold(
+          backgroundColor: isDark ? Colors.black : Colors.white,
+          body: SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: _SearchBar(isDark: isDark),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 4,
                   ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 4,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${AppLocalizations.of(context)!.alldevices} : $count',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: isDark ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${AppLocalizations.of(context)!.alldevices} : $count',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: isDark ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            final result = await context.push('/create-device');
-                            if (result == true) {
-                              context.read<DevicesCubit>().fetchDevices();
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.add,
-                            size: 18,
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          final result = await context.push('/create-device');
+                          if (result == true) {
+                            context.read<DevicesCubit>().fetchDevices();
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.add,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          AppLocalizations.of(context)!.adddevice,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
-                          label: Text(
-                            AppLocalizations.of(context)!.adddevice,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            backgroundColor: Colors.blue,
-                            elevation: 3,
-                          ),
                         ),
-                      ],
-                    ),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.blue,
+                          elevation: 3,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: BlocBuilder<DevicesCubit, DevicesState>(
-                      builder: (context, state) {
-                        if (state is DevicesLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (state is DevicesLoaded) {
-                          final devices = state.devices;
-                          if (devices.isEmpty) {
-                            return Center(
-                              child: Text(
-                                AppLocalizations.of(context)!.nodevicesfound,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black,
-                                ),
-                              ),
-                            );
-                          }
-                          return GridView.builder(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                  childAspectRatio: 0.75,
-                                ),
-                            itemCount: devices.length,
-                            itemBuilder: (context, index) {
-                              return DeviceCardGrid(
-                                device: devices[index],
-                              ); // DeviceCardGrid نفسه هيتعامل مع الداكن
-                            },
-                          );
-                        }
-                        if (state is DevicesError) {
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: BlocBuilder<DevicesCubit, DevicesState>(
+                    builder: (context, state) {
+                      if (state is DevicesLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (state is DevicesLoaded) {
+                        final devices = state.devices;
+                        if (devices.isEmpty) {
                           return Center(
                             child: Text(
-                              "Error: ${state.message}",
-                              style: TextStyle(color: Colors.red),
+                              AppLocalizations.of(context)!.nodevicesfound,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                              ),
                             ),
                           );
                         }
-                        return const SizedBox();
-                      },
-                    ),
+                        return GridView.builder(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 0.75,
+                              ),
+                          itemCount: devices.length,
+                          itemBuilder: (context, index) {
+                            return DeviceCardGrid(
+                              device: devices[index],
+                            ); // DeviceCardGrid نفسه هيتعامل مع الداكن
+                          },
+                        );
+                      }
+                      if (state is DevicesError) {
+                        return Center(
+                          child: Text(
+                            "Error: ${state.message}",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        );
+                      }
+                      return const SizedBox();
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

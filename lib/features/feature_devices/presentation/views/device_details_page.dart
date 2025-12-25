@@ -26,7 +26,7 @@ class DeviceDetailsPage extends StatelessWidget {
         backgroundColor: bgColor,
         iconTheme: IconThemeData(color: textColor),
         title: Text(
-          '${AppLocalizations.of(context)!.devicedetails}',
+          AppLocalizations.of(context)!.devicedetails,
           style: TextStyle(color: textColor),
         ),
         leading: IconButton(
@@ -102,7 +102,7 @@ class DeviceDetailsPage extends StatelessWidget {
                   const SizedBox(height: 8),
                   Divider(color: Colors.grey, thickness: 0.5),
                   Text(
-                    '${AppLocalizations.of(context)!.lastlocation}',
+                    AppLocalizations.of(context)!.lastlocation,
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                   const SizedBox(height: 12),
