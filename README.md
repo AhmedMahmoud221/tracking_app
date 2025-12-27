@@ -1,16 +1,38 @@
-# tracking_app
+# Tracking App : 📌
+It is an application for tracking devices and showing their location on a map, with smooth and fast device data management.
+---------
 
-A new Flutter project.
+Program concept : 
+- The application allows you to add, edit, delete, and view device data.
+- Each device is displayed on the map using Google Maps.
+- Project objective: To learn Flutter, State Management, and an interactive user interface.
 
-## Getting Started
+---------
 
-This project is a starting point for a Flutter application.
+Reduces usage : 🔧
+- Flutter  
+- Dart  
+- Google Maps Flutter Plugin  
+- Dealing with API (Dio)
+- Bloc/Cubit (State Management)  
+- Project organization using (Clean Architecture)
+- is supported (Dark mode) 
+- It supports Arabic and English languages.
 
-A few resources to get you started if this is your first Flutter project:
+---------
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Screenshots : 📸
+![Screenshot 1](screenshots/01.png)  
+![Screenshot 2](screenshots/02.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---------
+
+Notes : 📌 
+The application is scalable: Authenticator, Notifications, Analytics can be added.
+
+Run App :
+```bash
+git clone https://github.com/AhmedMahmoud221/tracking_app.git
+cd tracking_app
+flutter pub get
+flutter run
