@@ -22,7 +22,7 @@ Reduces usage : 🔧
 ---------
 
 Screenshots : 📸
-![Screenshot 1](screenshots/01.png)  
+![Screenshot 1](screenshots/01.png.png)  
 ![Screenshot 2](screenshots/02.png)
 
 ---------
