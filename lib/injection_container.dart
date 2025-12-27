@@ -25,10 +25,10 @@ import 'package:live_tracking/features/feature_profile/presentation/cubit/profil
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  // Dio
+  // -----------------------Dio---------------------------
   sl.registerLazySingleton<Dio>(() => Dio());
-  // -------------------------------
-  // Cubit
+
+  // -------------------------Cubit----------------------------
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthService>()));
 
   sl.registerFactory(() => SocketCubit());
@@ -49,8 +49,7 @@ Future<void> init() async {
 
   sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
 
-  // -------------------------------
-  // Use Case
+  // ------------------Use Case---------------
   sl.registerLazySingleton<AuthService>(() => AuthService());
 
   sl.registerLazySingleton(
@@ -67,8 +66,7 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => UpdateDeviceUseCase(sl()));
 
-  // -------------------------------
-  // Repository
+  // ----------------Repository---------------
   sl.registerLazySingleton<DeviceRepository>(
     () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>(), dio: sl<Dio>()),
   );
@@ -77,8 +75,7 @@ Future<void> init() async {
     () => UserProfileRepositoryImpl(sl()),
   );
 
-  // -------------------------------
-  // Data source
+  // -----------------Data source---------------
   sl.registerLazySingleton<DeviceRemoteDataSource>(
     () => DeviceRemoteDataSourceImpl(sl<Dio>()),
   );
