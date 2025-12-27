@@ -6,4 +6,8 @@ abstract class DeviceRepository {
   Future<List<DeviceEntity>> getDevices();
 
   Future<DeviceEntity> createDevice(DeviceEntity device, {File? image});
+
+  Future<DeviceEntity> updateDevice(DeviceEntity device, {File? image});
+
+  Future<void> deleteDevice(String deviceId);
 }

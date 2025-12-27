@@ -9,7 +9,7 @@ import 'package:live_tracking/features/feature_profile/data/repositories/user_pr
 import 'package:live_tracking/features/feature_profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/language_cubit/languageCubit.dart';
-import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
+import 'package:live_tracking/features/feature_profile/presentation/cubit/logout_cubit/logout_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_state.dart';
 import 'package:live_tracking/features/feature_profile/presentation/pages/custom_logout.dart';
@@ -28,7 +28,7 @@ class Profile extends StatelessWidget {
       body: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (_) => ProfileCubit(LogoutUseCase(AuthService())),
+            create: (_) => LogOutCubit(LogoutUseCase(AuthService())),
           ),
 
           BlocProvider(
@@ -110,7 +110,7 @@ class Profile extends StatelessWidget {
                 },
               ),
 
-              BlocListener<ProfileCubit, ProfileState>(
+              BlocListener<LogOutCubit, LogOutState>(
                 listener: (context, state) {
                   if (state is LogoutSuccessState) {
                     context.go('/login');
@@ -120,7 +120,7 @@ class Profile extends StatelessWidget {
                     ).showSnackBar(SnackBar(content: Text(state.message)));
                   }
                 },
-                child: BlocBuilder<ProfileCubit, ProfileState>(
+                child: BlocBuilder<LogOutCubit, LogOutState>(
                   builder: (context, state) {
                     final isLoading = state is LogoutLoadingState;
 
@@ -129,7 +129,7 @@ class Profile extends StatelessWidget {
                       child: LogoutButton(
                         isLoading: isLoading,
                         onTap: () {
-                          context.read<ProfileCubit>().logout();
+                          context.read<LogOutCubit>().logout();
                         },
                       ),
                     );

@@ -85,6 +85,16 @@ class DevicesCubit extends Cubit<DevicesState> {
     }).toSet();
   }
 
-  /// delete device
-  
+  void updateDeviceInList(DeviceEntity updatedDevice) {
+    final index = _allDevices.indexWhere((d) => d.id == updatedDevice.id);
+    if (index != -1) {
+      _allDevices[index] = updatedDevice;
+      emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+    }
+  }
+
+  void deleteDeviceFromList(String deviceId) {
+    _allDevices.removeWhere((device) => device.id == deviceId);
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+  }
 }

@@ -172,4 +172,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get delete => 'مسح';
+
+  @override
+  String get editdevice => 'تعديل الجهاز';
+
+  @override
+  String get devicecreatedsuccessfully => 'تم إنشاء الجهاز بنجاح';
+
+  @override
+  String get deviceupdatedsuccessfully => 'تم تحديث الجهاز بنجاح';
+
+  @override
+  String get adddeviceamage => 'إضافة صورة الجهاز';
+
+  @override
+  String get areyousureyouwanttodeletethisdevice => 'هل أنت متأكد أنك تريد حذف هذا الجهاز؟';
+
+  @override
+  String get cancel => 'إلغاء';
 }

@@ -40,4 +40,33 @@ class DeviceRepositoryImpl implements DeviceRepository {
 
     return DeviceModel.fromJson(response.data);
   }
+
+  @override
+  Future<DeviceEntity> updateDevice(DeviceEntity device, {File? image}) async {
+    final formData = FormData.fromMap({
+      'brand': device.brand,
+      'model': device.model,
+      'year': device.year,
+      'plateNumber': device.plateNumber,
+      'type': device.type,
+      if (image != null)
+        'image': await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split('/').last,
+        ),
+    });
+
+    final response = await dio.put(
+      '/devices/${device.id}',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+
+    return DeviceModel.fromJson(response.data);
+  }
+
+  @override
+  Future<void> deleteDevice(String deviceId) async {
+    await dio.delete('/devices/$deviceId');
+  }
 }

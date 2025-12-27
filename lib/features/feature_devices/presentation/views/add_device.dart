@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,27 +7,49 @@ import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/user_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_state.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
+import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_cubit.dart';
+import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_state.dart';
+import 'package:live_tracking/features/feature_home/presentation/cubits/update_device_cubit/update_device_cubit.dart';
+import 'package:live_tracking/features/feature_home/presentation/cubits/update_device_cubit/update_device_state.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
 
-class AddDevice extends StatefulWidget {
-  const AddDevice({super.key});
+class AddEditDevicePage extends StatefulWidget {
+  final DeviceEntity? device;
+
+  const AddEditDevicePage({super.key, this.device});
+
+  bool get isEdit => device != null;
 
   @override
-  State<AddDevice> createState() => _AddDeviceState();
+  State<AddEditDevicePage> createState() => _AddEditDevicePageState();
 }
 
-class _AddDeviceState extends State<AddDevice> {
+class _AddEditDevicePageState extends State<AddEditDevicePage> {
   final _formKey = GlobalKey<FormState>();
-  final brandController = TextEditingController();
-  final modelController = TextEditingController();
-  final yearController = TextEditingController();
-  final plateController = TextEditingController();
-  String selectedType = "Car";
+
+  late TextEditingController brandController;
+  late TextEditingController modelController;
+  late TextEditingController yearController;
+  late TextEditingController plateController;
+
+  String selectedType = "Car"; // القيمة البرمجية (Value)
   File? selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    brandController = TextEditingController(text: widget.device?.brand ?? '');
+    modelController = TextEditingController(text: widget.device?.model ?? '');
+    yearController = TextEditingController(
+      text: widget.device?.year.toString() ?? '',
+    );
+    plateController = TextEditingController(
+      text: widget.device?.plateNumber ?? '',
+    );
+    selectedType = widget.device?.type ?? "Car";
+  }
 
   Future<void> pickImage() async {
     final picker = ImagePicker();
@@ -36,11 +57,8 @@ class _AddDeviceState extends State<AddDevice> {
       source: ImageSource.gallery,
       imageQuality: 80,
     );
-
     if (image != null) {
-      setState(() {
-        selectedImage = File(image.path);
-      });
+      setState(() => selectedImage = File(image.path));
     }
   }
 
@@ -49,51 +67,65 @@ class _AddDeviceState extends State<AddDevice> {
     return BlocBuilder<ThemeCubit, ThemeState>(
       builder: (context, themeState) {
         final isDark = themeState == ThemeState.dark;
-
         final backgroundColor = isDark ? Colors.black : Colors.white;
         final fieldFillColor = isDark ? Colors.grey[850] : Colors.grey[100];
         final fieldTextColor = isDark ? Colors.white : Colors.black;
         final fieldLabelColor = isDark ? Colors.white70 : Colors.grey;
 
+        // قائمة الأنواع (القيمة ثابتة والنص مترجم)
+        final List<Map<String, String>> deviceTypes = [
+          {'id': 'Car', 'name': AppLocalizations.of(context)!.car},
+          {
+            'id': 'Motorcycle',
+            'name': AppLocalizations.of(context)!.motorcycle,
+          },
+          {'id': 'Truck', 'name': AppLocalizations.of(context)!.truck},
+        ];
+
         return Scaffold(
           backgroundColor: backgroundColor,
           appBar: AppBar(
             backgroundColor: backgroundColor,
+            elevation: 0,
             iconTheme: IconThemeData(color: fieldTextColor),
             title: Text(
-              AppLocalizations.of(context)!.createdevice,
+              widget.isEdit
+                  ? AppLocalizations.of(context)!.editdevice
+                  : AppLocalizations.of(context)!.createdevice,
               style: TextStyle(color: fieldTextColor),
             ),
           ),
-          body: BlocListener<CreateDeviceCubit, CreateDeviceState>(
-            listener: (context, state) {
-              if (state is CreateDeviceSuccess) {
-                if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-
-                brandController.clear();
-                modelController.clear();
-                yearController.clear();
-                plateController.clear();
-                setState(() {
-                  selectedType = "Car";
-                });
-
-                context.read<DevicesCubit>().addDevice(state.device);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Device Created Successfully")),
-                );
-
-                if (context.canPop()) context.pop(true);
-              }
-
-              if (state is CreateDeviceError) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(state.message)));
-              }
-            },
+          body: MultiBlocListener(
+            listeners: [
+              BlocListener<CreateDeviceCubit, CreateDeviceState>(
+                listener: (context, state) {
+                  if (state is CreateDeviceSuccess) {
+                    context.read<DevicesCubit>().addDevice(state.device);
+                    _showSnackBar(
+                      AppLocalizations.of(context)!.devicecreatedsuccessfully,
+                    );
+                    if (context.canPop()) context.pop(true);
+                  } else if (state is CreateDeviceError) {
+                    _showSnackBar(state.message, isError: true);
+                  }
+                },
+              ),
+              BlocListener<UpdateDeviceCubit, UpdateDeviceState>(
+                listener: (context, state) {
+                  if (state is UpdateDeviceSuccess) {
+                    context.read<DevicesCubit>().updateDeviceInList(
+                      state.device,
+                    );
+                    _showSnackBar(
+                      AppLocalizations.of(context)!.deviceupdatedsuccessfully,
+                    );
+                    if (context.canPop()) context.pop(true);
+                  } else if (state is UpdateDeviceError) {
+                    _showSnackBar(state.message, isError: true);
+                  }
+                },
+              ),
+            ],
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Form(
@@ -104,235 +136,54 @@ class _AddDeviceState extends State<AddDevice> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            GestureDetector(
-                              onTap: pickImage,
-                              child: Container(
-                                height: 150,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: fieldFillColor,
-                                  borderRadius: BorderRadius.circular(12),
-                                  image: selectedImage != null
-                                      ? DecorationImage(
-                                          image: FileImage(selectedImage!),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : null,
-                                ),
-                                child: selectedImage == null
-                                    ? Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.camera_alt,
-                                            color: fieldLabelColor,
-                                            size: 32,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            "Add Device Image",
-                                            style: TextStyle(
-                                              color: fieldLabelColor,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : null,
-                              ),
-                            ),
-
+                            _buildImagePicker(fieldFillColor, fieldLabelColor),
                             const SizedBox(height: 20),
-
-                            // Brand
-                            TextFormField(
-                              controller: brandController,
-                              decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)!.brand,
-                                filled: true,
-                                fillColor: fieldFillColor,
-                                labelStyle: TextStyle(
-                                  color: fieldLabelColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              style: TextStyle(color: fieldTextColor),
-                              validator: (v) => v!.isEmpty ? "Required" : null,
+                            _buildTextField(
+                              brandController,
+                              AppLocalizations.of(context)!.brand,
+                              fieldFillColor,
+                              fieldTextColor,
+                              fieldLabelColor,
                             ),
                             const SizedBox(height: 12),
-
-                            // Model
-                            TextFormField(
-                              controller: modelController,
-                              decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)!.model,
-                                filled: true,
-                                fillColor: fieldFillColor,
-                                labelStyle: TextStyle(
-                                  color: fieldLabelColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              style: TextStyle(color: fieldTextColor),
-                              validator: (v) => v!.isEmpty ? "Required" : null,
+                            _buildTextField(
+                              modelController,
+                              AppLocalizations.of(context)!.model,
+                              fieldFillColor,
+                              fieldTextColor,
+                              fieldLabelColor,
                             ),
                             const SizedBox(height: 12),
-
-                            // Year
-                            TextFormField(
-                              controller: yearController,
-                              decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)!.year,
-                                filled: true,
-                                fillColor: fieldFillColor,
-                                labelStyle: TextStyle(
-                                  color: fieldLabelColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              style: TextStyle(color: fieldTextColor),
-                              validator: (v) => v!.isEmpty ? "Required" : null,
-                              keyboardType: TextInputType.number,
+                            _buildTextField(
+                              yearController,
+                              AppLocalizations.of(context)!.year,
+                              fieldFillColor,
+                              fieldTextColor,
+                              fieldLabelColor,
+                              isNumber: true,
                             ),
                             const SizedBox(height: 12),
-
-                            // Plate Number
-                            TextFormField(
-                              controller: plateController,
-                              decoration: InputDecoration(
-                                labelText: AppLocalizations.of(
-                                  context,
-                                )!.platenumber,
-                                filled: true,
-                                fillColor: fieldFillColor,
-                                labelStyle: TextStyle(
-                                  color: fieldLabelColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              style: TextStyle(color: fieldTextColor),
-                              validator: (v) => v!.isEmpty ? "Required" : null,
+                            _buildTextField(
+                              plateController,
+                              AppLocalizations.of(context)!.platenumber,
+                              fieldFillColor,
+                              fieldTextColor,
+                              fieldLabelColor,
                             ),
                             const SizedBox(height: 12),
-
-                            // Dropdown Type
-                            DropdownButtonFormField2<String>(
-                              value: null,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: fieldFillColor,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              hint: Text(
-                                AppLocalizations.of(context)!.type,
-                                style: TextStyle(color: fieldLabelColor),
-                              ),
-                              items:
-                                  [
-                                        AppLocalizations.of(context)!.car,
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.motorcycle,
-                                        AppLocalizations.of(context)!.truck,
-                                      ]
-                                      .map(
-                                        (item) => DropdownMenuItem<String>(
-                                          value: item,
-                                          child: Text(
-                                            item,
-                                            style: TextStyle(
-                                              color: fieldTextColor,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                              dropdownStyleData: DropdownStyleData(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: isDark
-                                      ? Colors.grey[850]
-                                      : Colors.white,
-                                ),
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedType = value!;
-                                });
-                              },
+                            _buildDropdown(
+                              deviceTypes,
+                              fieldFillColor,
+                              fieldTextColor,
+                              fieldLabelColor,
+                              isDark,
                             ),
-
                             const SizedBox(height: 25),
                           ],
                         ),
                       ),
                     ),
-
-                    // Create Button
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              final device = DeviceEntity(
-                                id: "",
-                                brand: brandController.text,
-                                model: modelController.text,
-                                year: int.parse(yearController.text),
-                                plateNumber: plateController.text,
-                                type: selectedType,
-                                user: UserEntity(id: '', name: '', email: ''),
-                                status: "",
-                                //speed: 0,
-                                lastRecord: null,
-                              );
-
-                              context.read<CreateDeviceCubit>().createDevice(
-                                device,
-                                image: selectedImage, // File?
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            backgroundColor: Colors.blue,
-                            elevation: 4,
-                          ),
-                          child: Text(
-                            AppLocalizations.of(context)!.createdevice,
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildSubmitButton(),
                   ],
                 ),
               ),
@@ -341,5 +192,202 @@ class _AddDeviceState extends State<AddDevice> {
         );
       },
     );
+  }
+
+  // --- Widgets البناء المساعدة لتقليل زحمة الكود ---
+
+  Widget _buildImagePicker(Color? fillColor, Color labelColor) {
+    return GestureDetector(
+      onTap: pickImage,
+      child: Container(
+        height: 150,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: fillColor,
+          borderRadius: BorderRadius.circular(12),
+          image: selectedImage != null
+              ? DecorationImage(
+                  image: FileImage(selectedImage!),
+                  fit: BoxFit.cover,
+                )
+              : widget.device?.image != null
+              ? DecorationImage(
+                  image: NetworkImage(widget.device!.image!),
+                  fit: BoxFit.cover,
+                )
+              : null,
+        ),
+        child: selectedImage == null && widget.device?.image == null
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.camera_alt, color: labelColor, size: 32),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.adddeviceamage,
+                    style: TextStyle(color: labelColor),
+                  ),
+                ],
+              )
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    Color? fillColor,
+    Color textColor,
+    Color labelColor, {
+    bool isNumber = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      style: TextStyle(color: textColor),
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: fillColor,
+        labelStyle: TextStyle(color: labelColor, fontSize: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      validator: (v) => (v == null || v.isEmpty) ? "Required" : null,
+    );
+  }
+
+  Widget _buildDropdown(
+    List<Map<String, String>> items,
+    Color? fillColor,
+    Color textColor,
+    Color labelColor,
+    bool isDark,
+  ) {
+    return DropdownButtonFormField2<String>(
+      value: selectedType,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: fillColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      items: items
+          .map(
+            (item) => DropdownMenuItem<String>(
+              value: item['id'],
+              child: Text(item['name']!, style: TextStyle(color: textColor)),
+            ),
+          )
+          .toList(),
+      onChanged: (value) => setState(() => selectedType = value!),
+      dropdownStyleData: DropdownStyleData(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: isDark ? Colors.grey[850] : Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return BlocBuilder<CreateDeviceCubit, CreateDeviceState>(
+      builder: (context, createState) {
+        return BlocBuilder<UpdateDeviceCubit, UpdateDeviceState>(
+          builder: (context, updateState) {
+            // التحقق مما إذا كان أي من الـ Cubits في حالة تحميل
+            final isLoading =
+                createState is CreateDeviceLoading ||
+                updateState is UpdateDeviceLoading;
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: Colors.blue,
+                    disabledBackgroundColor: Colors.blue.withOpacity(0.6),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          widget.isEdit ? "Update" : "Create",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      final device = DeviceEntity(
+        id: widget.device?.id ?? '',
+        brand: brandController.text,
+        model: modelController.text,
+        year: int.tryParse(yearController.text) ?? 0,
+        plateNumber: plateController.text,
+        type: selectedType,
+        user: widget.device?.user ?? UserEntity(id: '', name: '', email: ''),
+        status: widget.device?.status ?? '',
+        lastRecord: widget.device?.lastRecord,
+        image: widget.device?.image,
+      );
+
+      if (widget.isEdit) {
+        context.read<UpdateDeviceCubit>().updateDevice(
+          device,
+          image: selectedImage,
+        );
+      } else {
+        context.read<CreateDeviceCubit>().createDevice(
+          device,
+          image: selectedImage,
+        );
+      }
+    }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : null,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    brandController.dispose();
+    modelController.dispose();
+    yearController.dispose();
+    plateController.dispose();
+    super.dispose();
   }
 }

@@ -172,4 +172,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get editdevice => 'Edit Device';
+
+  @override
+  String get devicecreatedsuccessfully => 'Device Created Successfully';
+
+  @override
+  String get deviceupdatedsuccessfully => 'Device Updated Successfully';
+
+  @override
+  String get adddeviceamage => 'Add Device Image';
+
+  @override
+  String get areyousureyouwanttodeletethisdevice => 'Are you sure you want to delete this device?';
+
+  @override
+  String get cancel => 'Cancel';
 }

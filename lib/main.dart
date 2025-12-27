@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:live_tracking/core/providers/app_providers.dart';
 import 'package:live_tracking/core/theme/app_theme.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubit/create_device_cubit.dart';
-import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
-import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
-import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/language_cubit/languageCubit.dart';
-import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
-import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 import 'package:live_tracking/injection_container.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
 
@@ -31,17 +24,7 @@ class LiveTrackingApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()),
-        BlocProvider<ProfileDataCubit>(create: (_) => sl<ProfileDataCubit>()),
-        BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>()),
-        BlocProvider<CreateDeviceCubit>(create: (_) => sl<CreateDeviceCubit>()),
-        BlocProvider(create: (_) => ProfileCubit(LogoutUseCase(AuthService()))),
-        BlocProvider(create: (_) => sl<DevicesCubit>()..fetchDevices()),
-        BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
-        BlocProvider(create: (_) => SocketCubit()),
-        BlocProvider<LanguageCubit>(create: (_) => LanguageCubit()),
-      ],
+      providers: AppProviders.providers,
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, state) {
           return BlocBuilder<LanguageCubit, Locale>(

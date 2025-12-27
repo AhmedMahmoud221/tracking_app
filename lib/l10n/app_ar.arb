@@ -54,5 +54,11 @@
   "gallery": "المعرض",
   "editprofile": "تعديل الملف الشخصي ",
   "edit": "تعديل",
-  "delete": "مسح"
+  "delete": "مسح",
+  "editdevice": "تعديل الجهاز",
+  "devicecreatedsuccessfully": "تم إنشاء الجهاز بنجاح",
+  "deviceupdatedsuccessfully": "تم تحديث الجهاز بنجاح",
+  "adddeviceamage": "إضافة صورة الجهاز",
+  "areyousureyouwanttodeletethisdevice": "هل أنت متأكد أنك تريد حذف هذا الجهاز؟",
+  "cancel": "إلغاء"
 }

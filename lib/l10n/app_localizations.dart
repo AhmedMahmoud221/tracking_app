@@ -424,6 +424,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @editdevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Device'**
+  String get editdevice;
+
+  /// No description provided for @devicecreatedsuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Created Successfully'**
+  String get devicecreatedsuccessfully;
+
+  /// No description provided for @deviceupdatedsuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Updated Successfully'**
+  String get deviceupdatedsuccessfully;
+
+  /// No description provided for @adddeviceamage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Device Image'**
+  String get adddeviceamage;
+
+  /// No description provided for @areyousureyouwanttodeletethisdevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this device?'**
+  String get areyousureyouwanttodeletethisdevice;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/core/extensions/status_localization_extension.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
+import 'package:live_tracking/features/feature_home/presentation/cubits/delete_device_cubit/delete_device_cubit.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
 
 class DeviceDetailsPage extends StatefulWidget {
@@ -25,18 +28,19 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
     _loadCarMarker();
     _tabController = TabController(length: 2, vsync: this);
   }
+
   Future<void> _loadCarMarker() async {
-  final marker = await BitmapDescriptor.fromAssetImage(
-    const ImageConfiguration(size: Size(64, 64)),
-    'assets/images/map_Icon.png',
-  );
+    final marker = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(size: Size(64, 64)),
+      'assets/images/map_Icon.png',
+    );
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  setState(() {
-    _carMarker = marker;
-  });
-}
+    setState(() {
+      _carMarker = marker;
+    });
+  }
 
   @override
   void dispose() {
@@ -64,16 +68,17 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                         fit: BoxFit.fill,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          return const Center(child: Icon(Icons.broken_image, size: 50));
+                          return const Center(
+                            child: Icon(Icons.broken_image, size: 50),
+                          );
                         },
                       )
-                    : Image.asset(
-                        AssetsData.dodge, // صورة افتراضية لو مفيش صورة من السيرفر
-                        fit: BoxFit.fill,
-                      ),
+                    : Image.asset(AssetsData.dodge, fit: BoxFit.fill),
               ),
               Positioned(
                 top: 0,
@@ -94,17 +99,53 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                   actions: [
                     PopupMenuButton<int>(
                       icon: const Icon(Icons.more_vert, color: Colors.white),
-                      onSelected: (value) {},
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                       color: isDark ? Colors.grey[850] : Colors.white,
                       offset: const Offset(0, 40),
+
+                      onSelected: (value) {
+                        if (value == 1) {
+                          context.push('/create-device', extra: device);
+                        }
+
+                        if (value == 2) {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: Text(AppLocalizations.of(context)!.delete),
+                              content: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.areyousureyouwanttodeletethisdevice,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.cancel,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    context
+                                        .read<DeleteDeviceCubit>()
+                                        .deleteDevice(device.id);
+                                  },
+                                  child: Text(
+                                    AppLocalizations.of(context)!.delete,
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
                       itemBuilder: (context) => [
                         PopupMenuItem(
-                          onTap: () {
-
-                          },
                           value: 1,
                           child: Row(
                             children: [
@@ -113,15 +154,15 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                               Text(
                                 AppLocalizations.of(context)!.edit,
                                 style: TextStyle(
-                                    color: isDark ? Colors.white : Colors.grey[700]),
+                                  color: isDark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                ),
                               ),
                             ],
                           ),
                         ),
                         PopupMenuItem(
-                          onTap: () {
-                            
-                          },
                           value: 2,
                           child: Row(
                             children: [
@@ -130,7 +171,10 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                               Text(
                                 AppLocalizations.of(context)!.delete,
                                 style: TextStyle(
-                                    color: isDark ? Colors.white : Colors.grey[700]),
+                                  color: isDark
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                ),
                               ),
                             ],
                           ),
@@ -238,15 +282,13 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
             icon: Icons.info_outline,
             title: AppLocalizations.of(context)!.status,
             value: device.status.localized(context),
-            iconColor:
-                device.status == 'active' ? Colors.green : Colors.red,
+            iconColor: device.status == 'active' ? Colors.green : Colors.red,
             isDark: isDark,
           ),
           _infoCard(
             icon: Icons.speed,
             title: AppLocalizations.of(context)!.speed,
-            value:
-                '${device.lastRecord?.speed.toString() ?? '-'} km/h',
+            value: '${device.lastRecord?.speed.toString() ?? '-'} km/h',
             iconColor: Colors.orange,
             isDark: isDark,
           ),
@@ -269,7 +311,9 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black54 : Colors.black.withAlpha((0.1 * 255).round()),
+            color: isDark
+                ? Colors.black54
+                : Colors.black.withAlpha((0.1 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -287,11 +331,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
                   color: iconColor.withAlpha((0.1 * 255).round()),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 24,
-                ),
+                child: Icon(icon, color: iconColor, size: 24),
               ),
               const SizedBox(width: 12),
               Column(
@@ -327,11 +367,13 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
     final device = widget.device;
     GoogleMapController? mapController;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-   
+
     void setMapStyle() async {
       if (mapController == null) return;
       final style = isDark
-          ? await DefaultAssetBundle.of(context).loadString('assets/google_map_theme/dark_map_style.json')
+          ? await DefaultAssetBundle.of(
+              context,
+            ).loadString('assets/google_map_theme/dark_map_style.json')
           : null;
       await mapController!.setMapStyle(style);
     }
@@ -349,17 +391,20 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
           ),
           markers: {
             Marker(
-                markerId: MarkerId(device.id),
-                position: device.lastRecord != null
-                    ? LatLng(device.lastRecord!.lat, device.lastRecord!.lng)
-                    : const LatLng(30.0, 31.0),
-                icon:_carMarker ?? BitmapDescriptor.defaultMarker, // لو الصورة لسه محملة استخدم الديفولت
-                infoWindow: InfoWindow(
-                  title: device.model,
-                  snippet: device.plateNumber, // هنا يظهر كود العربية
-                ),
+              markerId: MarkerId(device.id),
+              position: device.lastRecord != null
+                  ? LatLng(device.lastRecord!.lat, device.lastRecord!.lng)
+                  : const LatLng(30.0, 31.0),
+              icon:
+                  _carMarker ??
+                  BitmapDescriptor
+                      .defaultMarker, // لو الصورة لسه محملة استخدم الديفولت
+              infoWindow: InfoWindow(
+                title: device.model,
+                snippet: device.plateNumber, // هنا يظهر كود العربية
               ),
-            },
+            ),
+          },
           zoomControlsEnabled: false,
           scrollGesturesEnabled: true,
           tiltGesturesEnabled: false,

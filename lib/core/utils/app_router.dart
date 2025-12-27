@@ -10,7 +10,7 @@ import 'package:live_tracking/features/feature_login/presentation/pages/forget_p
 import 'package:live_tracking/features/feature_login/presentation/widgets/login_page_view.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/signup_page_view.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
-import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_cubit/profile_cubit.dart';
+import 'package:live_tracking/features/feature_profile/presentation/cubit/logout_cubit/logout_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/pages/change_password_page.dart';
 import 'package:live_tracking/features/feature_profile/presentation/widgets/profile.dart';
 import 'package:live_tracking/features/feature_splash/presentation/widgets/splash_view.dart';
@@ -22,7 +22,7 @@ class AppRouter {
   static const kSignupPageView = '/signup';
   static const kProfile = '/profile';
   static const kGoogleMap = '/google-map';
-  static const kCreateDevice = '/create-device';
+  static const kAddEditDevice = '/add_edit-device';
   static const kDeviceDetails = '/device-details';
   static const kChangePassword = '/change-password';
   static const kForgotPassword = '/forgotPassword';
@@ -52,7 +52,7 @@ class AppRouter {
         path: '/profile',
         builder: (context, state) {
           return BlocProvider(
-            create: (_) => ProfileCubit(LogoutUseCase(AuthService())),
+            create: (_) => LogOutCubit(LogoutUseCase(AuthService())),
             child: const Profile(),
           );
         },
@@ -64,7 +64,13 @@ class AppRouter {
           return GoogleMapPage(initialDevice: device);
         },
       ),
-      GoRoute(path: '/create-device', builder: (context, state) => AddDevice()),
+      GoRoute(
+        path: '/add_edit-device',
+        builder: (context, state) {
+          final device = state.extra as DeviceEntity?;
+          return AddEditDevicePage(device: device);
+        },
+      ),
       GoRoute(
         path: '/device-details',
         builder: (context, state) {
