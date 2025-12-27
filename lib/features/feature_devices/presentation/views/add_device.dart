@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/user_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
@@ -25,6 +28,21 @@ class _AddDeviceState extends State<AddDevice> {
   final yearController = TextEditingController();
   final plateController = TextEditingController();
   String selectedType = "Car";
+  File? selectedImage;
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +104,51 @@ class _AddDeviceState extends State<AddDevice> {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            const SizedBox(height: 12),
+                            GestureDetector(
+                              onTap: pickImage,
+                              child: Container(
+                                height: 150,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: fieldFillColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  image: selectedImage != null
+                                      ? DecorationImage(
+                                          image: FileImage(selectedImage!),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                ),
+                                child: selectedImage == null
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.camera_alt,
+                                            color: fieldLabelColor,
+                                            size: 32,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            "Add Device Image",
+                                            style: TextStyle(
+                                              color: fieldLabelColor,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : null,
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
 
                             // Brand
                             TextFormField(
                               controller: brandController,
                               decoration: InputDecoration(
-                                labelText:
-                                    AppLocalizations.of(context)!.brand,
+                                labelText: AppLocalizations.of(context)!.brand,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -115,8 +170,7 @@ class _AddDeviceState extends State<AddDevice> {
                             TextFormField(
                               controller: modelController,
                               decoration: InputDecoration(
-                                labelText:
-                                    AppLocalizations.of(context)!.model,
+                                labelText: AppLocalizations.of(context)!.model,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -138,8 +192,7 @@ class _AddDeviceState extends State<AddDevice> {
                             TextFormField(
                               controller: yearController,
                               decoration: InputDecoration(
-                                labelText:
-                                    AppLocalizations.of(context)!.year,
+                                labelText: AppLocalizations.of(context)!.year,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -162,8 +215,9 @@ class _AddDeviceState extends State<AddDevice> {
                             TextFormField(
                               controller: plateController,
                               decoration: InputDecoration(
-                                labelText:
-                                    AppLocalizations.of(context)!.platenumber,
+                                labelText: AppLocalizations.of(
+                                  context,
+                                )!.platenumber,
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 labelStyle: TextStyle(
@@ -199,7 +253,9 @@ class _AddDeviceState extends State<AddDevice> {
                               items:
                                   [
                                         AppLocalizations.of(context)!.car,
-                                        AppLocalizations.of(context)!.motorcycle,
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.motorcycle,
                                         AppLocalizations.of(context)!.truck,
                                       ]
                                       .map(
@@ -258,6 +314,7 @@ class _AddDeviceState extends State<AddDevice> {
 
                               context.read<CreateDeviceCubit>().createDevice(
                                 device,
+                                image: selectedImage, // File?
                               );
                             }
                           },

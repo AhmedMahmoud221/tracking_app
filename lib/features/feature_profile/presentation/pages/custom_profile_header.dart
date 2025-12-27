@@ -69,7 +69,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
                     _pickImage(ImageSource.camera);
                   },
                 ),
-                Text('${AppLocalizations.of(context)!.camera}'),
+                Text(AppLocalizations.of(context)!.camera),
               ],
             ),
             Column(
@@ -82,7 +82,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
                     _pickImage(ImageSource.gallery);
                   },
                 ),
-                Text('${AppLocalizations.of(context)!.gallery}'),
+                Text(AppLocalizations.of(context)!.gallery),
               ],
             ),
           ],
@@ -167,7 +167,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              "${AppLocalizations.of(context)!.editprofile}",
+              AppLocalizations.of(context)!.editprofile,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,

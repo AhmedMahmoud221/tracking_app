@@ -55,7 +55,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         backgroundColor: isDark ? Colors.grey[900] : Colors.white,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black),
         title: Text(
-          "${AppLocalizations.of(context)!.changePassword}",
+          AppLocalizations.of(context)!.changePassword,
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         leading: IconButton(
@@ -76,15 +76,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 controller: oldPassword,
                 obscureText: _obscureOld,
                 decoration: buildDecoration(
-                  "${AppLocalizations.of(context)!.oldpassword}",
+                  AppLocalizations.of(context)!.oldpassword,
                   _obscureOld,
                   () {
                     setState(() => _obscureOld = !_obscureOld);
                   },
                 ),
-                validator: (v) => v!.isEmpty
-                    ? "${AppLocalizations.of(context)!.required}"
-                    : null,
+                validator: (v) =>
+                    v!.isEmpty ? AppLocalizations.of(context)!.required : null,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
               const SizedBox(height: 18),
@@ -92,15 +91,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 controller: newPassword,
                 obscureText: _obscureNew,
                 decoration: buildDecoration(
-                  "${AppLocalizations.of(context)!.newpassword}",
+                  AppLocalizations.of(context)!.newpassword,
                   _obscureNew,
                   () {
                     setState(() => _obscureNew = !_obscureNew);
                   },
                 ),
-                validator: (v) => v!.isEmpty
-                    ? "${AppLocalizations.of(context)!.required}"
-                    : null,
+                validator: (v) =>
+                    v!.isEmpty ? AppLocalizations.of(context)!.required : null,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
               const SizedBox(height: 18),
@@ -109,17 +107,19 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   controller: confirmPassword,
                   obscureText: _obscureConfirm,
                   decoration: buildDecoration(
-                    "${AppLocalizations.of(context)!.confirmpassword}",
+                    AppLocalizations.of(context)!.confirmpassword,
                     _obscureConfirm,
                     () {
                       setState(() => _obscureConfirm = !_obscureConfirm);
                     },
                   ),
                   validator: (v) {
-                    if (v == null || v.isEmpty)
-                      return "${AppLocalizations.of(context)!.required}";
-                    if (v != newPassword.text)
-                      return "${AppLocalizations.of(context)!.passwordsdonotmatch}";
+                    if (v == null || v.isEmpty) {
+                      return AppLocalizations.of(context)!.required;
+                    }
+                    if (v != newPassword.text) {
+                      return AppLocalizations.of(context)!.passwordsdonotmatch;
+                    }
                     return null;
                   },
                   style: TextStyle(color: isDark ? Colors.white : Colors.black),
@@ -168,7 +168,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ),
                   ),
                   child: Text(
-                    "${AppLocalizations.of(context)!.changePassword}",
+                    AppLocalizations.of(context)!.changePassword,
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),

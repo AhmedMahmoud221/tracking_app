@@ -43,7 +43,7 @@ Future<void> init() async {
   // -------------------------------
   // Repository
   sl.registerLazySingleton<DeviceRepository>(
-    () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>()),
+    () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>(), dio: sl<Dio>()),
   );
 
   // -------------------------------

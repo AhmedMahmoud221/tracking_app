@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_home/domain/create_device_use_case.dart';
@@ -8,11 +10,11 @@ class CreateDeviceCubit extends Cubit<CreateDeviceState> {
 
   CreateDeviceCubit(this.createDeviceUseCase) : super(CreateDeviceInitial());
 
-  Future<void> createDevice(DeviceEntity device) async {
+  Future<void> createDevice(DeviceEntity device, {File? image}) async {
     emit(CreateDeviceLoading());
 
     try {
-      final result = await createDeviceUseCase(device);
+      final result = await createDeviceUseCase(device: device, image: image);
       emit(CreateDeviceSuccess(result));
     } catch (e) {
       emit(CreateDeviceError(e.toString()));

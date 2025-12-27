@@ -2,6 +2,7 @@ import 'package:live_tracking/features/feature_devices/domain/entities/device_en
 import 'package:live_tracking/features/feature_login/data/models/user_model.dart';
 
 class DeviceModel extends DeviceEntity {
+  @override
   final String? image; // هنا أضفنا خاصية الصورة
 
   DeviceModel({

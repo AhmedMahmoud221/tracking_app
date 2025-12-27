@@ -44,7 +44,7 @@ class RecentActivitiesCard extends StatelessWidget {
                   ),
                 ),
                 trailing: Text(
-                  '${AppLocalizations.of(context)!.mintago}',
+                  AppLocalizations.of(context)!.mintago,
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? Colors.white70 : Colors.grey,
