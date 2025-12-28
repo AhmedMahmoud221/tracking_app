@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
@@ -19,17 +21,20 @@ import 'package:live_tracking/features/feature_profile/data/repositories/user_pr
 import 'package:live_tracking/features/feature_profile/domain/repositories/user_profile_repository.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
+import 'package:live_tracking/features/feature_profile/presentation/cubit/language_cubit/languageCubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/logout_cubit/logout_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 
 final sl = GetIt.instance;
 
-Future<void> init() async {
+Future<void> init({String savedLang = 'ar'}) async {
   // -----------------------Dio---------------------------
   sl.registerLazySingleton<Dio>(() => Dio());
 
   // -------------------------Cubit----------------------------
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthService>()));
+
+  sl.registerFactory(() => LanguageCubit(Locale(savedLang)));
 
   sl.registerFactory(() => SocketCubit());
 

@@ -98,12 +98,17 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(255, 0, 92, 121),
-            Color.fromARGB(255, 79, 229, 255),
-          ],
+          colors: isDark 
+            ? [
+                Colors.grey[800]!, // رمادي غامق (البداية)
+                Colors.grey[900]!, // رمادي أغمق يقترب من الأسود (النهاية)
+              ]
+            : [
+                const Color.fromARGB(255, 0, 92, 121), // أزرق غامق
+                const Color.fromARGB(255, 79, 229, 255), // أزرق فاتح
+              ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -132,7 +137,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
                   onTap: _showPickOptions,
                   child: CircleAvatar(
                     radius: 14,
-                    backgroundColor: Colors.blue,
+                    backgroundColor: isDark ? Colors.grey[500] : Colors.blue,
                     child: const Icon(
                       Icons.edit,
                       color: Colors.white,
@@ -147,7 +152,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
           Text(
             widget.profile.name,
             style: TextStyle(
-              color: isDark ? Colors.black : Colors.white,
+              color: isDark ? Colors.white70 : Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -155,7 +160,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
           Text(
             widget.profile.email,
             style: TextStyle(
-              color: isDark ? Colors.black54 : Colors.white70,
+              color: isDark ? Colors.white70 : Colors.white70,
               fontSize: 15,
             ),
           ),

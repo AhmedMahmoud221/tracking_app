@@ -17,27 +17,11 @@ class AppProviders {
     BlocProvider<ProfileDataCubit>(create: (_) => sl<ProfileDataCubit>()),
     BlocProvider<LogOutCubit>(create: (_) => sl<LogOutCubit>()),
     BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
-    BlocProvider<LanguageCubit>(
-      create: (_) => LanguageCubit(),
-    ), // هذا داخلي لا بأس به
-
-    BlocProvider<DevicesCubit>(
-      create: (_) => sl<DevicesCubit>()..fetchDevices(),
-    ),
+    BlocProvider<LanguageCubit>(create: (_) => LanguageCubit(sl<LanguageCubit>().state),),
+    BlocProvider<DevicesCubit>(create: (_) => sl<DevicesCubit>()..fetchDevices(),),
     BlocProvider<CreateDeviceCubit>(create: (_) => sl<CreateDeviceCubit>()),
     BlocProvider<UpdateDeviceCubit>(create: (_) => sl<UpdateDeviceCubit>()),
     BlocProvider<DeleteDeviceCubit>(create: (_) => sl<DeleteDeviceCubit>()),
-
-    // التعديل هنا: استخدم sl لضمان الربط مع الـ injection container
     BlocProvider<SocketCubit>(create: (_) => sl<SocketCubit>()),
   ];
 }
-        // BlocProvider(
-        //   create: (context) =>
-        //       UpdateDeviceCubit(UpdateDeviceUseCase(sl<DeviceRepository>())),
-        // ),
-        // BlocProvider(
-        //   create: (context) =>
-        //       DevicesCubit(sl<GetDevicesList>())..fetchDevices(),
-        // ),
-        // BlocProvider(create: (_) => ProfileCubit(LogoutUseCase(AuthService()))),

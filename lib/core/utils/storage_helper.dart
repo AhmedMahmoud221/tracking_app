@@ -31,4 +31,15 @@ class SecureStorage {
     final value = await _storage.read(key: _themeKey);
     return value == 'dark';
   }
+
+  // language
+  static const _langKey = 'selected_language';
+
+  static Future<void> writeLanguage(String lang) async {
+    await _storage.write(key: _langKey, value: lang);
+  }
+
+  static Future<String?> readLanguage() async {
+    return await _storage.read(key: _langKey);
+  }
 }
