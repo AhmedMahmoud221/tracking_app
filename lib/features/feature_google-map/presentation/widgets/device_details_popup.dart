@@ -68,14 +68,7 @@ class DeviceDetailsPopup extends StatelessWidget {
           children: [
             // صورة الجهاز
             Center(
-              child: ClipOval(
-                child: Image.asset(
-                  AssetsData.freepik,
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.contain,
-                ),
-              ),
+              child: deviceImage(),
             ),
 
             const SizedBox(height: 16),
@@ -202,4 +195,23 @@ class DeviceDetailsPopup extends StatelessWidget {
       ),
     );
   }
+
+  Widget deviceImage({double size = 120}) {
+  return ClipOval(
+    child: device.image != null
+        ? Image.network(
+            device.image!,
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+          )
+        : Image.asset(
+            AssetsData.freepik,
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+          ),
+  );
+}
+
 }

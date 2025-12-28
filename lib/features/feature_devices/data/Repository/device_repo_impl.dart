@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:live_tracking/core/constants/api_constants.dart';
+import 'package:live_tracking/core/utils/storage_helper.dart';
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';
 import 'package:live_tracking/features/feature_devices/data/models/device_model.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
@@ -19,6 +21,7 @@ class DeviceRepositoryImpl implements DeviceRepository {
 
   @override
   Future<DeviceEntity> createDevice(DeviceEntity device, {File? image}) async {
+    final token = await SecureStorage.readToken();
     final formData = FormData.fromMap({
       'brand': device.brand,
       'model': device.model,
@@ -33,9 +36,13 @@ class DeviceRepositoryImpl implements DeviceRepository {
     });
 
     final response = await dio.post(
-      '/devices',
+      '${ApiConstants.baseUrl}/api/user/device',
       data: formData,
-      options: Options(contentType: 'multipart/form-data'),
+      options: Options(contentType: 'multipart/form-data',
+        headers: {
+          'Authorization': 'Bearer $token',
+        }
+      ),
     );
 
     return DeviceModel.fromJson(response.data);
@@ -43,6 +50,7 @@ class DeviceRepositoryImpl implements DeviceRepository {
 
   @override
   Future<DeviceEntity> updateDevice(DeviceEntity device, {File? image}) async {
+    final token = await SecureStorage.readToken();
     final formData = FormData.fromMap({
       'brand': device.brand,
       'model': device.model,
@@ -56,10 +64,14 @@ class DeviceRepositoryImpl implements DeviceRepository {
         ),
     });
 
-    final response = await dio.put(
-      '/devices/${device.id}',
+    final response = await dio.patch(
+      '${ApiConstants.baseUrl}/api/user/device/${device.id}',
       data: formData,
-      options: Options(contentType: 'multipart/form-data'),
+      options: Options(contentType: 'multipart/form-data',
+        headers: {
+          'Authorization': 'Bearer $token',
+        }
+      ),
     );
 
     return DeviceModel.fromJson(response.data);
@@ -67,6 +79,13 @@ class DeviceRepositoryImpl implements DeviceRepository {
 
   @override
   Future<void> deleteDevice(String deviceId) async {
-    await dio.delete('/devices/$deviceId');
+    final token = await SecureStorage.readToken();
+    await dio.delete('${ApiConstants.baseUrl}/api/user/device/$deviceId',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        }
+      )
+    );
   }
 }

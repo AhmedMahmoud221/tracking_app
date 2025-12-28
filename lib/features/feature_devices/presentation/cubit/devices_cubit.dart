@@ -24,7 +24,7 @@ class DevicesCubit extends Cubit<DevicesState> {
       // خزّن النسخة الأصلية
       _allDevices.clear();
       _allDevices.addAll(devices);
-      emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+      emit(DevicesLoaded(List.from(_allDevices), selectedDevice, DateTime.now()));
     } catch (e) {
       emit(
         DevicesError(e.toString()),
@@ -35,13 +35,13 @@ class DevicesCubit extends Cubit<DevicesState> {
   /// إضافة جهاز جديد مباشرة
   void addDevice(DeviceEntity device) {
     _allDevices.add(device);
-    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice, DateTime.now()));
   }
 
   void searchDevices(String query) {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) {
-      emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+      emit(DevicesLoaded(List.from(_allDevices), selectedDevice, DateTime.now()));
       return;
     }
 
@@ -52,23 +52,23 @@ class DevicesCubit extends Cubit<DevicesState> {
           device.status.toLowerCase().contains(q);
     }).toList();
 
-    emit(DevicesLoaded(filtered, selectedDevice));
+    emit(DevicesLoaded(filtered, selectedDevice, DateTime.now()));
   }
 
   /// فلترة محلية على _allDevices
   void searchDevicesList(String query) {
-    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice, DateTime.now()));
   }
 
   /// لو احتجت تعمل إعادة تحميل / مسح فلتر
   void clearSearch() {
-    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice, DateTime.now()));
   }
 
   /// تحديد جهاز معين
   void selectDevice(DeviceEntity device) {
     selectedDevice = device;
-    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice, DateTime.now()));
   }
 
   /// تحويل الأجهزة إلى Markers
@@ -89,12 +89,17 @@ class DevicesCubit extends Cubit<DevicesState> {
     final index = _allDevices.indexWhere((d) => d.id == updatedDevice.id);
     if (index != -1) {
       _allDevices[index] = updatedDevice;
-      emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+      
+      if (selectedDevice?.id == updatedDevice.id) {
+        selectedDevice = updatedDevice;
+      }
+    
+      emit(DevicesLoaded(List.of(_allDevices), selectedDevice, DateTime.now()));
     }
   }
 
   void deleteDeviceFromList(String deviceId) {
     _allDevices.removeWhere((device) => device.id == deviceId);
-    emit(DevicesLoaded(List.from(_allDevices), selectedDevice));
+    emit(DevicesLoaded(List.from(_allDevices), selectedDevice, DateTime.now()));
   }
 }

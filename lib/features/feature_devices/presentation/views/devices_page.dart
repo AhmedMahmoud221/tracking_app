@@ -18,6 +18,7 @@ class DevicesPage extends StatefulWidget {
 }
 
 class _DevicesPageState extends State<DevicesPage> {
+  final TextEditingController searchController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -79,7 +80,7 @@ class _DevicesPageState extends State<DevicesPage> {
                   // السيرش بار موجود هنا
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: _SearchBar(isDark: isDark),
+                    child: _SearchBar(isDark: isDark, controller: searchController),
                   ),
                   const SizedBox(height: 12),
                   Padding(
@@ -159,6 +160,7 @@ class _DevicesPageState extends State<DevicesPage> {
         );
       }
       return GridView.builder(
+        key: const PageStorageKey('devices_grid'),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -185,11 +187,30 @@ class _DevicesPageState extends State<DevicesPage> {
 }
 
 // السيرش بار كـ Widget منفصل كما أرسلته أنت
-class _SearchBar extends StatelessWidget {
-  final TextEditingController controller = TextEditingController();
+class _SearchBar extends StatefulWidget {
   final bool isDark;
+  final TextEditingController controller; // 1. أضف هذا السطر هنا
 
-  _SearchBar({required this.isDark});
+  const _SearchBar({required this.isDark, required this.controller});
+
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<_SearchBar> {
+  late TextEditingController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose(); // مهم جداً لتجنب تسريب الذاكرة
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,13 +221,13 @@ class _SearchBar extends StatelessWidget {
       },
       decoration: InputDecoration(
         hintText: "${AppLocalizations.of(context)!.searchdevices}...",
-        hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
+        hintStyle: TextStyle(color: widget.isDark ? Colors.white54 : Colors.grey),
         prefixIcon: Icon(
           Icons.search,
-          color: isDark ? Colors.white : Colors.grey,
+          color: widget.isDark ? Colors.white : Colors.grey,
         ),
         filled: true,
-        fillColor: isDark
+        fillColor: widget.isDark
             ? Colors.grey[850]
             : const Color.fromARGB(255, 243, 242, 242),
         border: OutlineInputBorder(
@@ -214,7 +235,7 @@ class _SearchBar extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
       ),
-      style: TextStyle(color: isDark ? Colors.white : Colors.black),
+      style: TextStyle(color: widget.isDark ? Colors.white : Colors.black),
     );
   }
 }

@@ -252,7 +252,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
                 _initializeMarkersAndPaths(state.devices);
               }
 
-              final record = state.selectedDevice!.lastRecord;
+              final record = state.selectedDevice?.lastRecord;
               if (record != null) {
                 await _mapController?.animateCamera(
                   CameraUpdate.newLatLng(LatLng(record.lat, record.lng)),

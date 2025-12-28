@@ -19,21 +19,24 @@ class DeviceModel extends DeviceEntity {
   });
 
   factory DeviceModel.fromJson(Map<String, dynamic> json) {
-    return DeviceModel(
-      id: json['_id'],
-      brand: json['brand'],
-      model: json['model'],
-      year: json['year'],
-      user: UserModel.fromJson(json['user']),
-      plateNumber: json['plateNumber'],
-      type: json['type'],
-      status: json['status'],
-      lastRecord: json['lastRecord'] != null
-          ? LastRecordModel.fromJson(json['lastRecord'])
-          : null,
-      image: json['image'], // جلبنا الصورة من JSON
-    );
-  }
+  return DeviceModel(
+    id: json['_id']?.toString() ?? '',
+    brand: json['brand']?.toString() ?? '',
+    model: json['model']?.toString() ?? '',
+    year: json['year'] ?? 0,
+    // حماية حقل المستخدم: إذا كان الـ user نل، ننشئ مستخدم وهمي بدلاً من الانهيار
+    user: json['user'] != null 
+        ? UserModel.fromJson(json['user']) 
+        : UserModel(id: '', name: 'Unknown', email: ''), 
+    plateNumber: json['plateNumber']?.toString() ?? '',
+    type: json['type']?.toString() ?? 'Car',
+    status: json['status']?.toString() ?? 'inactive',
+    lastRecord: json['lastRecord'] != null
+        ? LastRecordModel.fromJson(json['lastRecord'])
+        : null,
+    image: json['image']?.toString(), // تأكدنا أنه String أو Null
+  );
+}
 
   Map<String, dynamic> toJson() {
     return {
@@ -62,15 +65,20 @@ class LastRecordModel extends LastRecordEntity {
   });
 
   factory LastRecordModel.fromJson(Map<String, dynamic> json) {
-    return LastRecordModel(
-      lat: (json['lat'] as num).toDouble(),
-      lng: (json['lng'] as num).toDouble(),
-      speed: (json['speed'] as num).toDouble(),
-      status: json['status'],
-      rotation: (json['rotation'] as num).toDouble(),
-      timestamp: DateTime.parse(json['timestamp']),
-    );
-  }
+  return LastRecordModel(
+    // استخدمنا (json['...'] ?? 0) للحماية من قيم الـ Null في الأرقام
+    lat: (json['lat'] ?? 0 as num).toDouble(),
+    lng: (json['lng'] ?? 0 as num).toDouble(),
+    speed: (json['speed'] ?? 0 as num).toDouble(),
+    // الخطأ المحتمل كان هنا:
+    status: json['status']?.toString() ?? 'offline', 
+    rotation: (json['rotation'] ?? 0 as num).toDouble(),
+    // حماية للتاريخ
+    timestamp: json['timestamp'] != null 
+        ? DateTime.parse(json['timestamp']) 
+        : DateTime.now(),
+  );
+}
 
   Map<String, dynamic> toJson() {
     return {

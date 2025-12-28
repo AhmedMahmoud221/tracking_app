@@ -38,8 +38,29 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
   @override
   Future<DeviceModel> createDevice(CreateDeviceModel device) async {
     final token = await SecureStorage.readToken() ?? "";
+
     final response = await dio.post(
       '${ApiConstants.baseUrl}/api/user/device',
+      data: device.toJson(),
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    return DeviceModel.fromJson(response.data["data"]);
+  }
+
+  Future<DeviceModel> updateDevice(
+    String deviceId,
+    CreateDeviceModel device,
+  ) async {
+    final token = await SecureStorage.readToken() ?? "";
+
+    final response = await dio.put(
+      '${ApiConstants.baseUrl}/api/user/device/$deviceId',
       data: device.toJson(),
       options: Options(
         headers: {

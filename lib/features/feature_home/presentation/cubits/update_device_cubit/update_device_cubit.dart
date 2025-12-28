@@ -16,7 +16,7 @@ class UpdateDeviceCubit extends Cubit<UpdateDeviceState> {
       final result = await updateDeviceUseCase(device: device, image: image);
       emit(UpdateDeviceSuccess(result));
     } catch (e) {
-      emit(UpdateDeviceError(e.toString()));
+      emit(UpdateDeviceError( e.toString()));
     }
   }
 }

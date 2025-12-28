@@ -9,6 +9,6 @@ class CreateDeviceUseCase {
   CreateDeviceUseCase(this.repository);
 
   Future<DeviceEntity> call({required DeviceEntity device, File? image}) async {
-    return await repository.createDevice(device, image: image);
+    return await repository.createDevice(device, image: image);  // image: image
   }
 }

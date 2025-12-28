@@ -110,21 +110,21 @@ class _AddEditDevicePageState extends State<AddEditDevicePage> {
                   }
                 },
               ),
-              BlocListener<UpdateDeviceCubit, UpdateDeviceState>(
-                listener: (context, state) {
-                  if (state is UpdateDeviceSuccess) {
-                    context.read<DevicesCubit>().updateDeviceInList(
-                      state.device,
-                    );
-                    _showSnackBar(
-                      AppLocalizations.of(context)!.deviceupdatedsuccessfully,
-                    );
-                    if (context.canPop()) context.pop(true);
-                  } else if (state is UpdateDeviceError) {
-                    _showSnackBar(state.message, isError: true);
-                  }
-                },
-              ),
+              // داخل MultiBlocListener في صفحة AddEditDevicePage
+BlocListener<UpdateDeviceCubit, UpdateDeviceState>(
+  listener: (context, state) {
+    if (state is UpdateDeviceSuccess) {
+      // 1. تحديث القائمة في الـ Cubit الرئيسي فوراً
+      context.read<DevicesCubit>().updateDeviceInList(state.device);
+
+      // 2. إظهار الرسالة
+      _showSnackBar(AppLocalizations.of(context)!.deviceupdatedsuccessfully);
+
+      // 3. الرجوع (Pop)
+      context.pop(); 
+    }
+  },
+),
             ],
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -200,7 +200,7 @@ class _AddEditDevicePageState extends State<AddEditDevicePage> {
     return GestureDetector(
       onTap: pickImage,
       child: Container(
-        height: 150,
+        height: 250,
         width: double.infinity,
         decoration: BoxDecoration(
           color: fillColor,
@@ -242,21 +242,24 @@ class _AddEditDevicePageState extends State<AddEditDevicePage> {
     Color labelColor, {
     bool isNumber = false,
   }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      style: TextStyle(color: textColor),
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: fillColor,
-        labelStyle: TextStyle(color: labelColor, fontSize: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        style: TextStyle(color: textColor),
+        decoration: InputDecoration(
+          labelText: label,
+          filled: true,
+          fillColor: fillColor,
+          labelStyle: TextStyle(color: labelColor, fontSize: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
         ),
+        validator: (v) => (v == null || v.isEmpty) ? "Required" : null,
       ),
-      validator: (v) => (v == null || v.isEmpty) ? "Required" : null,
     );
   }
 
@@ -346,15 +349,23 @@ class _AddEditDevicePageState extends State<AddEditDevicePage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      // تأكدنا من الـ Validation، الآن نجهز البيانات ونعالج أي قيمة قد تكون Null
       final device = DeviceEntity(
-        id: widget.device?.id ?? '',
-        brand: brandController.text,
-        model: modelController.text,
+        // 1. تأكد أن الـ ID لا يرسل Null أبداً
+        id: widget.device?.id ?? '', 
+        
+        brand: brandController.text.trim(),
+        model: modelController.text.trim(),
         year: int.tryParse(yearController.text) ?? 0,
-        plateNumber: plateController.text,
+        plateNumber: plateController.text.trim(),
         type: selectedType,
-        user: widget.device?.user ?? UserEntity(id: '', name: '', email: ''),
-        status: widget.device?.status ?? '',
+        
+        // 2. الحماية من Null في الـ UserEntity
+        user: widget.device?.user ?? UserEntity(id: '0', name: 'Unknown', email: ''),
+        
+        // 3. الخطأ غالباً هنا: الـ Status لا يجب أن يكون Null
+        status: widget.device?.status ?? 'active', 
+        
         lastRecord: widget.device?.lastRecord,
         image: widget.device?.image,
       );
