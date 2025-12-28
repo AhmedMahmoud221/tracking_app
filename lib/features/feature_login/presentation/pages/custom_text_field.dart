@@ -23,6 +23,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return TextFormField(
       controller: widget.controller,
       obscureText: widget.isPassword ? _obscurePassword : false,
@@ -35,10 +37,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       },
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: isDark ? Colors.white : Colors.black),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color.fromARGB(255, 226, 226, 226)),
+          borderSide: const BorderSide(color: Colors.white70),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -59,7 +61,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               )
             : null,
       ),
-      style: const TextStyle(color: Colors.black),
+      style: TextStyle(color: isDark ? Colors.white70 : Colors.black),
     );
   }
 }

@@ -190,4 +190,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get enteryouremail => 'Enter your email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get enteryourpassword => 'Enter your password';
+
+  @override
+  String get youdonthaveanaccount => 'You don\'t have an account?';
+
+  @override
+  String get signup => 'Sign Up';
+
+  @override
+  String get forgetpassword => 'Forget Password?';
+
+  @override
+  String get signin => 'Sign In';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get enteryourusername => 'Enter your username';
+
+  @override
+  String get alreadyhaveanaccount => 'Already have an account?';
+
+  @override
+  String get resetyourpassword => 'Reset your password';
+
+  @override
+  String get pleasefillallfields => 'Please fill all fields';
+
+  @override
+  String get emailrequired => 'Email is required';
 }

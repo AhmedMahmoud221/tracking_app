@@ -34,14 +34,18 @@ class _HomePageBodyState extends State<HomePageBody> {
             final allDevices = state.devices;
 
             final total = allDevices.length;
-            //final online = allDevices
-            // .where((d) => d.status.toLowerCase() == 'online')
-            // .length;
-            final offline = allDevices
-                .where((d) => d.status.toLowerCase() != 'online')
+
+            // final online = allDevices
+            //     .where((d) => d.status.toLowerCase() == 'online')
+            //     .length;
+            final towed = allDevices
+                .where((d) => d.status.toLowerCase() == 'towed')
                 .length;
             final moving = allDevices
                 .where((d) => d.status.toLowerCase() == 'moving')
+                .length;
+            final parking = allDevices
+                .where((d) => d.status.toLowerCase() == 'parking')
                 .length;
 
             final lastDevice = allDevices.isNotEmpty ? allDevices.last : null;
@@ -52,7 +56,6 @@ class _HomePageBodyState extends State<HomePageBody> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
                     GridView.count(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -64,17 +67,17 @@ class _HomePageBodyState extends State<HomePageBody> {
                         StatCard(
                           title: AppLocalizations.of(context)!.totaldevices,
                           value: '$total',
+                          icon: Icons.devices,
+                        ),
+                        StatCard(
+                          title: AppLocalizations.of(context)!.towed,
+                          value: '$towed',
+                          icon: Icons.car_crash,
+                        ),
+                        StatCard(
+                          title: AppLocalizations.of(context)!.parking,
+                          value: '$parking',
                           icon: Icons.directions_car,
-                        ),
-                        StatCard(
-                          title: AppLocalizations.of(context)!.online,
-                          value: '$moving',
-                          icon: Icons.wifi,
-                        ),
-                        StatCard(
-                          title: AppLocalizations.of(context)!.offline,
-                          value: '$offline',
-                          icon: Icons.wifi_off,
                         ),
                         StatCard(
                           title: AppLocalizations.of(context)!.moving,

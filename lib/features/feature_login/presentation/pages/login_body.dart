@@ -10,6 +10,7 @@ import 'package:live_tracking/features/feature_login/presentation/pages/custom_b
 import 'package:live_tracking/features/feature_login/presentation/pages/custom_text_feild_head.dart';
 import 'package:live_tracking/features/feature_login/presentation/pages/custom_text_field.dart';
 import 'package:live_tracking/features/feature_login/presentation/pages/live_tracking_text.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginPageBody extends StatefulWidget {
@@ -38,9 +39,10 @@ class _LoginPageBodyState extends State<LoginPageBody> {
       },
       builder: (context, state) {
         final isLoading = state is AuthLoading;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? Colors.black : Colors.white,
           body: ModalProgressHUD(
             inAsyncCall: isLoading,
             child: SafeArea(
@@ -62,20 +64,22 @@ class _LoginPageBodyState extends State<LoginPageBody> {
                                 AssetsData.login,
                                 height: 250,
                                 fit: BoxFit.cover,
+                                color: isDark ? Colors.black.withOpacity(0.2) : null,
+                                colorBlendMode: isDark ? BlendMode.darken : null,
                               ),
                             ),
                             const SizedBox(height: 10),
-                            const CustomTextFeildHead(title: 'Email'),
+                            CustomTextFeildHead(title: AppLocalizations.of(context)!.email),
                             const SizedBox(height: 6),
                             CustomTextField(
-                              hint: 'Enter your email',
+                              hint: AppLocalizations.of(context)!.enteryouremail,
                               controller: _emailCtrl,
                               isPassword: false,
                             ),
                             const SizedBox(height: 6),
-                            const CustomTextFeildHead(title: 'Password'),
+                            CustomTextFeildHead(title: AppLocalizations.of(context)!.password),
                             CustomTextField(
-                              hint: 'Enter your password',
+                              hint: AppLocalizations.of(context)!.enteryourpassword,
                               controller: _passwordCtrl,
                               isPassword: true,
                             ),
@@ -85,15 +89,15 @@ class _LoginPageBodyState extends State<LoginPageBody> {
                                   context,
                                 ).go(AppRouter.kSignupPageView);
                               },
-                              text1: 'You don\'t have an account ?',
-                              text2: 'Sign Up',
+                              text1: AppLocalizations.of(context)!.youdonthaveanaccount,
+                              text2: AppLocalizations.of(context)!.signup,
                             ),
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    CustomButton(buttonText: 'Sign In', onTap: _onLoginPressed),
+                    CustomButton(buttonText: AppLocalizations.of(context)!.signin, onTap: _onLoginPressed),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -112,7 +116,7 @@ class _LoginPageBodyState extends State<LoginPageBody> {
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      ).showSnackBar( SnackBar(content: Text(AppLocalizations.of(context)!.pleasefillallfields)));
       return;
     }
 

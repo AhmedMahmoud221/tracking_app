@@ -55,16 +55,23 @@ class _SplashViewBodyState extends State<SplashViewBody>
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 0, 92, 121),
-              Color.fromARGB(255, 79, 229, 255),
-            ],
+            colors: isDark
+                ? [
+                    Colors.grey[900]!, // رمادي غامق جداً للدارك
+                    Colors.grey[900]!,
+                  ]
+                : [
+                    const Color.fromARGB(255, 0, 92, 121), // الأزرق الأصلي للـ Light
+                    const Color.fromARGB(255, 79, 229, 255),
+                  ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -85,12 +92,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Color.fromARGB(
-                              255,
-                              79,
-                              229,
-                              255,
-                            ).withOpacity(0.6),
+                            color: (isDark ? Colors.white24 : const Color(0xFF4FE5FF).withOpacity(0.6)),
                             blurRadius: 30,
                             spreadRadius: 6,
                           ),
@@ -118,7 +120,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                   color: Colors.white54,
                   boxShadow: [
                     BoxShadow(
-                      color: Color.fromARGB(255, 79, 229, 255).withOpacity(0.6),
+                     color: (isDark ? Colors.white10 : const Color(0xFF4FE5FF).withOpacity(0.6)),
                       blurRadius: 8,
                     ),
                   ],

@@ -460,6 +460,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @enteryouremail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get enteryouremail;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @enteryourpassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enteryourpassword;
+
+  /// No description provided for @youdonthaveanaccount.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have an account?'**
+  String get youdonthaveanaccount;
+
+  /// No description provided for @signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signup;
+
+  /// No description provided for @forgetpassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget Password?'**
+  String get forgetpassword;
+
+  /// No description provided for @signin.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signin;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @enteryourusername.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your username'**
+  String get enteryourusername;
+
+  /// No description provided for @alreadyhaveanaccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyhaveanaccount;
+
+  /// No description provided for @resetyourpassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset your password'**
+  String get resetyourpassword;
+
+  /// No description provided for @pleasefillallfields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get pleasefillallfields;
+
+  /// No description provided for @emailrequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailrequired;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

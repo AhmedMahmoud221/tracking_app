@@ -9,14 +9,16 @@ class CustomTextFeildHead extends StatelessWidget {
   final String title;
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
           title,
           style: Styles.textStyle18.copyWith(
-            color: Colors.black,
+            color: isDark ? Colors.white70 : Colors.black,
           ),
         ),
       ),

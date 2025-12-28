@@ -60,5 +60,19 @@
   "deviceupdatedsuccessfully": "Device Updated Successfully",
   "adddeviceamage": "Add Device Image",
   "areyousureyouwanttodeletethisdevice": "Are you sure you want to delete this device?",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "email": "Email",
+  "enteryouremail": "Enter your email",
+  "password": "Password",
+  "enteryourpassword": "Enter your password",
+  "youdonthaveanaccount": "You don't have an account?",
+  "signup": "Sign Up",
+  "forgetpassword": "Forget Password?",
+  "signin": "Sign In",
+  "username": "Username",
+  "enteryourusername": "Enter your username",
+  "alreadyhaveanaccount": "Already have an account?",
+  "resetyourpassword": "Reset your password",
+  "pleasefillallfields": "Please fill all fields",
+  "emailrequired": "Email is required"
 }

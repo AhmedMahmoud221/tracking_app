@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_state.dart';
 import 'package:live_tracking/features/feature_login/presentation/pages/custom_text_field.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   ForgotPasswordScreen({super.key});
@@ -29,9 +30,12 @@ class ForgotPasswordScreen extends StatelessWidget {
       },
       builder: (context, state) {
         final isLoading = state is AuthLoading;
-
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         return Scaffold(
-          appBar: AppBar(title: const Text("Forgot Password")),
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.forgetpassword),
+            backgroundColor: isDark ? Colors.grey[800] : Colors.blue,
+            ),
           body: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -41,7 +45,7 @@ class ForgotPasswordScreen extends StatelessWidget {
 
                 // Title
                 Text(
-                  "Enter your email",
+                  AppLocalizations.of(context)!.enteryouremail,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -71,8 +75,8 @@ class ForgotPasswordScreen extends StatelessWidget {
                               final email = emailController.text.trim();
                               if (email.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Email is required"),
+                                  SnackBar(
+                                    content: Text(AppLocalizations.of(context)!.emailrequired),
                                   ),
                                 );
                                 return;
@@ -98,8 +102,8 @@ class ForgotPasswordScreen extends StatelessWidget {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text(
-                              "Reset Your Password",
+                          : Text(
+                              AppLocalizations.of(context)!.resetyourpassword,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

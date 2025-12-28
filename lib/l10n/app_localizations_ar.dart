@@ -190,4 +190,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cancel => 'إلغاء';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get enteryouremail => 'أدخل بريدك الإلكتروني';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get enteryourpassword => 'أدخل كلمة المرور الخاصة بك';
+
+  @override
+  String get youdonthaveanaccount => 'ليس لديك حساب؟';
+
+  @override
+  String get signup => 'إنشاء حساب';
+
+  @override
+  String get forgetpassword => 'هل نسيت كلمة المرور؟';
+
+  @override
+  String get signin => 'تسجيل دخول';
+
+  @override
+  String get username => 'اسم المستخدم';
+
+  @override
+  String get enteryourusername => 'أدخل اسم المستخدم';
+
+  @override
+  String get alreadyhaveanaccount => 'لديك حساب بالفعل؟';
+
+  @override
+  String get resetyourpassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get pleasefillallfields => 'يرجى ملء جميع الحقول';
+
+  @override
+  String get emailrequired => 'البريد الإلكتروني مطلوب';
 }
