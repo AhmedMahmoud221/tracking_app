@@ -30,4 +30,29 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left(e.toString());
     }
   }
+
+  @override
+  Future<Either<String, MessageEntity>> sendMessage(String chatId, String text) async {
+    try {
+      final remoteMessage = await remoteDataSource.sendMessage(
+        chatId: chatId,
+        text: text,
+      );
+      return Right(remoteMessage);
+    } on DioException catch (e) {
+      return Left(e.response?.data['message'] ?? "عذراً، تعذر إرسال الرسالة");
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, MessageEntity>> sendVoiceMessage(String chatId, String filePath) async {
+    try {
+      final result = await remoteDataSource.sendVoiceMessage(chatId: chatId, filePath: filePath);
+      return Right(result);
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
 }

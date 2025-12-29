@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:live_tracking/main.dart';
 class AppProviders {
   static List<BlocProvider> get providers => [
     BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()),
+    BlocProvider(create: (context) => sl<ChatMessagesCubit>()),
     BlocProvider<ProfileDataCubit>(create: (_) => sl<ProfileDataCubit>()),
     BlocProvider<LogOutCubit>(create: (_) => sl<LogOutCubit>()),
     BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),

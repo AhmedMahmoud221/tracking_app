@@ -1,72 +1,178 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/core/constants/api_constants.dart';
+import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_audio_bubble.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_header_chat_screen.dart';
+import 'package:record/record.dart';
 
 class ChatMessagesScreen extends StatefulWidget {
   final String userName;
-  const ChatMessagesScreen({super.key, required this.userName});
+  final String chatId;
+
+  const ChatMessagesScreen({
+    super.key,
+    required this.userName,
+    required this.chatId,
+  });
 
   @override
   State<ChatMessagesScreen> createState() => _ChatMessagesScreenState();
 }
 
 class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
-  final TextEditingController _messageController = TextEditingController();
+  late TextEditingController _messageController;
+  late AudioRecorder audioRecorder;
+  
   bool _isRecording = false;
   double _swipePosition = 0.0;
-  int _recordDuration = 0; // بالثواني
+  int _recordDuration = 0; 
   Timer? _timer;
 
-  // fake messages data
-  final List<Map<String, dynamic>> messages = [
-    {"text": "هلا، كيف حالك؟", "isMe": false, "time": "10:00 AM"},
-    {"text": "الحمدلله بخير، أنت كيفك؟", "isMe": true, "time": "10:01 AM"},
-    {"text": "شغال على المشروع الجديد؟", "isMe": false, "time": "10:02 AM"},
-    {"text": "أيوه، وقربت أخلصه إن شاء الله 🚀", "isMe": true, "time": "10:05 AM"},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    audioRecorder = AudioRecorder();
+    _messageController = context.read<ChatMessagesCubit>().messageController;
+    context.read<ChatMessagesCubit>().fetchMessages(widget.chatId);
+  }
+
+  @override
+  void dispose() {
+    audioRecorder.dispose();
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _startRecording() async {
+    try {
+      if (await audioRecorder.hasPermission()) {
+        final directory = Directory.systemTemp;
+        final path = '${directory.path}/record_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        
+        await audioRecorder.start(const RecordConfig(), path: path);
+        
+        setState(() {
+          _isRecording = true;
+          _recordDuration = 0;
+        });
+        _startTimer();
+      }
+    } catch (e) {
+      print("Error starting record: $e");
+    }
+  }
+
+  // دالة بناء فقاعة الصورة المعدلة
+  Widget _buildImageBubble(MessageEntity msg, bool isDark) {
+    final url = msg.mediaUrl!.startsWith('http') 
+        ? msg.mediaUrl! 
+        : "${ApiConstants.baseUrl}${msg.mediaUrl}";
+        
+    return Align(
+      alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Column(
+        crossAxisAlignment: msg.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: msg.isMe ? Colors.blue : (isDark ? Colors.grey[800] : Colors.white),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                url,
+                width: 200,
+                height: 200,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const SizedBox(width: 200, height: 200, child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
+                },
+                errorBuilder: (_, __, ___) => Container(
+                  width: 200, height: 150, color: Colors.grey[300],
+                  child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                ),
+              ),
+            ),
+          ),
+          Text("${msg.createdAt.hour}:${msg.createdAt.minute}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? Colors.black : const Color(0xFFF5F5F5), // خلفية الشات
+      backgroundColor: isDark ? Colors.black : const Color(0xFFF5F5F5),
       appBar: AppBar(
         titleSpacing: 0,
         title: CustomHeaderChatScreen(widget: widget),
       ),
       body: Column(
         children: [
-          // show messages & audio bubbles
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final msg = messages[index];
-                if (msg['type'] == 'voice') {
-                  return AudioBubble(
-                    isMe: msg['isMe'],
-                    time: msg['time'],
-                    audioUrl: msg['audioUrl'],
+            child: BlocBuilder<ChatMessagesCubit, ChatMessagesState>(
+              builder: (context, state) {
+                if (state is ChatMessagesLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is ChatMessagesSuccess) {
+                  final messages = state.messages;
+                  
+                  if (messages.isEmpty) {
+                    return const Center(child: Text("Say Hello! 👋"));
+                  }
+
+                  return ListView.builder(
+                    reverse: true,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      // نعكس القائمة لعرض الأحدث بالأسفل
+                      final msg = messages.reversed.toList()[index];
+                      final time = "${msg.createdAt.hour}:${msg.createdAt.minute}";
+                      
+                      // اختيار نوع الفقاعة بناءً على نوع الرسالة
+                      if (msg.messageType == 'voice') {
+                        return AudioBubble(
+                          isMe: msg.isMe,
+                          time: time,
+                          audioUrl: msg.mediaUrl!.startsWith('http') 
+                              ? msg.mediaUrl! 
+                              : "${ApiConstants.baseUrl}${msg.mediaUrl}",
+                        );
+                      } else if (msg.messageType == 'image') {
+                        return _buildImageBubble(msg, isDark);
+                      } else {
+                        return _buildChatBubble(msg.text, msg.isMe, time, isDark);
+                      }
+                    },
                   );
-                } else {
-                  return _buildChatBubble(msg['text'], msg['isMe'], msg['time'], isDark);
+                } else if (state is ChatMessagesError) {
+                  return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
                 }
+                return const Center(child: Text("ابدأ المحادثة الآن"));
               },
             ),
           ),
-
-          // message input
           _buildMessageInput(isDark),
         ],
       ),
     );
   }
 
-  // messege bubble widget
   Widget _buildChatBubble(String text, bool isMe, String time, bool isDark) {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -74,140 +180,78 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         margin: const EdgeInsets.symmetric(vertical: 5),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isMe 
-              ? Colors.blue 
-              : (isDark ? Colors.grey[800] : Colors.white),
+          color: isMe ? Colors.blue : (isDark ? Colors.grey[800] : Colors.white),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(15),
             topRight: const Radius.circular(15),
             bottomLeft: Radius.circular(isMe ? 15 : 0),
             bottomRight: Radius.circular(isMe ? 0 : 15),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              text,
-              style: TextStyle(
-                color: isMe ? Colors.white : (isDark ? Colors.white : Colors.black87),
-                fontSize: 16,
-              ),
-            ),
+            Text(text, style: TextStyle(color: isMe || isDark ? Colors.white : Colors.black87, fontSize: 16)),
             const SizedBox(height: 4),
-            Text(
-              time,
-              style: TextStyle(
-                color: isMe ? Colors.white70 : Colors.grey,
-                fontSize: 10,
-              ),
-            ),
+            Text(time, style: TextStyle(color: isMe ? Colors.white70 : Colors.grey, fontSize: 10)),
           ],
         ),
       ),
     );
   }
 
-  // message input widget
-  // 1. دالة لبدء العداد
-  void _startTimer() {
-    _recordDuration = 0;
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      setState(() => _recordDuration++);
-    });
-  }
-
-  // 2. دالة لإيقاف العداد
-  void _stopTimer() {
-    _timer?.cancel();
-    setState(() => _recordDuration = 0);
-  }
-
-  // 3. تحويل الثواني لصيغة 00:00
-  String _formatDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
-
-  @override
   Widget _buildMessageInput(bool isDark) {
     bool isTextEmpty = _messageController.text.trim().isEmpty;
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[900] : Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
       ),
       child: Row(
         children: [
-          // زر الإضافة يختفي أثناء التسجيل لتوفير مساحة
           if (!_isRecording)
-            IconButton(
-              icon: const Icon(Icons.add, color: Colors.blue),
-              onPressed: () {
-                /* كود الـ BottomSheet الخاص بك */
-              },
-            ),
-
-          Expanded(
-            child: _isRecording
-                ? _buildRecordingWave(isDark) // واجهة التسجيل
-                : _buildTextField(isDark),   // واجهة الكتابة العادية
-          ),
-
+            IconButton(icon: const Icon(Icons.add, color: Colors.blue), onPressed: () {}),
+          Expanded(child: _isRecording ? _buildRecordingWave(isDark) : _buildTextField(isDark)),
           const SizedBox(width: 5),
-
-          // زر المايك مع الـ Gestures
           GestureDetector(
             onHorizontalDragUpdate: (details) {
               if (_isRecording) {
                 setState(() {
                   _swipePosition += details.delta.dx;
-                  // إذا سحب المستخدم لليسار بمقدار معين نلغي التسجيل
                   if (_swipePosition < -120) {
                     _isRecording = false;
                     _stopTimer();
-                    print("Recording Cancelled");
+                    audioRecorder.stop(); // إيقاف التسجيل عند السحب للحذف
                   }
                 });
               }
             },
-            onLongPress: () {
-              if (isTextEmpty) {
-                setState(() {
-                  _isRecording = true;
-                  _swipePosition = 0;
-                });
-                _startTimer();
-                print("بدأ التسجيل برمجياً هنا...");
-              }
-            },
-            onLongPressEnd: (details) async{
+            onLongPress: () { if (isTextEmpty) _startRecording(); },
+            onLongPressEnd: (details) async {
               if (_isRecording) {
-                setState(() => _isRecording = false);
+                final path = await audioRecorder.stop();
                 _stopTimer();
-                if (_swipePosition > -120) {
-                  print("تم الإرسال بنجاح");
+                setState(() => _isRecording = false);
+                if (path != null && _swipePosition > -120) {
+                  context.read<ChatMessagesCubit>().sendVoice(widget.chatId, path);
                 }
+              }
+              setState(() => _swipePosition = 0.0);
+            },
+            onTap: () {
+              if (!isTextEmpty) {
+                context.read<ChatMessagesCubit>().sendMessage(widget.chatId);
+                setState(() {});
               }
             },
             child: CircleAvatar(
               backgroundColor: _isRecording ? Colors.red : Colors.blue,
-              radius: _isRecording ? 28 : 25, // تكبير الزر أثناء التسجيل
+              radius: _isRecording ? 28 : 25,
               child: Icon(
                 isTextEmpty ? (_isRecording ? Icons.mic : Icons.mic_none) : Icons.send,
-                color: Colors.white,
-                size: 24,
+                color: Colors.white, size: 24,
               ),
             ),
           ),
@@ -216,17 +260,13 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     );
   }
 
-  // ودجت الـ TextField العادي
   Widget _buildTextField(bool isDark) {
     return TextField(
       controller: _messageController,
       onChanged: (val) => setState(() {}),
       decoration: InputDecoration(
         hintText: "Type a message...",
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide.none,
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
         filled: true,
         fillColor: isDark ? Colors.black : Colors.grey[100],
         contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -234,31 +274,33 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     );
   }
 
-  // ودجت حالة التسجيل (Animation & Slide to cancel)
+  void _startTimer() {
+    _recordDuration = 0;
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => setState(() => _recordDuration++));
+  }
+
+  void _stopTimer() { _timer?.cancel(); setState(() => _recordDuration = 0); }
+
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
   Widget _buildRecordingWave(bool isDark) {
     return Container(
       height: 45,
       padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.black : Colors.grey[100],
-        borderRadius: BorderRadius.circular(25),
-      ),
+      decoration: BoxDecoration(color: isDark ? Colors.black : Colors.grey[100], borderRadius: BorderRadius.circular(25)),
       child: Row(
         children: [
-          // أيقونة حمراء تنبض
           const Icon(Icons.circle, color: Colors.green, size: 12),
           const SizedBox(width: 8),
           Text(_formatDuration(_recordDuration), style: const TextStyle(fontWeight: FontWeight.bold)),
           const Spacer(),
-          // نص السحب للإلغاء مع أنيميشن بسيط
           Opacity(
             opacity: (1.0 + (_swipePosition / 120)).clamp(0.0, 1.0),
-            child: Row(
-              children: const [
-                Icon(Icons.arrow_back_ios, size: 12, color: Colors.grey),
-                Text(" Slide to cancel", style: TextStyle(color: Colors.grey)),
-              ],
-            ),
+            child: const Row(children: [Icon(Icons.arrow_back_ios, size: 12, color: Colors.grey), Text(" Slide to cancel", style: TextStyle(color: Colors.grey))]),
           ),
         ],
       ),

@@ -7,7 +7,9 @@ import 'package:live_tracking/features/feature_chat/data/Repository/chat_reposit
 import 'package:live_tracking/features/feature_chat/data/datasource/chat_remote_data_source.dart';
 import 'package:live_tracking/features/feature_chat/data/datasource/get_chat_messages_use_case.dart';
 import 'package:live_tracking/features/feature_chat/domain/repo/chat_repository_impl.dart';
+import 'package:live_tracking/features/feature_chat/domain/usecase/send_message_use_case.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_devices/data/Repository/device_repo_impl.dart';
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
@@ -61,6 +63,8 @@ Future<void> init({String savedLang = 'ar'}) async {
 
   sl.registerFactory(() => ChatListCubit(sl()));
 
+  sl.registerFactory(() => ChatMessagesCubit(sl(), sl()));
+
   // ------------------Use Case---------------
   sl.registerLazySingleton<AuthService>(() => AuthService());
 
@@ -79,6 +83,8 @@ Future<void> init({String savedLang = 'ar'}) async {
   sl.registerLazySingleton(() => UpdateDeviceUseCase(sl()));
 
   sl.registerLazySingleton(() => GetChatMessagesUseCase(sl()));
+
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
 
   // ----------------Repository---------------
   sl.registerLazySingleton<DeviceRepository>(

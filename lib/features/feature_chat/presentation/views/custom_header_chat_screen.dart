@@ -25,9 +25,16 @@ class CustomHeaderChatScreen extends StatelessWidget {
       },
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 18,
-            backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+            backgroundColor: Colors.grey[300],
+            child: ClipOval(
+              child: Image.network(
+                'https://i.pravatar.cc/150?u=${widget.userName}',
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: Colors.white),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           const SizedBox(width: 10),
           Text(widget.userName, style: const TextStyle(fontSize: 18)),

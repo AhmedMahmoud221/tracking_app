@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_state.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
+import 'package:live_tracking/main.dart';
 
 class CustomUsersListView extends StatelessWidget {
   const CustomUsersListView({super.key});
@@ -94,11 +96,17 @@ class CustomUsersListView extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatMessagesScreen(userName: chat.otherUserName),
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) => sl<ChatMessagesCubit>(),
+                      child: ChatMessagesScreen(
+                        userName: chat.otherUserName, // مرر الاسم هنا
+                        chatId: chat.chatId, // مرر الـ ID هنا
+                      ),
                     ),
-                  );
+                  ),
+                );
                 },
               );
             },

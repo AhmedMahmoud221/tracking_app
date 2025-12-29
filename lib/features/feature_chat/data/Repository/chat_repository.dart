@@ -6,4 +6,8 @@ abstract class ChatRepository {
   Future<Either<String, List<ChatEntity>>> getMyChats();
   
   Future<Either<String, List<MessageEntity>>> getChatMessages(String chatId);
+
+  Future<Either<String, MessageEntity>> sendMessage(String chatId, String text);
+  
+  Future<Either<String, MessageEntity>> sendVoiceMessage(String chatId, String filePath);
 }
