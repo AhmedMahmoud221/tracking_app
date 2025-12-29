@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:live_tracking/core/utils/storage_helper.dart';
+import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'theme_state.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {

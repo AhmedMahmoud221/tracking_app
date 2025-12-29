@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:live_tracking/core/utils/storage_helper.dart';
+import 'package:live_tracking/core/utils/secure_storage.dart';
 
 class LanguageCubit extends Cubit<Locale> {
   LanguageCubit(super.initialLocale);

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_cubit.dart';
 
 class CustomSearchbarUsersList extends StatelessWidget {
   const CustomSearchbarUsersList({
@@ -11,9 +13,12 @@ class CustomSearchbarUsersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      onChanged: (value) {
+        context.read<ChatListCubit>().searchChats(value);
+      },
       decoration: InputDecoration(
         hintText: "Search...",
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: const TextStyle(color: Colors.grey),
         prefixIcon: const Icon(Icons.search, color: Colors.blue),
         filled: true,
         fillColor: isDark ? Colors.grey[900] : Colors.grey[200],

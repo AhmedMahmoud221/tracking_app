@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
-import 'package:live_tracking/core/utils/storage_helper.dart';
+import 'package:live_tracking/core/utils/secure_storage.dart';
 
 class SplashViewBody extends StatefulWidget {
   final String nextRoute;

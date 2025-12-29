@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:live_tracking/core/utils/storage_helper.dart';
+import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
 
 part 'logout_state.dart';
@@ -16,6 +16,8 @@ class LogOutCubit extends Cubit<LogOutState> {
     try {
       final token = await SecureStorage.readToken();
       await logoutUseCase(token);
+
+      await SecureStorage.deleteToken(); // Clear all stored data on logout
 
       emit(LogoutSuccessState());
     } catch (e) {

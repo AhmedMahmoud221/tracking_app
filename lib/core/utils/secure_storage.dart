@@ -27,6 +27,7 @@ class SecureStorage {
     await _storage.write(key: _themeKey, value: isDark ? 'dark' : 'light');
   }
 
+  // Read theme
   static Future<bool> readTheme() async {
     final value = await _storage.read(key: _themeKey);
     return value == 'dark';
@@ -39,7 +40,24 @@ class SecureStorage {
     await _storage.write(key: _langKey, value: lang);
   }
 
+  // read language
   static Future<String?> readLanguage() async {
     return await _storage.read(key: _langKey);
+  }
+
+  // save user data
+  static Future<void> saveUserData({required String token, required String userId}) async {
+    await _storage.write(key: 'token', value: token);
+    await _storage.write(key: 'userId', value: userId);
+  }
+
+  // save user id
+  static Future<void> saveUserId(String userId) async {
+    await _storage.write(key: 'userId', value: userId);
+  }
+
+  // read user id
+  static Future<String?> readUserId() async {
+    return await _storage.read(key: 'userId');
   }
 }

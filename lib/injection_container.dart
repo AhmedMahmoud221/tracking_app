@@ -5,8 +5,9 @@ import 'package:get_it/get_it.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/features/feature_chat/data/Repository/chat_repository.dart';
 import 'package:live_tracking/features/feature_chat/data/datasource/chat_remote_data_source.dart';
+import 'package:live_tracking/features/feature_chat/data/datasource/get_chat_messages_use_case.dart';
 import 'package:live_tracking/features/feature_chat/domain/repo/chat_repository_impl.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_cubit.dart';
 import 'package:live_tracking/features/feature_devices/data/Repository/device_repo_impl.dart';
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
@@ -76,6 +77,8 @@ Future<void> init({String savedLang = 'ar'}) async {
   sl.registerLazySingleton(() => DeleteDeviceUseCase(sl()));
 
   sl.registerLazySingleton(() => UpdateDeviceUseCase(sl()));
+
+  sl.registerLazySingleton(() => GetChatMessagesUseCase(sl()));
 
   // ----------------Repository---------------
   sl.registerLazySingleton<DeviceRepository>(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_cubit_cubit.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_cubit_state.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
 
 class CustomUsersListView extends StatelessWidget {
