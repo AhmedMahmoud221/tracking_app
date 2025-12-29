@@ -544,6 +544,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email is required'**
   String get emailrequired;
+
+  /// No description provided for @chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

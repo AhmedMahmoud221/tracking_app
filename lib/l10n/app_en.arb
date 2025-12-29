@@ -74,5 +74,6 @@
   "alreadyhaveanaccount": "Already have an account?",
   "resetyourpassword": "Reset your password",
   "pleasefillallfields": "Please fill all fields",
-  "emailrequired": "Email is required"
+  "emailrequired": "Email is required",
+  "chat": "Chat"
 }

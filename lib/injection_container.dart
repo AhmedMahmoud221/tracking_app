@@ -3,6 +3,10 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
+import 'package:live_tracking/features/feature_chat/data/Repository/chat_repository.dart';
+import 'package:live_tracking/features/feature_chat/data/datasource/chat_remote_data_source.dart';
+import 'package:live_tracking/features/feature_chat/domain/repo/chat_repository_impl.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_devices/data/Repository/device_repo_impl.dart';
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
@@ -54,6 +58,8 @@ Future<void> init({String savedLang = 'ar'}) async {
 
   sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
 
+  sl.registerFactory(() => ChatListCubit(sl()));
+
   // ------------------Use Case---------------
   sl.registerLazySingleton<AuthService>(() => AuthService());
 
@@ -76,6 +82,10 @@ Future<void> init({String savedLang = 'ar'}) async {
     () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>(), dio: sl<Dio>()),
   );
 
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(sl()),
+  );
+
   sl.registerLazySingleton<UserProfileRepository>(
     () => UserProfileRepositoryImpl(sl()),
   );
@@ -83,5 +93,9 @@ Future<void> init({String savedLang = 'ar'}) async {
   // -----------------Data source---------------
   sl.registerLazySingleton<DeviceRemoteDataSource>(
     () => DeviceRemoteDataSourceImpl(sl<Dio>()),
+  );
+
+  sl.registerLazySingleton<ChatRemoteDataSource>(
+    () => ChatRemoteDataSource(sl()), // تأكد إن الـ dio متسجل برضه
   );
 }

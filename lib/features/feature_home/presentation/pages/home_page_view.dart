@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/features/feature_chat/presentation/views/chat_page_body.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/devices_page.dart';
@@ -35,13 +36,14 @@ class _HomePageViewState extends State<HomePageView> {
             HomePageBody(
               onTrackLastDevice: (device) {
                 setState(() {
-                  selectedDevice = device; // الجهاز المختار
-                  selectedIndex = 2;       // Tab الماب
+                  selectedDevice = device; 
+                  selectedIndex = 2;
                 });
               },
             ),
             DevicesPage(isActive: selectedIndex == 1),
             GoogleMapPage(),
+            ChatPageBody(),
             Profile(),
           ],
         ),

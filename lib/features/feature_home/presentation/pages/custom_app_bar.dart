@@ -7,6 +7,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppBar(
+      leading: const SizedBox(width: 48),
       title: Center(
         child: RichText(
           text: TextSpan(
@@ -34,6 +35,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.notifications_active,
+            color: isDark ? Colors.white : Colors.black,
+          ),
+          onPressed: () {
+            // Handle notification icon press
+          },
+        ),
+      ],
     );
   }
   @override

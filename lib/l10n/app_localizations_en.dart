@@ -232,4 +232,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emailrequired => 'Email is required';
+
+  @override
+  String get chat => 'Chat';
 }

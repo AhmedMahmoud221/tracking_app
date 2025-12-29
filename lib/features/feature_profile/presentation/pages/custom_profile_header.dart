@@ -40,10 +40,9 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
     });
   }
 
-  // دالة تعديل الاسم مع الـ Validation
   Future<void> _editUserName() async {
     final TextEditingController controller = TextEditingController(text: _currentUserName);
-    final GlobalKey<FormState> _dialogFormKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> dialogFormKey = GlobalKey<FormState>();
     final locale = AppLocalizations.of(context)!;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -58,11 +57,11 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
           ),
 
         content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8, // هياخد 80% من عرض الشاشة
+          width: MediaQuery.of(context).size.width * 0.8,
           child: Form(
-            key: _dialogFormKey,
+            key: dialogFormKey,
             child: Column(
-              mainAxisSize: MainAxisSize.min, // عشان مياخدش طول الشاشة كلها
+              mainAxisSize: MainAxisSize.min, // height as needed
               children: [
                 TextFormField(
                   controller: controller,
@@ -77,13 +76,13 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
                       borderSide: BorderSide.none,
                       ),
                   ),
-                  // --- الـ Validation هنا ---
+                  // Validation for the username
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return locale.required; // لو الاسم فاضي
+                      return locale.required; //fill this field
                     }
                     if (value.trim().length < 3) {
-                      return "Min 3 characters"; // لو أقل من 3 حروف
+                      return "Min 3 characters"; // if on 3 characters
                     }
                     return null;
                   },
@@ -102,13 +101,12 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              // خلفية زرقاء للبوتون في اللايت مود
               backgroundColor: Colors.blue,
-              foregroundColor: Colors.white, // لون نص البوتون
+              foregroundColor: Colors.white, 
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () async {
-              if (_dialogFormKey.currentState!.validate()) {
+              if (dialogFormKey.currentState!.validate()) {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setString(_nameKey, controller.text.trim());
                 
@@ -246,7 +244,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
           ),
           const SizedBox(height: 15),
           GestureDetector(
-            onTap: _editUserName, // تشغيل التعديل
+            onTap: _editUserName, // Edit profile button tap
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(

@@ -29,26 +29,12 @@ class CustomBottomBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           buildItem(context, Icons.home, AppLocalizations.of(context)!.home, 0),
-          buildItem(
-            context,
-            Icons.directions_car,
-            AppLocalizations.of(context)!.devices,
-            1,
-          ),
-          buildItem(
-            context,
-            Icons.gps_fixed,
-            AppLocalizations.of(context)!.live,
-            2,
-          ),
-          buildItem(
-            context,
-            Icons.person,
-            AppLocalizations.of(context)!.profile,
-            3,
-          ),
+          buildItem(context, Icons.directions_car, AppLocalizations.of(context)!.devices, 1),
+          buildItem(context, Icons.gps_fixed, AppLocalizations.of(context)!.live, 2),
+          buildItem(context, Icons.message, AppLocalizations.of(context)!.chat, 3),
+          buildItem(context, Icons.person, AppLocalizations.of(context)!.profile, 4),
         ],
-      ),
+      ), 
     );
   }
 

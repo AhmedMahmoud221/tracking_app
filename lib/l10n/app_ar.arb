@@ -74,5 +74,6 @@
   "alreadyhaveanaccount": "لديك حساب بالفعل؟",
   "resetyourpassword": "إعادة تعيين كلمة المرور",
   "pleasefillallfields": "يرجى ملء جميع الحقول",
-  "emailrequired": "البريد الإلكتروني مطلوب"
+  "emailrequired": "البريد الإلكتروني مطلوب",
+  "chat": "الدردشة"
 }
