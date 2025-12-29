@@ -8,30 +8,25 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this.authService) : super(AuthInitial());
 
-  // Login method
+  // 1. Login Method
   Future<void> login({required String email, required String password}) async {
     emit(AuthLoading());
     try {
-      // 1. استدعاء الدالة وتخزين النتيجة في authData
-      final Map<String, dynamic> authData = await authService.login(email: email, password: password);
+      final authData = await authService.login(email: email, password: password);
       
-      // 2. استخراج البيانات من authData (مش من authService)
       final String token = authData['token'];
-      final String userId = authData['userId']; // شلنا await وشلنا authService
+      final String userId = authData['userId'];
 
-      // 3. حفظ البيانات
       await SecureStorage.saveUserData(token: token, userId: userId);
       
-      print("Token: $token");
-      print("User ID: $userId");
-
+      print("Login Success - User ID: $userId");
       emit(AuthSuccess(token: token));
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
   }
 
-  // Signup method
+  // 2. Signup Method 
   Future<void> signup({
     required String name,
     required String email,
@@ -40,20 +35,26 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(AuthLoading());
     try {
-      final token = await authService.signup(
+      final authData = await authService.signup(
         name: name,
         email: email,
         password: password,
         passwordConfirm: passwordConfirm,
       );
-      await SecureStorage.saveToken(token); // for save token to secure storage
+
+      final String token = authData['token'];
+      final String userId = authData['userId'];
+
+      await SecureStorage.saveUserData(token: token, userId: userId);
+
+      print("Signup Success - User ID: $userId");
       emit(AuthSuccess(token: token));
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
   }
 
-  // Forget Password method
+  // 3. Forget Password Method
   Future<void> forgetPassword({required String email}) async {
     emit(AuthLoading());
     try {
