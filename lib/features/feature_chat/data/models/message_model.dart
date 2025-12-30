@@ -14,21 +14,16 @@ class MessageModel extends MessageEntity {
     required super.isMe,
   });
 
-  factory MessageModel.fromJson(Map<String, dynamic> json, String currentUserId) {
-    final sender = json['senderId'];
-    final sId = sender is Map ? sender['_id'] : sender;
-
+  factory MessageModel.fromJson(Map<String, dynamic> json, String myId) {
     return MessageModel(
-      id: json['_id'],
-      senderId: sId,
-      senderName: sender is Map ? sender['name'] : '',
-      senderImage: sender is Map ? sender['profilePicture'] : null,
-      text: json['text'] ?? '',
+      id: json['_id'] ?? '',
+      senderId: json['senderId']?['_id'] ?? '',
+      senderName: json['senderId']?['name'] ?? 'Unknown',
+      text: json['text'] ?? '', // التعامل مع الـ null
       messageType: json['messageType'] ?? 'text',
-      mediaUrl: json['mediaUrl'],
-      fileName: json['fileName'],
+      mediaUrl: json['mediaUrl'], // السيرفر هيبعته لو ميديا
       createdAt: DateTime.parse(json['createdAt']),
-      isMe: sId == currentUserId, 
+      isMe: (json['senderId']?['_id'] ?? '') == myId,
     );
   }
 }

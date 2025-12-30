@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_cubit.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_state.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_bubble.dart';
 
 class ChatDetailsScreen extends StatefulWidget {

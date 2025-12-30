@@ -7,24 +7,23 @@ class SendMessageUseCase {
 
   SendMessageUseCase(this.repository);
 
-  // Existing method for sending text messages
-  Future<Either<String, MessageEntity>> call(String chatId, String text) {
-    return repository.sendMessage(chatId, text);
+  // ميثود واحدة تحكمهم جميعاً
+  Future<Either<String, MessageEntity>> call(SendMessageParams params) {
+    return repository.sendMessage(params);
+    // ملاحظة: لازم تعدل الـ Repository عشان يستقبل params بدل String chatId
   }
+}
 
-  // New method for sending voice messages
-  Future<Either<String, MessageEntity>> sendVoice(
-    String chatId,
-    String filePath,
-  ) {
-    return repository.sendVoiceMessage(chatId, filePath);
-  }
+class SendMessageParams {
+  final String chatId;
+  final String messageType; // 'text', 'image', 'voice', 'video', 'file'
+  final String? text;
+  final String? mediaPath;
 
-  //  New method for SendMessageImageUseCase
-  Future<Either<String, MessageEntity>> sendImage(
-    String chatId,
-    String imagePath,
-  ) async {
-    return await repository.sendImage(chatId, imagePath);
-  }
+  SendMessageParams({
+    required this.chatId,
+    required this.messageType,
+    this.text,
+    this.mediaPath,
+  });
 }

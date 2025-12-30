@@ -1,15 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
+import 'package:live_tracking/core/utils/secure_storage.dart';
+import 'package:live_tracking/features/feature_chat/data/models/message_model.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_cubit.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_state.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_state.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/audio_bubble.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_header_chat_screen.dart';
+import 'package:live_tracking/features/feature_chat/presentation/views/video_player_screen.dart';
 import 'package:record/record.dart';
 
 class ChatMessagesScreen extends StatefulWidget {
@@ -34,17 +40,28 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   double _swipePosition = 0.0;
   int _recordDuration = 0;
   Timer? _timer;
+  String? myId;
 
   @override
   void initState() {
     super.initState();
     audioRecorder = AudioRecorder();
     _messageController = context.read<ChatMessagesCubit>().messageController;
+
+    _loadUserId();
+
     context.read<ChatMessagesCubit>().fetchMessages(widget.chatId);
+    context.read<ChatSocketCubit>().connectToChat(widget.chatId);
+  }
+
+  Future<void> _loadUserId() async {
+    myId = await SecureStorage.readUserId();
   }
 
   @override
   void dispose() {
+    // 3. الخروج من غرفة السوكيت عند مغادرة الشاشة
+    context.read<ChatSocketCubit>().disconnectFromChat(widget.chatId);
     audioRecorder.dispose();
     _timer?.cancel();
     super.dispose();
@@ -70,7 +87,36 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     }
   }
 
-  // show image method
+  // 1. ميثود الصور (نفسها بس اتأكد إنها بتنادي الكيوبت)
+  Future<void> _pickImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+    if (image != null) {
+      context.read<ChatMessagesCubit>().sendImage(widget.chatId, image.path);
+    }
+  }
+
+  // 2. ميثود الفيديو (دلوقتي تقدر تشغلها لأن الكيوبت جاهز)
+  Future<void> _pickVideo() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      context.read<ChatMessagesCubit>().sendVideo(widget.chatId, video.path);
+    }
+  }
+
+  // 3. ميثود الملفات (بافتراض إنك ضفت مكتبة file_picker)
+  Future<void> _pickDocument() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.single.path != null) {
+      context.read<ChatMessagesCubit>().sendFile(
+        widget.chatId,
+        result.files.single.path!,
+      );
+    }
+  }
+
+  // show message images
   Widget _buildImageBubble(MessageEntity msg, bool isDark) {
     final String path = msg.mediaUrl ?? "";
 
@@ -140,90 +186,211 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     );
   }
 
+  // show message files
+  Widget _buildFileBubble(MessageEntity msg, bool isDark) {
+    return Align(
+      alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: () {
+          // هنا ممكن تستخدم url_launcher عشان تفتح رابط الملف في المتصفح
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: msg.isMe
+                ? Colors.blueGrey
+                : (isDark ? Colors.grey[800] : Colors.white),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.insert_drive_file, color: Colors.white),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  msg.mediaUrl?.split('/').last ?? "Document",
+                  style: const TextStyle(color: Colors.white),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // show message videos
+  Widget _buildVideoBubble(MessageEntity msg, bool isDark) {
+    return Align(
+      alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Column(
+        crossAxisAlignment: msg.isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              String finalUrl = msg.mediaUrl ?? "";
+              // لو الرابط مش كامل (جاي من السيرفر كمسار فقط) كمله بالـ BaseUrl
+              if (!finalUrl.startsWith('http') && !finalUrl.startsWith('/')) {
+                finalUrl = "${ApiConstants.baseUrl}$finalUrl";
+              }
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => VideoPlayerScreen(url: finalUrl),
+                ),
+              );
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              width: 200,
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Icon(
+                    Icons.play_circle_fill,
+                    color: Colors.white,
+                    size: 50,
+                  ),
+                  if (msg.mediaUrl != null && msg.mediaUrl!.startsWith('/'))
+                    const Positioned(
+                      bottom: 5,
+                      right: 5,
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 16,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Text(
+            "${msg.createdAt.hour}:${msg.createdAt.minute}",
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: isDark ? Colors.black : const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: CustomHeaderChatScreen(widget: widget),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: BlocBuilder<ChatMessagesCubit, ChatMessagesState>(
-              builder: (context, state) {
-                if (state is ChatMessagesLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is ChatMessagesSuccess) {
-                  final messages = state.messages;
+    return BlocListener<ChatSocketCubit, ChatSocketState>(
+      listener: (context, state) {
+        if (state is ChatSocketMessageReceived) {
+          final newMessage = MessageModel.fromJson(state.data, myId ?? "");
+          context.read<ChatMessagesCubit>().addIncomingMessage(newMessage);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: isDark ? Colors.black : const Color(0xFFF5F5F5),
+        appBar: AppBar(
+          titleSpacing: 0,
+          title: CustomHeaderChatScreen(widget: widget),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: BlocBuilder<ChatMessagesCubit, ChatMessagesState>(
+                builder: (context, state) {
+                  if (state is ChatMessagesLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is ChatMessagesSuccess) {
+                    final messages = state.messages;
 
-                  if (messages.isEmpty) {
-                    return const Center(child: Text("Say Hello! 👋"));
-                  }
+                    if (messages.isEmpty) {
+                      return const Center(child: Text("Say Hello! 👋"));
+                    }
 
-                  return ListView.builder(
-                    reverse: true,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = messages[index];
-                      final time =
-                          "${msg.createdAt.hour}:${msg.createdAt.minute}";
+                    return ListView.builder(
+                      reverse: true,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final msg = messages[index];
+                        final time =
+                            "${msg.createdAt.hour.toString().padLeft(2, '0')}:${msg.createdAt.minute.toString().padLeft(2, '0')}";
 
-                      final String msgType = msg.messageType
-                          .toString()
-                          .toLowerCase();
+                        final String msgType = msg.messageType
+                            .toString()
+                            .toLowerCase();
 
-                      String audioPath = msg.mediaUrl ?? "";
-                      if (audioPath.isNotEmpty) {
-                        if (!audioPath.startsWith('http') &&
-                            !audioPath.startsWith('/')) {
-                          audioPath = "${ApiConstants.baseUrl}$audioPath";
+                        // تجهيز مسار الميديا (لو موجود)
+                        String mediaPath = msg.mediaUrl ?? "";
+                        if (mediaPath.isNotEmpty &&
+                            !mediaPath.startsWith('http') &&
+                            !mediaPath.startsWith('/')) {
+                          mediaPath = "${ApiConstants.baseUrl}$mediaPath";
                         }
-                      }
 
-                      if (msgType == 'voice' || msgType == 'audio') {
-                        return AudioBubble(
-                          isMe: msg.isMe,
-                          time: time,
-                          audioUrl: audioPath,
-                        );
-                      } else if (msgType == 'image') {
-                        return _buildImageBubble(msg, isDark);
-                      } else if (msgType == 'text' || msg.text.isNotEmpty) {
-                        return _buildChatBubble(
-                          msg.text,
-                          msg.isMe,
-                          time,
-                          isDark,
-                        );
-                      } else {
-                        return _buildChatBubble(
-                          "نوع غير مدعوم: [$msgType]",
-                          msg.isMe,
-                          time,
-                          isDark,
-                        );
-                      }
-                    },
-                  );
-                } else if (state is ChatMessagesError) {
-                  return Center(
-                    child: Text(
-                      state.message,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  );
-                }
-                return const Center(child: Text("ابدأ المحادثة الآن"));
-              },
+                        // 1. حالة الصوت
+                        if (msgType == 'voice' || msgType == 'audio') {
+                          return AudioBubble(
+                            isMe: msg.isMe,
+                            time: time,
+                            audioUrl: mediaPath,
+                          );
+                        }
+                        // 2. حالة الصورة
+                        else if (msgType == 'image') {
+                          return _buildImageBubble(msg, isDark);
+                        }
+                        // 3. حالة الفيديو (جديد)
+                        else if (msgType == 'video') {
+                          return _buildVideoBubble(
+                            msg,
+                            isDark,
+                          ); // هنحتاج نكتب الميثود دي تحت
+                        }
+                        // 4. حالة الملفات/المستندات (جديد)
+                        else if (msgType == 'file' || msgType == 'document') {
+                          return _buildFileBubble(
+                            msg,
+                            isDark,
+                          ); // هنحتاج نكتب الميثود دي تحت
+                        }
+                        // 5. الحالة الافتراضية (نص)
+                        else {
+                          return _buildChatBubble(
+                            msg.text.isEmpty && msgType != 'text'
+                                ? "وصلك ملف [$msgType] لا يمكن عرضه حالياً"
+                                : msg.text,
+                            msg.isMe,
+                            time,
+                            isDark,
+                          );
+                        }
+                      },
+                    );
+                  } else if (state is ChatMessagesError) {
+                    return Center(
+                      child: Text(
+                        state.message,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+                  return const Center(child: Text("ابدأ المحادثة الآن"));
+                },
+              ),
             ),
-          ),
-          _buildMessageInput(isDark),
-        ],
+            _buildMessageInput(isDark),
+          ],
+        ),
       ),
     );
   }
@@ -285,25 +452,72 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
           if (!_isRecording)
             IconButton(
               icon: const Icon(Icons.add, color: Colors.blue),
-              onPressed: () async {
-                // 1. إنشاء نسخة من الـ Picker
-                final ImagePicker picker = ImagePicker();
-
-                // 2. اختيار الصورة من المعرض (Gallery)
-                final XFile? image = await picker.pickImage(
-                  source: ImageSource.gallery,
-                );
-
-                // 3. لو المستخدم اختار صورة فعلاً (مش عمل Cancel)
-                if (image != null) {
-                  if (context.mounted) {
-                    // 4. نبعت المسار للـ Cubit
-                    context.read<ChatMessagesCubit>().sendImage(
-                      widget.chatId,
-                      image.path,
+              onPressed: () {
+                // إظهار قائمة خيارات
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  builder: (context) {
+                    return SafeArea(
+                      child: Wrap(
+                        children: [
+                          ListTile(
+                            leading: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.blue,
+                            ),
+                            title: const Text('Camera'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _pickImage(
+                                ImageSource.camera,
+                              ); // نختار من الكاميرا
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.photo_library,
+                              color: Colors.purple,
+                            ),
+                            title: const Text('Gallery'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _pickImage(
+                                ImageSource.gallery,
+                              ); // نختار من المعرض
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.videocam,
+                              color: Colors.red,
+                            ),
+                            title: const Text('Video'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _pickVideo(); // ميثود اختيار الفيديو
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(
+                              Icons.insert_drive_file,
+                              color: Colors.orange,
+                            ),
+                            title: const Text('Document'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _pickDocument(); // ميثود اختيار الملفات
+                            },
+                          ),
+                        ],
+                      ),
                     );
-                  }
-                }
+                  },
+                );
               },
             ),
           Expanded(

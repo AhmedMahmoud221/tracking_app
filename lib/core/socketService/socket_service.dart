@@ -5,8 +5,9 @@ class SocketService {
   IO.Socket? _socket;
 
   IO.Socket get socket {
-    if (_socket == null)
+    if (_socket == null) {
       throw Exception("Socket not initialized. Call init() first.");
+    }
     return _socket!;
   }
 

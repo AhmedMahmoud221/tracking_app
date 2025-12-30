@@ -10,7 +10,7 @@ import 'package:live_tracking/features/feature_chat/data/datasource/get_chat_mes
 import 'package:live_tracking/features/feature_chat/domain/repo/chat_repository_impl.dart';
 import 'package:live_tracking/features/feature_chat/domain/usecase/send_message_use_case.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
 import 'package:live_tracking/features/feature_devices/data/Repository/device_repo_impl.dart';
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';

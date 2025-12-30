@@ -33,7 +33,8 @@ class ChatRemoteDataSource {
     return MessageResponseModel.fromJson(response.data, myId ?? '');
   }
 
-  // Send Message Method
+  //============================================================================
+  // 1. إرسال النصوص (تظل كما هي أو نحدثها بسيطاً)
   Future<MessageModel> sendMessage({
     required String chatId,
     required String text,
@@ -44,9 +45,8 @@ class ChatRemoteDataSource {
     final response = await _dio.post(
       '${ApiConstants.baseUrl}/api/chat/message',
       data: {
-        'chatId': chatId, // الـ ID بتاع الروم
-        'receiverId':
-            chatId, // جرب تضيف السطر ده (لأن في بعض الـ APIs الـ chatId هو نفسه الـ receiverId)
+        'chatId': chatId,
+        'receiverId': chatId,
         'text': text,
         'messageType': 'text',
       },
@@ -56,22 +56,23 @@ class ChatRemoteDataSource {
     return MessageModel.fromJson(response.data['data']['message'], myId ?? '');
   }
 
-  // Send Voice Message Method
-  Future<MessageModel> sendVoiceMessage({
+  // 2. ميثود الميديا الموحدة (للصور، الفويس، الفيديو، والملفات)
+  Future<MessageModel> sendMediaMessage({
     required String chatId,
-    required String filePath, // مسار الملف المسجل في الموبايل
+    required String filePath,
+    required String messageType, // 'image', 'voice', 'video', 'file'
   }) async {
     final token = await SecureStorage.readToken();
     final myId = await SecureStorage.readUserId();
 
+    // استخراج اسم الملف من المسار
+    String fileName = filePath.split('/').last;
+
     FormData formData = FormData.fromMap({
       'chatId': chatId,
       'receiverId': chatId,
-      'messageType': 'voice',
-      'file': await MultipartFile.fromFile(
-        filePath,
-        filename: 'voice_note.aac',
-      ),
+      'messageType': messageType,
+      'file': await MultipartFile.fromFile(filePath, filename: fileName),
     });
 
     final response = await _dio.post(
@@ -80,42 +81,13 @@ class ChatRemoteDataSource {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    return MessageModel.fromJson(response.data['data']['message'], myId ?? '');
-  }
-
-  // Send Image message method
-  Future<MessageModel> sendImageMessage({
-    required String chatId,
-    required String imagePath,
-  }) async {
-    try {
-      final token = await SecureStorage.readToken();
-      final myId = await SecureStorage.readUserId();
-
-      String fileName = imagePath.split('/').last;
-      FormData formData = FormData.fromMap({
-        "chatId": chatId,
-        "receiverId": chatId,
-        "messageType": "image",
-        "file": await MultipartFile.fromFile(imagePath, filename: fileName),
-      });
-
-      final response = await _dio.post(
-        '${ApiConstants.baseUrl}/api/chat/message/media',
-        data: formData,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return MessageModel.fromJson(
+        response.data['data']['message'],
+        myId ?? '',
       );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return MessageModel.fromJson(
-          response.data['data']['message'],
-          myId ?? '',
-        );
-      } else {
-        throw Exception("فشل رفع الصورة");
-      }
-    } catch (e) {
-      rethrow;
+    } else {
+      throw Exception("فشل رفع الملف من نوع $messageType");
     }
   }
 }

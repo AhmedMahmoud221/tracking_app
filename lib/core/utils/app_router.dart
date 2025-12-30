@@ -38,8 +38,9 @@ class AppRouter {
       // لو إحنا في صفحة الـ Splash وبنشوف هنروح فين
       if (state.fullPath == '/') {
         if (authState is AuthSuccess) return kHomePage;
-        if (authState is AuthInitial || authState is AuthFailure)
+        if (authState is AuthInitial || authState is AuthFailure) {
           return kLoginPageView;
+        }
       }
 
       return null; // كمل في طريقك عادي لو مفيش شرط تحقق

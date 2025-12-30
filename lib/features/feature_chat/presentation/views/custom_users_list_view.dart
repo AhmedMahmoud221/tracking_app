@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_state.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
 import 'package:live_tracking/main.dart';
 
