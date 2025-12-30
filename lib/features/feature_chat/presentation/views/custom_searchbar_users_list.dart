@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
 
 class CustomSearchbarUsersList extends StatelessWidget {
-  const CustomSearchbarUsersList({
-    super.key,
-    required this.isDark,
-  });
+  const CustomSearchbarUsersList({super.key, required this.isDark});
 
   final bool isDark;
 

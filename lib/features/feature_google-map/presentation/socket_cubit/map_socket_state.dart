@@ -1,25 +1,25 @@
-abstract class SocketState {}
+abstract class MapSocketState {}
 
 // 1. الحالة الابتدائية: قبل محاولة الاتصال
-class SocketInitial extends SocketState {}
+class MapSocketInitial extends MapSocketState {}
 
 // 2. حالة الاتصال الجاري: (اختياري، لكن يفضل إضافتها لتظهر Loading UI)
-class SocketConnecting extends SocketState {}
+class MapSocketConnecting extends MapSocketState {}
 
 // 3. حالة الاتصال الناجح: يتم إطلاقها بعد onConnect
-class SocketConnected extends SocketState {} 
+class MapSocketConnected extends MapSocketState {}
 
 // 4. حالة قطع الاتصال: يتم إطلاقها بعد onDisconnect
-class SocketDisconnected extends SocketState {}
+class MapSocketDisconnected extends MapSocketState {}
 
 // 5. حالة تحديث الموقع: تحمل بيانات الموقع الجديدة
-class SocketLocationUpdated extends SocketState {
+class MapSocketLocationUpdated extends MapSocketState {
   final dynamic data;
-  SocketLocationUpdated(this.data);
+  MapSocketLocationUpdated(this.data);
 }
 
 // 6. حالة الخطأ: للتعامل مع أي مشكلة في الاتصال
-class SocketError extends SocketState {
+class MapSocketError extends MapSocketState {
   final String message;
-  SocketError(this.message);
+  MapSocketError(this.message);
 }

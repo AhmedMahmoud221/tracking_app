@@ -3,18 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking/core/extensions/status_localization_extension.dart';
+import 'package:live_tracking/core/socketService/socket_service.dart';
 import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_state.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/map_socket_cubit.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/map_socket_state.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/widgets/custom_bottom_sheet.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/widgets/device_details_popup.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/device_details_page.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
+import 'package:live_tracking/main.dart';
 
 class GoogleMapPage extends StatefulWidget {
   final DeviceEntity? initialDevice;
@@ -98,19 +100,20 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
       if (token != null && token.isNotEmpty) {
         if (mounted) {
-          context.read<SocketCubit>().connect(token);
+          // 1. تشغيل المحرك الرئيسي (السوكيت الموحد)
+          sl<SocketService>().init(token);
+
+          // 2. تفعيل الاستماع في كيوبت الماب
+          context.read<MapSocketCubit>().listenToLocation();
+
           _socketConnected = true;
-          debugPrint(
-            '💡 Socket Connection Attempt: Started successfully with token.',
-          );
+          debugPrint('💡 Socket Connection: Initialized and Map is listening.');
         }
       } else {
-        debugPrint(
-          '❌ Socket Connection Attempt: Token not found in Secure Storage.',
-        );
+        debugPrint('❌ Socket Connection: Token not found.');
       }
     } catch (e) {
-      debugPrint('❌ Error reading token or connecting socket: $e');
+      debugPrint('❌ Error connecting socket: $e');
     }
   }
 
@@ -237,9 +240,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
     return MultiBlocListener(
       listeners: [
-        BlocListener<SocketCubit, SocketState>(
+        BlocListener<MapSocketCubit, MapSocketState>(
           listener: (context, state) {
-            if (state is SocketLocationUpdated) {
+            if (state is MapSocketLocationUpdated) {
               _updateDeviceLocation(state.data);
             }
           },

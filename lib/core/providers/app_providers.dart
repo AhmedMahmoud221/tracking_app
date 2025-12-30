@@ -1,8 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_cubit.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/map_socket_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubits/delete_device_cubit/delete_device_cubit.dart';
 import 'package:live_tracking/features/feature_home/presentation/cubits/update_device_cubit/update_device_cubit.dart';
@@ -28,6 +29,7 @@ class AppProviders {
     BlocProvider<CreateDeviceCubit>(create: (_) => sl<CreateDeviceCubit>()),
     BlocProvider<UpdateDeviceCubit>(create: (_) => sl<UpdateDeviceCubit>()),
     BlocProvider<DeleteDeviceCubit>(create: (_) => sl<DeleteDeviceCubit>()),
-    BlocProvider<SocketCubit>(create: (_) => sl<SocketCubit>()),
+    BlocProvider<MapSocketCubit>(create: (_) => sl<MapSocketCubit>()),
+    BlocProvider<ChatSocketCubit>(create: (context) => sl<ChatSocketCubit>()),
   ];
 }

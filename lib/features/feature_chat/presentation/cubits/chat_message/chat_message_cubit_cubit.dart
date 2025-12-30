@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_chat/data/datasource/get_chat_messages_use_case.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
 import 'package:live_tracking/features/feature_chat/domain/usecase/send_message_use_case.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_state.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_state.dart';
 
 class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   final GetChatMessagesUseCase getChatMessagesUseCase;

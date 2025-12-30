@@ -2,20 +2,22 @@ import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:live_tracking/core/socketService/socket_service.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/features/feature_chat/data/Repository/chat_repository.dart';
 import 'package:live_tracking/features/feature_chat/data/datasource/chat_remote_data_source.dart';
 import 'package:live_tracking/features/feature_chat/data/datasource/get_chat_messages_use_case.dart';
 import 'package:live_tracking/features/feature_chat/domain/repo/chat_repository_impl.dart';
 import 'package:live_tracking/features/feature_chat/domain/usecase/send_message_use_case.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/chat_list_cubit.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
 import 'package:live_tracking/features/feature_devices/data/Repository/device_repo_impl.dart';
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
 import 'package:live_tracking/features/feature_devices/domain/usecases/get_devices_list.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/socket_cubit.dart';
+import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/map_socket_cubit.dart';
 import 'package:live_tracking/features/feature_home/domain/create_device_use_case.dart';
 import 'package:live_tracking/features/feature_home/domain/delete_device_use_case.dart';
 import 'package:live_tracking/features/feature_home/domain/update_device_use_case.dart';
@@ -37,13 +39,14 @@ final sl = GetIt.instance;
 Future<void> init({String savedLang = 'ar'}) async {
   // -----------------------Dio---------------------------
   sl.registerLazySingleton<Dio>(() => Dio());
-
-  // -------------------------Cubit----------------------------
+  // ----------------------Socket-------------------------
+  sl.registerLazySingleton<SocketService>(() => SocketService());
+  // -------------------------Cubit-----------------------
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl<AuthService>()));
 
   sl.registerFactory(() => LanguageCubit(Locale(savedLang)));
 
-  sl.registerFactory(() => SocketCubit());
+  sl.registerFactory(() => MapSocketCubit(sl<SocketService>()));
 
   sl.registerFactory<ProfileDataCubit>(
     () => ProfileDataCubit(sl<GetUserProfileUseCase>()),
@@ -94,7 +97,8 @@ Future<void> init({String savedLang = 'ar'}) async {
     () => DeviceRemoteDataSourceImpl(sl<Dio>()),
   );
 
-  //-------------------------Chat------------------------------//
+  //=================Chat===================//
+
   // -----------------Data source---------------
   sl.registerLazySingleton<ChatRemoteDataSource>(
     () => ChatRemoteDataSource(sl<Dio>()), // تأكد إنه بياخد الـ Dio
@@ -118,4 +122,5 @@ Future<void> init({String savedLang = 'ar'}) async {
       sl<SendMessageUseCase>(),
     ),
   );
+  sl.registerFactory(() => ChatSocketCubit(sl<SocketService>()));
 }

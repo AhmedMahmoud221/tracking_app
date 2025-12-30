@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_state.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_bubble.dart';
 
 class ChatDetailsScreen extends StatefulWidget {
   final String chatId;
   final String userName;
 
-  const ChatDetailsScreen({super.key, required this.chatId, required this.userName});
+  const ChatDetailsScreen({
+    super.key,
+    required this.chatId,
+    required this.userName,
+  });
 
   @override
   State<ChatDetailsScreen> createState() => _ChatDetailsScreenState();
@@ -67,14 +71,18 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
               controller: cubit.messageController,
               decoration: InputDecoration(
                 hintText: "Type a message...",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(25)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
               ),
             ),
           ),
-          IconButton(icon: const Icon(Icons.send, color: Colors.blue), onPressed: () 
-          {
-            cubit.sendMessage(widget.chatId);
-          }),
+          IconButton(
+            icon: const Icon(Icons.send, color: Colors.blue),
+            onPressed: () {
+              cubit.sendMessage(widget.chatId);
+            },
+          ),
         ],
       ),
     );
