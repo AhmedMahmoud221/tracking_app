@@ -33,9 +33,9 @@ class ForgotPasswordScreen extends StatelessWidget {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return Scaffold(
           appBar: AppBar(
-            title: Text(AppLocalizations.of(context)!.forgetpassword),
-            backgroundColor: isDark ? Colors.grey[800] : Colors.blue,
-            ),
+            title: Text(AppLocalizations.of(context)!.forgetpasswordappbar),
+            backgroundColor: isDark ? Colors.grey[800] : Colors.white,
+          ),
           body: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -76,7 +76,11 @@ class ForgotPasswordScreen extends StatelessWidget {
                               if (email.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(AppLocalizations.of(context)!.emailrequired),
+                                    content: Text(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.emailrequired,
+                                    ),
                                   ),
                                 );
                                 return;

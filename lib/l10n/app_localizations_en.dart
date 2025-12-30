@@ -213,6 +213,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgetpassword => 'Forget Password?';
 
   @override
+  String get forgetpasswordappbar => 'Forget Password';
+
+  @override
   String get signin => 'Sign In';
 
   @override

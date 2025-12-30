@@ -6,6 +6,8 @@ import 'package:live_tracking/features/feature_devices/presentation/views/device
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
+import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
+import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_state.dart';
 import 'package:live_tracking/features/feature_login/presentation/pages/forget_password_screen.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/login_page_view.dart';
 import 'package:live_tracking/features/feature_login/presentation/widgets/signup_page_view.dart';
@@ -29,6 +31,20 @@ class AppRouter {
 
   static final router = GoRouter(
     initialLocation: '/', //splash first
+
+    redirect: (context, state) {
+      final authState = context.read<AuthCubit>().state;
+
+      // لو إحنا في صفحة الـ Splash وبنشوف هنروح فين
+      if (state.fullPath == '/') {
+        if (authState is AuthSuccess) return kHomePage;
+        if (authState is AuthInitial || authState is AuthFailure)
+          return kLoginPageView;
+      }
+
+      return null; // كمل في طريقك عادي لو مفيش شرط تحقق
+    },
+
     routes: [
       GoRoute(
         path: '/',

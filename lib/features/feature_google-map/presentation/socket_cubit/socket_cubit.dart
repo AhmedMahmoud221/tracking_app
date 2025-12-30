@@ -23,7 +23,7 @@ class SocketCubit extends Cubit<SocketState> {
 
     _socket.connect();
 
-    // 2. تسجيل المستمعين مباشرة على كائن _socket
+    // 2. الاستماع لأحداث الاتصال وفصل الاتصال
     _socket.onConnect((_) {
       // print('✅ Socket Connected');
       emit(SocketConnected());
@@ -38,16 +38,15 @@ class SocketCubit extends Cubit<SocketState> {
       // print('Joined device room $data');
     });
 
-    // 3. الاستماع لـ 'device:live' وتوجيه الحالة
+    // 3. الاستماع لأحداث الخطأ
     _socket.on('device:live', (data) {
-      // print('New location: $data');
       emit(SocketLocationUpdated(data));
     });
   }
 
   @override
   Future<void> close() {
-    // 5. التصرف في الـ Socket
+    // 5. فصل الاتصال وتنظيف الموارد
     _socket.disconnect();
     _socket.dispose();
     return super.close();

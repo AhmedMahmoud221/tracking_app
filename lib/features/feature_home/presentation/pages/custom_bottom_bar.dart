@@ -15,6 +15,7 @@ class CustomBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 90,
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
@@ -25,16 +26,46 @@ class CustomBottomBar extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          buildItem(context, Icons.home, AppLocalizations.of(context)!.home, 0),
-          buildItem(context, Icons.directions_car, AppLocalizations.of(context)!.devices, 1),
-          buildItem(context, Icons.gps_fixed, AppLocalizations.of(context)!.live, 2),
-          buildItem(context, Icons.message, AppLocalizations.of(context)!.chat, 3),
-          buildItem(context, Icons.person, AppLocalizations.of(context)!.profile, 4),
-        ],
-      ), 
+      child: Center(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              buildItem(
+                context,
+                Icons.home,
+                AppLocalizations.of(context)!.home,
+                0,
+              ),
+              buildItem(
+                context,
+                Icons.directions_car,
+                AppLocalizations.of(context)!.devices,
+                1,
+              ),
+              buildItem(
+                context,
+                Icons.gps_fixed,
+                AppLocalizations.of(context)!.live,
+                2,
+              ),
+              buildItem(
+                context,
+                Icons.message,
+                AppLocalizations.of(context)!.chat,
+                3,
+              ),
+              buildItem(
+                context,
+                Icons.person,
+                AppLocalizations.of(context)!.profile,
+                4,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -50,17 +81,19 @@ class CustomBottomBar extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 900),
-        curve: Curves.easeOutBack,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: EdgeInsets.symmetric(
-          horizontal: isActive ? 20 : 16,
-          vertical: isActive ? 10 : 8,
+          horizontal: isActive ? 16 : 12,
+          vertical: 10,
         ),
         decoration: BoxDecoration(
           color: isActive ? Colors.blue[400] : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             AnimatedScale(
               duration: const Duration(milliseconds: 250),
@@ -74,7 +107,7 @@ class CustomBottomBar extends StatelessWidget {
                 size: 26,
               ),
             ),
-            if (isActive) const SizedBox(width: 6),
+            if (isActive) const SizedBox(width: 8),
             if (isActive)
               AnimatedSlide(
                 duration: const Duration(milliseconds: 280),
@@ -89,7 +122,7 @@ class CustomBottomBar extends StatelessWidget {
                       label,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

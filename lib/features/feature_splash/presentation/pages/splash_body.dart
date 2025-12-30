@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/core/utils/secure_storage.dart';
+import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
 
 class SplashViewBody extends StatefulWidget {
   final String nextRoute;
@@ -56,7 +58,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -69,7 +71,12 @@ class _SplashViewBodyState extends State<SplashViewBody>
                     Colors.grey[900]!,
                   ]
                 : [
-                    const Color.fromARGB(255, 0, 92, 121), // الأزرق الأصلي للـ Light
+                    const Color.fromARGB(
+                      255,
+                      0,
+                      92,
+                      121,
+                    ), // الأزرق الأصلي للـ Light
                     const Color.fromARGB(255, 79, 229, 255),
                   ],
             begin: Alignment.topCenter,
@@ -92,7 +99,9 @@ class _SplashViewBodyState extends State<SplashViewBody>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: (isDark ? Colors.white24 : const Color(0xFF4FE5FF).withOpacity(0.6)),
+                            color: (isDark
+                                ? Colors.white24
+                                : const Color(0xFF4FE5FF).withOpacity(0.6)),
                             blurRadius: 30,
                             spreadRadius: 6,
                           ),
@@ -120,7 +129,9 @@ class _SplashViewBodyState extends State<SplashViewBody>
                   color: Colors.white54,
                   boxShadow: [
                     BoxShadow(
-                     color: (isDark ? Colors.white10 : const Color(0xFF4FE5FF).withOpacity(0.6)),
+                      color: (isDark
+                          ? Colors.white10
+                          : const Color(0xFF4FE5FF).withOpacity(0.6)),
                       blurRadius: 8,
                     ),
                   ],
@@ -167,17 +178,22 @@ class _SplashViewBodyState extends State<SplashViewBody>
   }
 
   void navigateToNextPage() async {
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 4));
 
     if (!mounted) return;
 
     final token = await SecureStorage.readToken();
 
     if (token != null) {
-      // ignore: use_build_context_synchronously
+      // 3. (خطوة احترافية) بلغ الـ Cubit إننا لقينا توكن عشان الحالة تتغير لـ Success
+      // ده بيخلي الـ HomePage تفتح وهي عارفة إن فيه توكن جاهز
+      context.read<AuthCubit>().checkAuthStatus();
+
+      if (!mounted) return;
       GoRouter.of(context).go(AppRouter.kHomePage);
     } else {
-      // ignore: use_build_context_synchronously
+      // 4. لو مفيش توكن وديه اللوجن
+      if (!mounted) return;
       GoRouter.of(context).go(AppRouter.kLoginPageView);
     }
   }

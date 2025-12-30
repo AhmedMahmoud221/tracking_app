@@ -14,13 +14,17 @@ import 'package:live_tracking/main.dart';
 
 class AppProviders {
   static List<BlocProvider> get providers => [
-    BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()),
+    BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()..checkAuthStatus()),
     BlocProvider(create: (context) => sl<ChatMessagesCubit>()),
     BlocProvider<ProfileDataCubit>(create: (_) => sl<ProfileDataCubit>()),
     BlocProvider<LogOutCubit>(create: (_) => sl<LogOutCubit>()),
     BlocProvider<ThemeCubit>(create: (_) => sl<ThemeCubit>()),
-    BlocProvider<LanguageCubit>(create: (_) => LanguageCubit(sl<LanguageCubit>().state),),
-    BlocProvider<DevicesCubit>(create: (_) => sl<DevicesCubit>()..fetchDevices(),),
+    BlocProvider<LanguageCubit>(
+      create: (_) => LanguageCubit(sl<LanguageCubit>().state),
+    ),
+    BlocProvider<DevicesCubit>(
+      create: (_) => sl<DevicesCubit>()..fetchDevices(),
+    ),
     BlocProvider<CreateDeviceCubit>(create: (_) => sl<CreateDeviceCubit>()),
     BlocProvider<UpdateDeviceCubit>(create: (_) => sl<UpdateDeviceCubit>()),
     BlocProvider<DeleteDeviceCubit>(create: (_) => sl<DeleteDeviceCubit>()),

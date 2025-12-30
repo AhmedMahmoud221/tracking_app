@@ -503,6 +503,12 @@ abstract class AppLocalizations {
   /// **'Forget Password?'**
   String get forgetpassword;
 
+  /// No description provided for @forgetpasswordappbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget Password'**
+  String get forgetpasswordappbar;
+
   /// No description provided for @signin.
   ///
   /// In en, this message translates to:

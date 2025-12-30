@@ -46,8 +46,11 @@ class SecureStorage {
   }
 
   // save user data
-  static Future<void> saveUserData({required String token, required String userId}) async {
-    await _storage.write(key: 'token', value: token);
+  static Future<void> saveUserData({
+    required String token,
+    required String userId,
+  }) async {
+    await _storage.write(key: _tokenKey, value: token);
     await _storage.write(key: 'userId', value: userId);
   }
 

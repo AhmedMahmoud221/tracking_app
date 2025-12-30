@@ -8,21 +8,22 @@ class AuthService {
   AuthService({Dio? dio}) : _dio = dio ?? Dio();
 
   // 1. Login Method
-  Future<Map<String, dynamic>> login({required String email, required String password}) async {
+  Future<Map<String, dynamic>> login({
+    required String email,
+    required String password,
+  }) async {
     final response = await _dio.post(
-      '${ApiConstants.baseUrl}/api/users/login',
-      data: {
-        'email': email,
-        'password': password,
-      },
+      '${ApiConstants.baseUrl}/api/user/login',
+      data: {'email': email, 'password': password},
     );
-    
+
     return {
       'token': response.data['token'],
       'userId': response.data['data']['user']['_id'],
     };
   }
 
+  //--------------------------------------------
   // 2. Signup Method
   Future<Map<String, dynamic>> signup({
     required String name,
@@ -39,23 +40,22 @@ class AuthService {
         'passwordConfirm': passwordConfirm,
       },
     );
-
     return {
       'token': response.data['token'],
       'userId': response.data['data']['user']['_id'],
     };
   }
 
+  //--------------------------------------------
   // 3. Logout Method
   Future<void> logoutbutton(String token) async {
     await _dio.get(
       '${ApiConstants.baseUrl}/api/user/logout',
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'},
-      ),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }
 
+  //--------------------------------------------
   // 4. Change Password
   Future<void> changePassword({
     required String currentPassword,
@@ -72,12 +72,11 @@ class AuthService {
         'newPassword': newPassword,
         'newPasswordConfirm': newPasswordConfirm,
       },
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'},
-      ),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }
 
+  //--------------------------------------------
   // 5. Forget Password
   Future<void> forgetPassword({required String email}) async {
     await _dio.post(
