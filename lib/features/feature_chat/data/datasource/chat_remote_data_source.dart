@@ -13,28 +13,21 @@ class ChatRemoteDataSource {
   Future<ChatResponseModel> getChats() async {
     final token = await SecureStorage.readToken();
 
-    final response = await _dio.get('${ApiConstants.baseUrl}/api/chat',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
-        ));  
+    final response = await _dio.get(
+      '${ApiConstants.baseUrl}/api/chat',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
     return ChatResponseModel.fromJson(response.data);
   }
 
   // Get Chat Messages Method
   Future<MessageResponseModel> getChatMessages({required String chatId}) async {
-
     final token = await SecureStorage.readToken();
-    final myId = await SecureStorage.readUserId(); 
+    final myId = await SecureStorage.readUserId();
 
     final response = await _dio.get(
       '${ApiConstants.baseUrl}/api/chat/message/$chatId',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      ),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
     return MessageResponseModel.fromJson(response.data, myId ?? '');
@@ -51,14 +44,13 @@ class ChatRemoteDataSource {
     final response = await _dio.post(
       '${ApiConstants.baseUrl}/api/chat/message',
       data: {
-        'chatId': chatId,      // الـ ID بتاع الروم
-        'receiverId': chatId,  // جرب تضيف السطر ده (لأن في بعض الـ APIs الـ chatId هو نفسه الـ receiverId)
+        'chatId': chatId, // الـ ID بتاع الروم
+        'receiverId':
+            chatId, // جرب تضيف السطر ده (لأن في بعض الـ APIs الـ chatId هو نفسه الـ receiverId)
         'text': text,
         'messageType': 'text',
       },
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'},
-      ),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
     return MessageModel.fromJson(response.data['data']['message'], myId ?? '');
@@ -76,7 +68,10 @@ class ChatRemoteDataSource {
       'chatId': chatId,
       'receiverId': chatId,
       'messageType': 'voice',
-      'file': await MultipartFile.fromFile(filePath, filename: 'voice_note.aac'),
+      'file': await MultipartFile.fromFile(
+        filePath,
+        filename: 'voice_note.aac',
+      ),
     });
 
     final response = await _dio.post(
@@ -86,5 +81,41 @@ class ChatRemoteDataSource {
     );
 
     return MessageModel.fromJson(response.data['data']['message'], myId ?? '');
+  }
+
+  // Send Image message method
+  Future<MessageModel> sendImageMessage({
+    required String chatId,
+    required String imagePath,
+  }) async {
+    try {
+      final token = await SecureStorage.readToken();
+      final myId = await SecureStorage.readUserId();
+
+      String fileName = imagePath.split('/').last;
+      FormData formData = FormData.fromMap({
+        "chatId": chatId,
+        "receiverId": chatId,
+        "messageType": "image",
+        "file": await MultipartFile.fromFile(imagePath, filename: fileName),
+      });
+
+      final response = await _dio.post(
+        '${ApiConstants.baseUrl}/api/chat/message/media',
+        data: formData,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return MessageModel.fromJson(
+          response.data['data']['message'],
+          myId ?? '',
+        );
+      } else {
+        throw Exception("فشل رفع الصورة");
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }

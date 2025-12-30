@@ -3,11 +3,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubit/cubit/chat_message_cubit_state.dart';
-import 'package:live_tracking/features/feature_chat/presentation/views/custom_audio_bubble.dart';
+import 'package:live_tracking/features/feature_chat/presentation/views/audio_bubble.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_header_chat_screen.dart';
 import 'package:record/record.dart';
 
@@ -28,10 +29,10 @@ class ChatMessagesScreen extends StatefulWidget {
 class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   late TextEditingController _messageController;
   late AudioRecorder audioRecorder;
-  
+
   bool _isRecording = false;
   double _swipePosition = 0.0;
-  int _recordDuration = 0; 
+  int _recordDuration = 0;
   Timer? _timer;
 
   @override
@@ -53,10 +54,11 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     try {
       if (await audioRecorder.hasPermission()) {
         final directory = Directory.systemTemp;
-        final path = '${directory.path}/record_${DateTime.now().millisecondsSinceEpoch}.m4a';
-        
+        final path =
+            '${directory.path}/record_${DateTime.now().millisecondsSinceEpoch}.m4a';
+
         await audioRecorder.start(const RecordConfig(), path: path);
-        
+
         setState(() {
           _isRecording = true;
           _recordDuration = 0;
@@ -68,44 +70,71 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     }
   }
 
-  // دالة بناء فقاعة الصورة المعدلة
+  // show image method
   Widget _buildImageBubble(MessageEntity msg, bool isDark) {
-    final url = msg.mediaUrl!.startsWith('http') 
-        ? msg.mediaUrl! 
-        : "${ApiConstants.baseUrl}${msg.mediaUrl}";
-        
+    final String path = msg.mediaUrl ?? "";
+
+    bool isLocal =
+        !path.startsWith('http') &&
+        (path.startsWith('/') || path.contains('com.example'));
+
+    String finalUrl = path;
+    if (!isLocal && path.isNotEmpty && !path.startsWith('http')) {
+      finalUrl = "${ApiConstants.baseUrl}$path";
+    }
+
     return Align(
       alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Column(
-        crossAxisAlignment: msg.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: msg.isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Container(
             margin: const EdgeInsets.symmetric(vertical: 5),
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: msg.isMe ? Colors.blue : (isDark ? Colors.grey[800] : Colors.white),
+              color: msg.isMe
+                  ? Colors.blue
+                  : (isDark ? Colors.grey[800] : Colors.white),
               borderRadius: BorderRadius.circular(15),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5),
+              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                url,
-                width: 200,
-                height: 200,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const SizedBox(width: 200, height: 200, child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
-                },
-                errorBuilder: (_, __, ___) => Container(
-                  width: 200, height: 150, color: Colors.grey[300],
-                  child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-                ),
-              ),
+              child: isLocal
+                  ? Image.file(
+                      File(path), // عرض من الموبايل فوراً
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image),
+                    )
+                  : Image.network(
+                      finalUrl, // عرض من السيرفر
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image),
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const SizedBox(
+                          width: 200,
+                          height: 200,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                    ),
             ),
           ),
-          Text("${msg.createdAt.hour}:${msg.createdAt.minute}", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+          Text(
+            "${msg.createdAt.hour}:${msg.createdAt.minute}",
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
+          ),
         ],
       ),
     );
@@ -130,7 +159,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is ChatMessagesSuccess) {
                   final messages = state.messages;
-                  
+
                   if (messages.isEmpty) {
                     return const Center(child: Text("Say Hello! 👋"));
                   }
@@ -140,28 +169,54 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      // نعكس القائمة لعرض الأحدث بالأسفل
-                      final msg = messages.reversed.toList()[index];
-                      final time = "${msg.createdAt.hour}:${msg.createdAt.minute}";
-                      
-                      // اختيار نوع الفقاعة بناءً على نوع الرسالة
-                      if (msg.messageType == 'voice') {
+                      final msg = messages[index];
+                      final time =
+                          "${msg.createdAt.hour}:${msg.createdAt.minute}";
+
+                      final String msgType = msg.messageType
+                          .toString()
+                          .toLowerCase();
+
+                      String audioPath = msg.mediaUrl ?? "";
+                      if (audioPath.isNotEmpty) {
+                        if (!audioPath.startsWith('http') &&
+                            !audioPath.startsWith('/')) {
+                          audioPath = "${ApiConstants.baseUrl}$audioPath";
+                        }
+                      }
+
+                      if (msgType == 'voice' || msgType == 'audio') {
                         return AudioBubble(
                           isMe: msg.isMe,
                           time: time,
-                          audioUrl: msg.mediaUrl!.startsWith('http') 
-                              ? msg.mediaUrl! 
-                              : "${ApiConstants.baseUrl}${msg.mediaUrl}",
+                          audioUrl: audioPath,
                         );
-                      } else if (msg.messageType == 'image') {
+                      } else if (msgType == 'image') {
                         return _buildImageBubble(msg, isDark);
+                      } else if (msgType == 'text' || msg.text.isNotEmpty) {
+                        return _buildChatBubble(
+                          msg.text,
+                          msg.isMe,
+                          time,
+                          isDark,
+                        );
                       } else {
-                        return _buildChatBubble(msg.text, msg.isMe, time, isDark);
+                        return _buildChatBubble(
+                          "نوع غير مدعوم: [$msgType]",
+                          msg.isMe,
+                          time,
+                          isDark,
+                        );
                       }
                     },
                   );
                 } else if (state is ChatMessagesError) {
-                  return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
                 }
                 return const Center(child: Text("ابدأ المحادثة الآن"));
               },
@@ -180,7 +235,9 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         margin: const EdgeInsets.symmetric(vertical: 5),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isMe ? Colors.blue : (isDark ? Colors.grey[800] : Colors.white),
+          color: isMe
+              ? Colors.blue
+              : (isDark ? Colors.grey[800] : Colors.white),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(15),
             topRight: const Radius.circular(15),
@@ -188,13 +245,27 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             bottomRight: Radius.circular(isMe ? 0 : 15),
           ),
         ),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(text, style: TextStyle(color: isMe || isDark ? Colors.white : Colors.black87, fontSize: 16)),
+            Text(
+              text,
+              style: TextStyle(
+                color: isMe || isDark ? Colors.white : Colors.black87,
+                fontSize: 16,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(time, style: TextStyle(color: isMe ? Colors.white70 : Colors.grey, fontSize: 10)),
+            Text(
+              time,
+              style: TextStyle(
+                color: isMe ? Colors.white70 : Colors.grey,
+                fontSize: 10,
+              ),
+            ),
           ],
         ),
       ),
@@ -212,8 +283,34 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
       child: Row(
         children: [
           if (!_isRecording)
-            IconButton(icon: const Icon(Icons.add, color: Colors.blue), onPressed: () {}),
-          Expanded(child: _isRecording ? _buildRecordingWave(isDark) : _buildTextField(isDark)),
+            IconButton(
+              icon: const Icon(Icons.add, color: Colors.blue),
+              onPressed: () async {
+                // 1. إنشاء نسخة من الـ Picker
+                final ImagePicker picker = ImagePicker();
+
+                // 2. اختيار الصورة من المعرض (Gallery)
+                final XFile? image = await picker.pickImage(
+                  source: ImageSource.gallery,
+                );
+
+                // 3. لو المستخدم اختار صورة فعلاً (مش عمل Cancel)
+                if (image != null) {
+                  if (context.mounted) {
+                    // 4. نبعت المسار للـ Cubit
+                    context.read<ChatMessagesCubit>().sendImage(
+                      widget.chatId,
+                      image.path,
+                    );
+                  }
+                }
+              },
+            ),
+          Expanded(
+            child: _isRecording
+                ? _buildRecordingWave(isDark)
+                : _buildTextField(isDark),
+          ),
           const SizedBox(width: 5),
           GestureDetector(
             onHorizontalDragUpdate: (details) {
@@ -228,30 +325,38 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                 });
               }
             },
-            onLongPress: () { if (isTextEmpty) _startRecording(); },
+            onLongPress: () {
+              if (isTextEmpty) _startRecording();
+            },
             onLongPressEnd: (details) async {
               if (_isRecording) {
                 final path = await audioRecorder.stop();
                 _stopTimer();
                 setState(() => _isRecording = false);
                 if (path != null && _swipePosition > -120) {
-                  context.read<ChatMessagesCubit>().sendVoice(widget.chatId, path);
+                  context.read<ChatMessagesCubit>().sendVoice(
+                    widget.chatId,
+                    path,
+                  );
                 }
               }
               setState(() => _swipePosition = 0.0);
             },
             onTap: () {
-              if (!isTextEmpty) {
+              if (_messageController.text.trim().isNotEmpty) {
                 context.read<ChatMessagesCubit>().sendMessage(widget.chatId);
-                setState(() {});
+                // مش محتاج تعمل setState هنا لأن الـ BlocBuilder هيحس بالتغيير فوراً
               }
             },
             child: CircleAvatar(
               backgroundColor: _isRecording ? Colors.red : Colors.blue,
               radius: _isRecording ? 28 : 25,
               child: Icon(
-                isTextEmpty ? (_isRecording ? Icons.mic : Icons.mic_none) : Icons.send,
-                color: Colors.white, size: 24,
+                isTextEmpty
+                    ? (_isRecording ? Icons.mic : Icons.mic_none)
+                    : Icons.send,
+                color: Colors.white,
+                size: 24,
               ),
             ),
           ),
@@ -266,20 +371,32 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
       onChanged: (val) => setState(() {}),
       decoration: InputDecoration(
         hintText: "Type a message...",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25),
+          borderSide: BorderSide.none,
+        ),
         filled: true,
         fillColor: isDark ? Colors.black : Colors.grey[100],
-        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 10,
+        ),
       ),
     );
   }
 
   void _startTimer() {
     _recordDuration = 0;
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => setState(() => _recordDuration++));
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer t) => setState(() => _recordDuration++),
+    );
   }
 
-  void _stopTimer() { _timer?.cancel(); setState(() => _recordDuration = 0); }
+  void _stopTimer() {
+    _timer?.cancel();
+    setState(() => _recordDuration = 0);
+  }
 
   String _formatDuration(int seconds) {
     final minutes = seconds ~/ 60;
@@ -291,16 +408,27 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     return Container(
       height: 45,
       padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(color: isDark ? Colors.black : Colors.grey[100], borderRadius: BorderRadius.circular(25)),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.black : Colors.grey[100],
+        borderRadius: BorderRadius.circular(25),
+      ),
       child: Row(
         children: [
           const Icon(Icons.circle, color: Colors.green, size: 12),
           const SizedBox(width: 8),
-          Text(_formatDuration(_recordDuration), style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            _formatDuration(_recordDuration),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           const Spacer(),
           Opacity(
             opacity: (1.0 + (_swipePosition / 120)).clamp(0.0, 1.0),
-            child: const Row(children: [Icon(Icons.arrow_back_ios, size: 12, color: Colors.grey), Text(" Slide to cancel", style: TextStyle(color: Colors.grey))]),
+            child: const Row(
+              children: [
+                Icon(Icons.arrow_back_ios, size: 12, color: Colors.grey),
+                Text(" Slide to cancel", style: TextStyle(color: Colors.grey)),
+              ],
+            ),
           ),
         ],
       ),

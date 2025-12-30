@@ -16,12 +16,12 @@ class CustomUsersListView extends StatelessWidget {
       builder: (context, state) {
         if (state is ChatListLoading) {
           return const Center(child: CircularProgressIndicator());
-        } 
-        
+        }
+
         if (state is ChatListError) {
           return Center(child: Text(state.message));
-        } 
-        
+        }
+
         if (state is ChatListSuccess) {
           final chats = state.chats;
 
@@ -31,34 +31,49 @@ class CustomUsersListView extends StatelessWidget {
 
           return ListView.separated(
             itemCount: chats.length,
-            separatorBuilder: (context, index) => const Divider(indent: 85, endIndent: 15, height: 1),
+            separatorBuilder: (context, index) =>
+                const Divider(indent: 85, endIndent: 15, height: 1),
             itemBuilder: (context, index) {
               final chat = chats[index];
               return ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 leading: CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.blue.withOpacity(0.1),
-                  backgroundImage: chat.profilePicture != null && chat.profilePicture!.isNotEmpty
+                  backgroundImage:
+                      chat.profilePicture != null &&
+                          chat.profilePicture!.isNotEmpty
                       ? NetworkImage(chat.profilePicture!)
                       : null,
-                  child: chat.profilePicture == null || chat.profilePicture!.isEmpty
+                  child:
+                      chat.profilePicture == null ||
+                          chat.profilePicture!.isEmpty
                       ? Text(
-                          chat.otherUserName.isNotEmpty ? chat.otherUserName[0] : "?",
+                          chat.otherUserName.isNotEmpty
+                              ? chat.otherUserName[0]
+                              : "?",
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         )
                       : null,
                 ),
                 title: Text(
                   chat.otherUserName,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 subtitle: Text(
                   chat.lastMessage,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontWeight: chat.hasUnreadMessages ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: chat.hasUnreadMessages
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     color: chat.hasUnreadMessages ? Colors.black : Colors.grey,
                   ),
                 ),
@@ -76,7 +91,7 @@ class CustomUsersListView extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     // دائرة الإشعار (تظهر فقط لو فيه رسائل غير مقروءة)
-                    if (chat.hasUnreadMessages) 
+                    if (chat.hasUnreadMessages)
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: const BoxDecoration(
@@ -96,17 +111,19 @@ class CustomUsersListView extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BlocProvider(
-                      create: (context) => sl<ChatMessagesCubit>(),
-                      child: ChatMessagesScreen(
-                        userName: chat.otherUserName, // مرر الاسم هنا
-                        chatId: chat.chatId, // مرر الـ ID هنا
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (context) => sl<ChatMessagesCubit>(),
+                        child: ChatMessagesScreen(
+                          userName: chat.otherUserName, // مرر الاسم هنا
+                          chatId: chat.chatId, // مرر الـ ID هنا
+                        ),
                       ),
                     ),
-                  ),
-                );
+                  ).then((_) {
+                    context.read()<ChatListCubit>().fetchChats();
+                  });
                 },
               );
             },

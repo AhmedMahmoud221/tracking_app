@@ -20,7 +20,9 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<String, List<MessageEntity>>> getChatMessages(String chatId) async {
+  Future<Either<String, List<MessageEntity>>> getChatMessages(
+    String chatId,
+  ) async {
     try {
       final response = await remoteDataSource.getChatMessages(chatId: chatId);
       return Right(response.messages);
@@ -32,7 +34,10 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<String, MessageEntity>> sendMessage(String chatId, String text) async {
+  Future<Either<String, MessageEntity>> sendMessage(
+    String chatId,
+    String text,
+  ) async {
     try {
       final remoteMessage = await remoteDataSource.sendMessage(
         chatId: chatId,
@@ -47,9 +52,31 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<String, MessageEntity>> sendVoiceMessage(String chatId, String filePath) async {
+  Future<Either<String, MessageEntity>> sendVoiceMessage(
+    String chatId,
+    String filePath,
+  ) async {
     try {
-      final result = await remoteDataSource.sendVoiceMessage(chatId: chatId, filePath: filePath);
+      final result = await remoteDataSource.sendVoiceMessage(
+        chatId: chatId,
+        filePath: filePath,
+      );
+      return Right(result);
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, MessageEntity>> sendImage(
+    String chatId,
+    String imagePath,
+  ) async {
+    try {
+      final result = await remoteDataSource.sendImageMessage(
+        chatId: chatId,
+        imagePath: imagePath,
+      );
       return Right(result);
     } catch (e) {
       return Left(e.toString());

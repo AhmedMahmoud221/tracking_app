@@ -63,8 +63,6 @@ Future<void> init({String savedLang = 'ar'}) async {
 
   sl.registerFactory(() => ChatListCubit(sl()));
 
-  sl.registerFactory(() => ChatMessagesCubit(sl(), sl()));
-
   // ------------------Use Case---------------
   sl.registerLazySingleton<AuthService>(() => AuthService());
 
@@ -82,17 +80,9 @@ Future<void> init({String savedLang = 'ar'}) async {
 
   sl.registerLazySingleton(() => UpdateDeviceUseCase(sl()));
 
-  sl.registerLazySingleton(() => GetChatMessagesUseCase(sl()));
-
-  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
-
   // ----------------Repository---------------
   sl.registerLazySingleton<DeviceRepository>(
     () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>(), dio: sl<Dio>()),
-  );
-
-  sl.registerLazySingleton<ChatRepository>(
-    () => ChatRepositoryImpl(sl()),
   );
 
   sl.registerLazySingleton<UserProfileRepository>(
@@ -104,7 +94,28 @@ Future<void> init({String savedLang = 'ar'}) async {
     () => DeviceRemoteDataSourceImpl(sl<Dio>()),
   );
 
+  //-------------------------Chat------------------------------//
+  // -----------------Data source---------------
   sl.registerLazySingleton<ChatRemoteDataSource>(
-    () => ChatRemoteDataSource(sl()), // تأكد إن الـ dio متسجل برضه
+    () => ChatRemoteDataSource(sl<Dio>()), // تأكد إنه بياخد الـ Dio
+  );
+
+  // ----------------Repository---------------
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(
+      sl<ChatRemoteDataSource>(), // بياخد الـ DataSource بس
+    ),
+  );
+
+  // ------------------Use Case---------------
+  sl.registerLazySingleton(() => GetChatMessagesUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton(() => SendMessageUseCase(sl<ChatRepository>()));
+
+  // -------------------------Cubit----------------------------
+  sl.registerFactory(
+    () => ChatMessagesCubit(
+      sl<GetChatMessagesUseCase>(),
+      sl<SendMessageUseCase>(),
+    ),
   );
 }

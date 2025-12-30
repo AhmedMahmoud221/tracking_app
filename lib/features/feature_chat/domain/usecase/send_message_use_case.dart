@@ -13,7 +13,18 @@ class SendMessageUseCase {
   }
 
   // New method for sending voice messages
-  Future<Either<String, MessageEntity>> sendVoice(String chatId, String filePath) {
+  Future<Either<String, MessageEntity>> sendVoice(
+    String chatId,
+    String filePath,
+  ) {
     return repository.sendVoiceMessage(chatId, filePath);
+  }
+
+  //  New method for SendMessageImageUseCase
+  Future<Either<String, MessageEntity>> sendImage(
+    String chatId,
+    String imagePath,
+  ) async {
+    return await repository.sendImage(chatId, imagePath);
   }
 }
