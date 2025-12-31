@@ -10,13 +10,13 @@ class ChatSocketCubit extends Cubit<ChatSocketState> {
   // الدخول لغرفة الشات والاستماع للرسائل
   void connectToChat(String chatId) {
     // 1. تأمين: شيل أي مستمع قديم للحدث ده عشان الداتا متتكررش
-    _socketService.socket.off('message');
+    _socketService.socket.off('new-message');
 
     // 2. الانضمام للروم (تأكد من اسم الـ event من الـ Backend)
-    _socketService.socket.emit('join', chatId);
+    _socketService.socket.emit('join-chat', chatId);
 
     // 3. الاستماع للرسائل الجديدة
-    _socketService.socket.on('message', (data) {
+    _socketService.socket.on('new-message', (data) {
       if (!isClosed) {
         emit(ChatSocketMessageReceived(data));
       }
@@ -25,14 +25,14 @@ class ChatSocketCubit extends Cubit<ChatSocketState> {
 
   // الخروج من الغرفة وتنظيف المستمعين
   void disconnectFromChat(String chatId) {
-    _socketService.socket.emit('leave', chatId);
-    _socketService.socket.off('message');
+    _socketService.socket.emit('leave-chat', chatId);
+    _socketService.socket.off('new-message');
   }
 
   @override
   Future<void> close() {
     // لا نغلق السوكيت هنا لأنه "مشاع" للتطبيق كله، فقط نتوقف عن الاستماع
-    _socketService.socket.off('message');
+    _socketService.socket.off('new-message');
     return super.close();
   }
 }

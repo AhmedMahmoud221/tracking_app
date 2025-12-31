@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
-import 'package:live_tracking/core/utils/secure_storage.dart';
-import 'package:live_tracking/features/feature_chat/data/models/message_model.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_state.dart';
@@ -17,6 +15,7 @@ import 'package:live_tracking/features/feature_chat/presentation/views/audio_bub
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_header_chat_screen.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/video_player_screen.dart';
 import 'package:record/record.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChatMessagesScreen extends StatefulWidget {
   final String userName;
@@ -47,16 +46,36 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     super.initState();
     audioRecorder = AudioRecorder();
     _messageController = context.read<ChatMessagesCubit>().messageController;
-
-    _loadUserId();
-
-    context.read<ChatMessagesCubit>().fetchMessages(widget.chatId);
-    context.read<ChatSocketCubit>().connectToChat(widget.chatId);
+    
+    // نداء ميثود واحدة منظمة
+    _startChatFlow();
   }
 
-  Future<void> _loadUserId() async {
-    myId = await SecureStorage.readUserId();
+  Future<void> _startChatFlow() async {
+    final id = "6935eccd50c25daeb0dea0b5"; // الـ ID بتاعك
+
+    if (mounted) {
+      setState(() {
+        myId = id;
+      });
+
+      if (myId != null && myId!.isNotEmpty) {
+        // مرر الـ id هنا كباراميتر تاني
+        context.read<ChatMessagesCubit>().fetchMessages(widget.chatId, myId!); 
+        context.read<ChatSocketCubit>().connectToChat(widget.chatId);
+      }
+    }
   }
+
+  // Future<void> _loadUserId() async {
+  //   // final id = await SecureStorage.readUserId();
+  //   final id = "6935eccd50c25daeb0dea0b5";
+
+  //   setState(() {
+  //     myId = id;
+  //   });
+  //   print("✅ Loaded My ID: $myId");
+  // }
 
   @override
   void dispose() {
@@ -118,105 +137,109 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
 
   // show message images
   Widget _buildImageBubble(MessageEntity msg, bool isDark) {
-    final String path = msg.mediaUrl ?? "";
+    final String imageUrl = _getFormattedUrl(msg.mediaUrl);
 
-    bool isLocal =
-        !path.startsWith('http') &&
-        (path.startsWith('/') || path.contains('com.example'));
-
-    String finalUrl = path;
-    if (!isLocal && path.isNotEmpty && !path.startsWith('http')) {
-      finalUrl = "${ApiConstants.baseUrl}$path";
-    }
-
-    return Align(
-      alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: msg.isMe
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 5),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: msg.isMe
-                  ? Colors.blue
-                  : (isDark ? Colors.grey[800] : Colors.white),
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: isLocal
-                  ? Image.file(
-                      File(path), // عرض من الموبايل فوراً
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.broken_image),
-                    )
-                  : Image.network(
-                      finalUrl, // عرض من السيرفر
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.broken_image),
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const SizedBox(
-                          width: 200,
-                          height: 200,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      },
-                    ),
-            ),
-          ),
-          Text(
-            "${msg.createdAt.hour}:${msg.createdAt.minute}",
-            style: const TextStyle(fontSize: 10, color: Colors.grey),
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        // هنا بنفتح الصورة في Full Screen
+        if (imageUrl.isNotEmpty) {
+          _showFullImage(imageUrl);
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.grey.withOpacity(0.3)),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Image.network(
+          imageUrl,
+          width: 200,
+          height: 200,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => 
+              const Icon(Icons.broken_image, size: 50),
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const SizedBox(
+              width: 200, height: 200, 
+              child: Center(child: CircularProgressIndicator())
+            );
+          },
+        ),
       ),
     );
   }
 
+  // ميثود سريعة لعرض الصورة كاملة
+  void _showFullImage(String url) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog.fullscreen(
+        backgroundColor: Colors.black,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Center(child: Image.network(url)),
+            Positioned(
+              top: 40, right: 20,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getFormattedUrl(String? path) {
+    if (path == null || path.isEmpty) return "";
+    if (path.startsWith('http')) return path;
+
+    return "${ApiConstants.baseUrl}/";
+  }
+
   // show message files
   Widget _buildFileBubble(MessageEntity msg, bool isDark) {
-    return Align(
-      alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: GestureDetector(
-        onTap: () {
-          // هنا ممكن تستخدم url_launcher عشان تفتح رابط الملف في المتصفح
-        },
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 5),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: msg.isMe
-                ? Colors.blueGrey
-                : (isDark ? Colors.grey[800] : Colors.white),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.insert_drive_file, color: Colors.white),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  msg.mediaUrl?.split('/').last ?? "Document",
-                  style: const TextStyle(color: Colors.white),
-                  overflow: TextOverflow.ellipsis,
+    final String formattedFileUrl = _getFormattedUrl(msg.mediaUrl);
+    final String fileName = msg.text.isNotEmpty ? msg.text : "Document File";
+
+    return InkWell(
+      onTap: () async {
+        final Uri url = Uri.parse(formattedFileUrl);
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        } else {
+          print("Could not launch $formattedFileUrl");
+        }
+      },
+      child: Container(
+        width: 220,
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        decoration: BoxDecoration(
+          color: msg.isMe ? Colors.blue.withOpacity(0.1) : Colors.grey[200],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.blue.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.insert_drive_file, color: Colors.blue, size: 30),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                fileName,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w500,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -292,8 +315,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     return BlocListener<ChatSocketCubit, ChatSocketState>(
       listener: (context, state) {
         if (state is ChatSocketMessageReceived) {
-          final newMessage = MessageModel.fromJson(state.data, myId ?? "");
-          context.read<ChatMessagesCubit>().addIncomingMessage(newMessage);
+          context.read<ChatMessagesCubit>().addIncomingMessage(state.data);
         }
       },
       child: Scaffold(
@@ -322,6 +344,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final msg = messages[index];
+                        final messageKey = ValueKey("${msg.text}_${msg.createdAt.millisecondsSinceEpoch}");
                         final time =
                             "${msg.createdAt.hour.toString().padLeft(2, '0')}:${msg.createdAt.minute.toString().padLeft(2, '0')}";
 
@@ -340,6 +363,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                         // 1. حالة الصوت
                         if (msgType == 'voice' || msgType == 'audio') {
                           return AudioBubble(
+                            key: messageKey,
                             isMe: msg.isMe,
                             time: time,
                             audioUrl: mediaPath,
@@ -347,31 +371,28 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                         }
                         // 2. حالة الصورة
                         else if (msgType == 'image') {
-                          return _buildImageBubble(msg, isDark);
+                          return Container(key: messageKey, child: _buildImageBubble(msg, isDark));
                         }
                         // 3. حالة الفيديو (جديد)
                         else if (msgType == 'video') {
-                          return _buildVideoBubble(
-                            msg,
-                            isDark,
-                          ); // هنحتاج نكتب الميثود دي تحت
+                          return Container(key: messageKey, child: _buildVideoBubble(msg, isDark));
                         }
                         // 4. حالة الملفات/المستندات (جديد)
                         else if (msgType == 'file' || msgType == 'document') {
-                          return _buildFileBubble(
-                            msg,
-                            isDark,
-                          ); // هنحتاج نكتب الميثود دي تحت
+                          return Container(key: messageKey, child: _buildFileBubble(msg, isDark));
                         }
                         // 5. الحالة الافتراضية (نص)
                         else {
-                          return _buildChatBubble(
-                            msg.text.isEmpty && msgType != 'text'
-                                ? "وصلك ملف [$msgType] لا يمكن عرضه حالياً"
-                                : msg.text,
-                            msg.isMe,
-                            time,
-                            isDark,
+                          return Container(
+                            key: messageKey, // <--- أضفنا الـ Key هنا
+                            child: _buildChatBubble(
+                              msg.text.isEmpty && msgType != 'text'
+                                  ? "وصلك ملف [$msgType] لا يمكن عرضه حالياً"
+                                  : msg.text,
+                              msg.isMe,
+                              time,
+                              isDark,
+                            ),
                           );
                         }
                       },
@@ -621,7 +642,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   Widget _buildRecordingWave(bool isDark) {
     return Container(
       height: 45,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         color: isDark ? Colors.black : Colors.grey[100],
         borderRadius: BorderRadius.circular(25),

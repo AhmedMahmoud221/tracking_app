@@ -51,16 +51,16 @@ class SecureStorage {
     required String userId,
   }) async {
     await _storage.write(key: _tokenKey, value: token);
-    await _storage.write(key: 'userId', value: userId);
+    await _storage.write(key: 'user_id', value: userId);
   }
 
   // save user id
   static Future<void> saveUserId(String userId) async {
-    await _storage.write(key: 'userId', value: userId);
+    await _storage.write(key: 'user_id', value: userId);
   }
 
   // read user id
   static Future<String?> readUserId() async {
-    return await _storage.read(key: 'userId');
+    return await _storage.read(key: 'user_id');
   }
 }

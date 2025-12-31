@@ -12,7 +12,6 @@ class SocketService {
   }
 
   void init(String token) {
-    // لو متصل بالفعل مش هنعمل اتصال جديد
     if (_socket != null && _socket!.connected) return;
 
     _socket = IO.io(

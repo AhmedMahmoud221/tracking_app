@@ -22,4 +22,16 @@ class MessageEntity {
     required this.createdAt,
     required this.isMe,
   });
+
+  // داخل ملف message_entity.dart
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'text': text,
+      'senderId': senderId,
+      'messageType': messageType,
+      'mediaUrl': mediaUrl,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
 }

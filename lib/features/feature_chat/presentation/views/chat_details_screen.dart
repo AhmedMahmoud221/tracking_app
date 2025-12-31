@@ -22,8 +22,9 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    // بدأ تحميل الرسائل فور فتح الشاشة
-    context.read<ChatMessagesCubit>().fetchMessages(widget.chatId);
+
+    const String myId = "6935eccd50c25daeb0dea0b5";
+    context.read<ChatMessagesCubit>().fetchMessages(widget.chatId, myId);
   }
 
   @override
