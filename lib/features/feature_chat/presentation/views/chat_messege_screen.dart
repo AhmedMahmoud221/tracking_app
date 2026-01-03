@@ -34,6 +34,7 @@ class ChatMessagesScreen extends StatefulWidget {
 class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   late TextEditingController _messageController;
   late AudioRecorder audioRecorder;
+  late ChatMessagesCubit _cubit;
 
   bool _isRecording = false;
   double _swipePosition = 0.0;
@@ -46,7 +47,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     super.initState();
     audioRecorder = AudioRecorder();
     _messageController = context.read<ChatMessagesCubit>().messageController;
-    
+
     // نداء ميثود واحدة منظمة
     _startChatFlow();
   }
@@ -61,7 +62,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
 
       if (myId != null && myId!.isNotEmpty) {
         // مرر الـ id هنا كباراميتر تاني
-        context.read<ChatMessagesCubit>().fetchMessages(widget.chatId, myId!); 
+        context.read<ChatMessagesCubit>().fetchMessages(widget.chatId, myId!);
         context.read<ChatSocketCubit>().connectToChat(widget.chatId);
       }
     }
@@ -78,11 +79,19 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   // }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // نخزن المرجع هنا بأمان
+    _cubit = context.read<ChatMessagesCubit>();
+  }
+
+  @override
   void dispose() {
     // 3. الخروج من غرفة السوكيت عند مغادرة الشاشة
     context.read<ChatSocketCubit>().disconnectFromChat(widget.chatId);
     audioRecorder.dispose();
     _timer?.cancel();
+    _cubit.close();
     super.dispose();
   }
 
@@ -158,13 +167,14 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
           width: 200,
           height: 200,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => 
+          errorBuilder: (context, error, stackTrace) =>
               const Icon(Icons.broken_image, size: 50),
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return const SizedBox(
-              width: 200, height: 200, 
-              child: Center(child: CircularProgressIndicator())
+              width: 200,
+              height: 200,
+              child: Center(child: CircularProgressIndicator()),
             );
           },
         ),
@@ -183,7 +193,8 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
           children: [
             Center(child: Image.network(url)),
             Positioned(
-              top: 40, right: 20,
+              top: 40,
+              right: 20,
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white, size: 30),
                 onPressed: () => Navigator.pop(context),
@@ -315,7 +326,11 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     return BlocListener<ChatSocketCubit, ChatSocketState>(
       listener: (context, state) {
         if (state is ChatSocketMessageReceived) {
-          context.read<ChatMessagesCubit>().addIncomingMessage(state.data);
+          // هنا بنستخدم state.message اللي هو الـ Object الجاهز
+          // وبنبعته للميثود اللي عدلناها فوق
+          context.read<ChatMessagesCubit>().addIncomingMessageFromSocket(
+            state.message,
+          );
         }
       },
       child: Scaffold(
@@ -344,7 +359,9 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final msg = messages[index];
-                        final messageKey = ValueKey("${msg.text}_${msg.createdAt.millisecondsSinceEpoch}");
+                        final messageKey = ValueKey(
+                          "${msg.text}_${msg.createdAt.millisecondsSinceEpoch}",
+                        );
                         final time =
                             "${msg.createdAt.hour.toString().padLeft(2, '0')}:${msg.createdAt.minute.toString().padLeft(2, '0')}";
 
@@ -371,15 +388,24 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                         }
                         // 2. حالة الصورة
                         else if (msgType == 'image') {
-                          return Container(key: messageKey, child: _buildImageBubble(msg, isDark));
+                          return Container(
+                            key: messageKey,
+                            child: _buildImageBubble(msg, isDark),
+                          );
                         }
                         // 3. حالة الفيديو (جديد)
                         else if (msgType == 'video') {
-                          return Container(key: messageKey, child: _buildVideoBubble(msg, isDark));
+                          return Container(
+                            key: messageKey,
+                            child: _buildVideoBubble(msg, isDark),
+                          );
                         }
                         // 4. حالة الملفات/المستندات (جديد)
                         else if (msgType == 'file' || msgType == 'document') {
-                          return Container(key: messageKey, child: _buildFileBubble(msg, isDark));
+                          return Container(
+                            key: messageKey,
+                            child: _buildFileBubble(msg, isDark),
+                          );
                         }
                         // 5. الحالة الافتراضية (نص)
                         else {

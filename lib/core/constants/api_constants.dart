@@ -1,11 +1,9 @@
 class ApiConstants {
-  static const String baseUrl =
-      "https://v05j2rv7-5000.euw.devtunnels.ms"; // baseUrl
+  static const String baseUrl = "http://192.168.1.10:5000/"; // baseUrl
 
   //--------------------------------------------------------------
 
-  static const String socketUrl =
-      "https://v05j2rv7-5000.euw.devtunnels.ms/"; // socketUrl
+  static const String socketUrl = "http://192.168.1.10:5000/"; // socketUrl
 
   //--------------------------------------------------------------
   static const String messages = "$baseUrl/api/messages"; // messageUrl

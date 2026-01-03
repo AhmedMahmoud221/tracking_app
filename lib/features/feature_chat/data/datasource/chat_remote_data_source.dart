@@ -14,7 +14,7 @@ class ChatRemoteDataSource {
     final token = await SecureStorage.readToken();
 
     final response = await _dio.get(
-      '${ApiConstants.baseUrl}/api/chat',
+      '${ApiConstants.baseUrl}api/chat',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
     return ChatResponseModel.fromJson(response.data);
@@ -26,7 +26,7 @@ class ChatRemoteDataSource {
     final myId = await SecureStorage.readUserId();
 
     final response = await _dio.get(
-      '${ApiConstants.baseUrl}/api/chat/message/$chatId',
+      '${ApiConstants.baseUrl}api/chat/message/$chatId',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
@@ -43,7 +43,7 @@ class ChatRemoteDataSource {
     final myId = await SecureStorage.readUserId();
 
     final response = await _dio.post(
-      '${ApiConstants.baseUrl}/api/chat/message',
+      '${ApiConstants.baseUrl}api/chat/message',
       data: {
         'chatId': chatId,
         'receiverId': chatId,
@@ -76,7 +76,7 @@ class ChatRemoteDataSource {
     });
 
     final response = await _dio.post(
-      '${ApiConstants.baseUrl}/api/chat/message/media',
+      '${ApiConstants.baseUrl}api/chat/message/media',
       data: formData,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );

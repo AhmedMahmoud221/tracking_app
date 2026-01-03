@@ -36,12 +36,11 @@ class DeviceRepositoryImpl implements DeviceRepository {
     });
 
     final response = await dio.post(
-      '${ApiConstants.baseUrl}/api/user/device',
+      '${ApiConstants.baseUrl}api/user/device',
       data: formData,
-      options: Options(contentType: 'multipart/form-data',
-        headers: {
-          'Authorization': 'Bearer $token',
-        }
+      options: Options(
+        contentType: 'multipart/form-data',
+        headers: {'Authorization': 'Bearer $token'},
       ),
     );
 
@@ -65,12 +64,11 @@ class DeviceRepositoryImpl implements DeviceRepository {
     });
 
     final response = await dio.patch(
-      '${ApiConstants.baseUrl}/api/user/device/${device.id}',
+      '${ApiConstants.baseUrl}api/user/device/${device.id}',
       data: formData,
-      options: Options(contentType: 'multipart/form-data',
-        headers: {
-          'Authorization': 'Bearer $token',
-        }
+      options: Options(
+        contentType: 'multipart/form-data',
+        headers: {'Authorization': 'Bearer $token'},
       ),
     );
 
@@ -80,12 +78,9 @@ class DeviceRepositoryImpl implements DeviceRepository {
   @override
   Future<void> deleteDevice(String deviceId) async {
     final token = await SecureStorage.readToken();
-    await dio.delete('${ApiConstants.baseUrl}/api/user/device/$deviceId',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-        }
-      )
+    await dio.delete(
+      '${ApiConstants.baseUrl}api/user/device/$deviceId',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }
 }

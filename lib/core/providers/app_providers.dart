@@ -15,6 +15,10 @@ import 'package:live_tracking/main.dart';
 
 class AppProviders {
   static List<BlocProvider> get providers => [
+    BlocProvider<ChatSocketCubit>(
+      create: (context) =>
+          sl<ChatSocketCubit>()..initSocket(), // أضف استدعاء البدء هنا
+    ),
     BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>()..checkAuthStatus()),
     BlocProvider(create: (context) => sl<ChatMessagesCubit>()),
     BlocProvider<ProfileDataCubit>(create: (_) => sl<ProfileDataCubit>()),

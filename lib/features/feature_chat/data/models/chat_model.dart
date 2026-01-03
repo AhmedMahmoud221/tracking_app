@@ -7,25 +7,43 @@ class ChatModel extends ChatEntity {
     super.profilePicture,
     required super.lastMessage,
     required super.createdAt,
-    required super.hasUnreadMessages, 
+    required super.hasUnreadMessages,
+    required super.lastMessageSenderId,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     final List userIds = json['userIds'] ?? [];
     final Map<String, dynamic> otherUser = userIds.isNotEmpty ? userIds[0] : {};
-    
     final lastMsgData = json['lastMessage'];
+
     bool unread = false;
     String lastMsgText = "";
+    String senderId = "";
+    DateTime displayDate = DateTime.now();
 
     if (lastMsgData != null && lastMsgData is Map) {
-      unread = lastMsgData['seen'] == false; 
-      
-      lastMsgText = lastMsgData['content'] ?? 
-                    lastMsgData['message'] ?? 
-                    "Sent a ${lastMsgData['messageType'] ?? 'message'}";
+      unread = lastMsgData['seen'] == false;
+      senderId = lastMsgData['senderId']?.toString() ?? "";
+
+      if (lastMsgData['content'] != null &&
+          lastMsgData['content'].toString().isNotEmpty) {
+        lastMsgText = lastMsgData['content'];
+      } else if (lastMsgData['text'] != null &&
+          lastMsgData['text'].toString().isNotEmpty) {
+        lastMsgText = lastMsgData['text'];
+      } else {
+        String type = lastMsgData['messageType'] ?? "message";
+        lastMsgText = "Sent a $type";
+      }
+
+      if (lastMsgData['createdAt'] != null) {
+        displayDate = DateTime.parse(lastMsgData['createdAt']).toLocal();
+      }
     } else {
-      lastMsgText = "No messages yet";
+      // لو مفيش رسائل خالص، نستخدم تاريخ إنشاء الشات نفسه
+      if (json['createdAt'] != null) {
+        displayDate = DateTime.parse(json['createdAt']).toLocal();
+      }
     }
 
     return ChatModel(
@@ -33,10 +51,9 @@ class ChatModel extends ChatEntity {
       otherUserName: otherUser['name'] ?? 'Unknown',
       profilePicture: otherUser['profilePicture'],
       lastMessage: lastMsgText,
-      hasUnreadMessages: unread, 
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
-          : DateTime.now(),
+      hasUnreadMessages: unread,
+      lastMessageSenderId: senderId,
+      createdAt: displayDate,
     );
   }
 }

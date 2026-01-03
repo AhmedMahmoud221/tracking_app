@@ -1,8 +1,10 @@
+import 'package:live_tracking/features/feature_chat/data/models/message_model.dart';
+
 abstract class ChatSocketState {}
 
 class ChatSocketInitial extends ChatSocketState {}
 
 class ChatSocketMessageReceived extends ChatSocketState {
-  final dynamic data; // البيانات الخام اللي جاية من السيرفر
-  ChatSocketMessageReceived(this.data);
+  final MessageModel message; // البيانات الخام اللي جاية من السيرفر
+  ChatSocketMessageReceived(this.message);
 }

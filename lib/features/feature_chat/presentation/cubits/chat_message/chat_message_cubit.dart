@@ -11,7 +11,6 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   final GetChatMessagesUseCase getChatMessagesUseCase;
   final SendMessageUseCase sendMessageUseCase;
 
-
   ChatMessagesCubit(this.getChatMessagesUseCase, this.sendMessageUseCase)
     : super(ChatMessagesInitial());
   final TextEditingController messageController = TextEditingController();
@@ -55,8 +54,8 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
 
   // الـ "ماكينة" اللي بتنفذ الإرسال الفعلي وتحدث الـ UI
   Future<void> _handleSending(SendMessageParams params) async {
-    final myId = await SecureStorage.readUserId() ?? ""; 
-    
+    final myId = await SecureStorage.readUserId() ?? "";
+
     final tempMessage = MessageEntity(
       id: DateTime.now().millisecondsSinceEpoch.toString(), // ID مؤقت
       text: params.text ?? "",
@@ -72,75 +71,75 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
 
     final result = await sendMessageUseCase(params);
 
-    result.fold(
-      (error) => emit(ChatMessagesError(error)), 
-      (newMessage) {
-        if (state is ChatMessagesSuccess) {
-          final currentMessages = (state as ChatMessagesSuccess).messages;
-          
-          // 1. فحص هل السوكيت سبقنا وضاف الرسالة؟
-          bool alreadyAddedBySocket = currentMessages.any((m) => m.id == newMessage.id);
+    result.fold((error) => emit(ChatMessagesError(error)), (newMessage) {
+      if (state is ChatMessagesSuccess) {
+        final currentMessages = (state as ChatMessagesSuccess).messages;
 
-          List<MessageEntity> newList;
-          if (alreadyAddedBySocket) {
-            // لو موجودة، بنشيل الـ temp اللي كنا ضايفينها بس
-            newList = currentMessages.where((m) => m.id != tempMessage.id).toList();
-          } else {
-            // لو مش موجودة، بنبدل الـ temp بالحقيقية
-            newList = currentMessages.map((m) => m.id == tempMessage.id ? newMessage : m).toList();
-          }
+        // 1. فحص هل السوكيت سبقنا وضاف الرسالة؟
+        bool alreadyAddedBySocket = currentMessages.any(
+          (m) => m.id == newMessage.id,
+        );
 
-          // 2. الترتيب (الخطوة السحرية عشان الترتيب ما يبوظش لما تقفل وتفتح)
-          // بنرتب بحيث الأحدث (createdAt الأكبر) يكون هو اللي في الأول (index 0)
-          newList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          
-          // 3. إرسال الحالة النهائية مرة واحدة فقط
-          emit(ChatMessagesSuccess(messages: newList));
+        List<MessageEntity> newList;
+        if (alreadyAddedBySocket) {
+          // لو موجودة، بنشيل الـ temp اللي كنا ضايفينها بس
+          newList = currentMessages
+              .where((m) => m.id != tempMessage.id)
+              .toList();
+        } else {
+          // لو مش موجودة، بنبدل الـ temp بالحقيقية
+          newList = currentMessages
+              .map((m) => m.id == tempMessage.id ? newMessage : m)
+              .toList();
         }
+
+        // 2. الترتيب (الخطوة السحرية عشان الترتيب ما يبوظش لما تقفل وتفتح)
+        // بنرتب بحيث الأحدث (createdAt الأكبر) يكون هو اللي في الأول (index 0)
+        newList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        // 3. إرسال الحالة النهائية مرة واحدة فقط
+        emit(ChatMessagesSuccess(messages: newList));
       }
-    );
+    });
   }
 
   //============================================================================
   // fetch chat messages
-Future<void> fetchMessages(String chatId, String currentUserId) async {
+  Future<void> fetchMessages(String chatId, String currentUserId) async {
     emit(ChatMessagesLoading());
-    
+
     print("CUBIT RECEIVED ID: $currentUserId");
 
     final result = await getChatMessagesUseCase(chatId);
-    result.fold(
-      (error) => emit(ChatMessagesError(error)),
-      (messagesList) {
-        final messages = messagesList.map((e) => 
-          MessageModel.fromJson(e.toJson(), currentUserId)
-        ).toList().reversed.toList(); // ✅ ضيفنا العكس هنا
+    result.fold((error) => emit(ChatMessagesError(error)), (messagesList) {
+      final messages = messagesList
+          .map((e) => MessageModel.fromJson(e.toJson(), currentUserId))
+          .toList()
+          .reversed
+          .toList(); // ✅ ضيفنا العكس هنا
 
-        emit(ChatMessagesSuccess(messages: messages));
-      },
-    );
+      emit(ChatMessagesSuccess(messages: messages));
+    });
   }
 
   // show messages from socket
-  void addIncomingMessage(Map<String, dynamic> data) {
+  void addIncomingMessageFromSocket(MessageModel newMessage) {
     final currentState = state;
     if (currentState is ChatMessagesSuccess) {
-      const String manualId = "6935eccd50c25daeb0dea0b5"; 
-      final newMessage = MessageModel.fromJson(data, manualId);
-
+      // 1. فحص هل الرسالة موجودة فعلاً (عشان ما نكررهاش لو السوكيت بعتها مرتين)
       bool existsById = currentState.messages.any((m) => m.id == newMessage.id);
 
-      bool isMyOwnTempMessage = currentState.messages.any((m) => 
-          m.text == newMessage.text && 
-          m.isMe == true && 
-          m.id.length > 15); 
+      // 2. فحص هل دي رسالة "أنا" اللي بعتها ولسه ظاهرة كـ Temp؟
+      bool isMyOwnTempMessage = currentState.messages.any(
+        (m) => m.text == newMessage.text && m.isMe == true && m.id.length > 15,
+      );
 
       if (!existsById && !isMyOwnTempMessage) {
         final updatedList = List<MessageEntity>.from(currentState.messages)
-          ..insert(0, newMessage);
-        
+          ..insert(0, newMessage); // إضافة الرسالة في أول القائمة
+
         emit(ChatMessagesSuccess(messages: updatedList));
-        print("✅ Socket: New Message Added (From someone else)");
+        print("✅ Socket: New Object Message Added");
       } else {
         print("⚠️ Socket: Message ignored (Duplicate or My own temp)");
       }

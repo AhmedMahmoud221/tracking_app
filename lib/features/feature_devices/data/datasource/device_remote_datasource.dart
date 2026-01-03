@@ -21,7 +21,7 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
     final token = await SecureStorage.readToken() ?? "";
 
     final response = await dio.get(
-      '${ApiConstants.baseUrl}/api/user/device',
+      '${ApiConstants.baseUrl}api/user/device',
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
@@ -40,7 +40,7 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
     final token = await SecureStorage.readToken() ?? "";
 
     final response = await dio.post(
-      '${ApiConstants.baseUrl}/api/user/device',
+      '${ApiConstants.baseUrl}api/user/device',
       data: device.toJson(),
       options: Options(
         headers: {
@@ -60,7 +60,7 @@ class DeviceRemoteDataSourceImpl implements DeviceRemoteDataSource {
     final token = await SecureStorage.readToken() ?? "";
 
     final response = await dio.put(
-      '${ApiConstants.baseUrl}/api/user/device/$deviceId',
+      '${ApiConstants.baseUrl}api/user/device/$deviceId',
       data: device.toJson(),
       options: Options(
         headers: {

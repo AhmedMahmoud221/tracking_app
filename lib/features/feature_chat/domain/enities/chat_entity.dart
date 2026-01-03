@@ -4,7 +4,8 @@ class ChatEntity {
   final String? profilePicture;
   final String lastMessage;
   final DateTime createdAt;
-  final bool hasUnreadMessages; 
+  final bool hasUnreadMessages;
+  final String lastMessageSenderId;
 
   ChatEntity({
     required this.chatId,
@@ -13,5 +14,6 @@ class ChatEntity {
     required this.lastMessage,
     required this.createdAt,
     required this.hasUnreadMessages,
+    required this.lastMessageSenderId,
   });
 }

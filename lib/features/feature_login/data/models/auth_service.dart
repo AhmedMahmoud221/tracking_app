@@ -13,7 +13,7 @@ class AuthService {
     required String password,
   }) async {
     final response = await _dio.post(
-      '${ApiConstants.baseUrl}/api/user/login',
+      '${ApiConstants.baseUrl}api/user/login',
       data: {'email': email, 'password': password},
     );
 
@@ -32,7 +32,7 @@ class AuthService {
     required String passwordConfirm,
   }) async {
     final response = await _dio.post(
-      '${ApiConstants.baseUrl}/api/user/register',
+      '${ApiConstants.baseUrl}api/user/register',
       data: {
         'name': name,
         'email': email,
@@ -50,7 +50,7 @@ class AuthService {
   // 3. Logout Method
   Future<void> logoutbutton(String token) async {
     await _dio.get(
-      '${ApiConstants.baseUrl}/api/user/logout',
+      '${ApiConstants.baseUrl}api/user/logout',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }
@@ -66,7 +66,7 @@ class AuthService {
     if (token == null) throw Exception("User not authenticated");
 
     await _dio.patch(
-      '${ApiConstants.baseUrl}/api/user/change-password',
+      '${ApiConstants.baseUrl}api/user/change-password',
       data: {
         'currentPassword': currentPassword,
         'newPassword': newPassword,
@@ -80,7 +80,7 @@ class AuthService {
   // 5. Forget Password
   Future<void> forgetPassword({required String email}) async {
     await _dio.post(
-      '${ApiConstants.baseUrl}/api/user/forgot-password',
+      '${ApiConstants.baseUrl}api/user/forgot-password',
       data: {'email': email},
     );
   }

@@ -122,5 +122,5 @@ Future<void> init({String savedLang = 'ar'}) async {
       sl<SendMessageUseCase>(),
     ),
   );
-  sl.registerFactory(() => ChatSocketCubit(sl<SocketService>()));
+  sl.registerLazySingleton(() => ChatSocketCubit(sl<SocketService>()));
 }
