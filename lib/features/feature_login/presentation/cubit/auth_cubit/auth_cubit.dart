@@ -22,7 +22,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       await SecureStorage.saveUserData(token: token, userId: userId);
 
-      print("Login Success - User ID: $userId");
+      // print("Login Success - User ID: $userId");
       emit(AuthSuccess(token: token));
     } catch (e) {
       emit(AuthFailure(e.toString()));
@@ -63,7 +63,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       await SecureStorage.saveUserData(token: token, userId: userId);
 
-      print("Signup Success - User ID: $userId");
+      // print("Signup Success - User ID: $userId");
       emit(AuthSuccess(token: token));
     } catch (e) {
       emit(AuthFailure(e.toString()));

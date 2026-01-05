@@ -35,6 +35,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   late TextEditingController _messageController;
   late AudioRecorder audioRecorder;
   late ChatMessagesCubit _cubit;
+  late ChatSocketCubit _socketCubit;
 
   bool _isRecording = false;
   double _swipePosition = 0.0;
@@ -68,29 +69,21 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     }
   }
 
-  // Future<void> _loadUserId() async {
-  //   // final id = await SecureStorage.readUserId();
-  //   final id = "6935eccd50c25daeb0dea0b5";
-
-  //   setState(() {
-  //     myId = id;
-  //   });
-  //   print("✅ Loaded My ID: $myId");
-  // }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // نخزن المرجع هنا بأمان
     _cubit = context.read<ChatMessagesCubit>();
+    _socketCubit = context.read<ChatSocketCubit>();
   }
 
   @override
   void dispose() {
-    // 3. الخروج من غرفة السوكيت عند مغادرة الشاشة
-    context.read<ChatSocketCubit>().disconnectFromChat(widget.chatId);
+    _socketCubit.disconnectFromChat(widget.chatId);
+
     audioRecorder.dispose();
     _timer?.cancel();
+    
     _cubit.close();
     super.dispose();
   }
@@ -111,11 +104,11 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         _startTimer();
       }
     } catch (e) {
-      print("Error starting record: $e");
+      // print("Error starting record: $e");
     }
   }
 
-  // 1. ميثود الصور (نفسها بس اتأكد إنها بتنادي الكيوبت)
+  // pickImage method
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: source);
@@ -124,7 +117,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     }
   }
 
-  // 2. ميثود الفيديو (دلوقتي تقدر تشغلها لأن الكيوبت جاهز)
+  // pckVideo method
   Future<void> _pickVideo() async {
     final ImagePicker picker = ImagePicker();
     final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
@@ -133,7 +126,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     }
   }
 
-  // 3. ميثود الملفات (بافتراض إنك ضفت مكتبة file_picker)
+  // pickDocment method
   Future<void> _pickDocument() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null && result.files.single.path != null) {
@@ -147,37 +140,53 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   // show message images
   Widget _buildImageBubble(MessageEntity msg, bool isDark) {
     final String imageUrl = _getFormattedUrl(msg.mediaUrl);
+    bool isMe = msg.isMe;
 
-    return GestureDetector(
-      onTap: () {
-        // هنا بنفتح الصورة في Full Screen
-        if (imageUrl.isNotEmpty) {
-          _showFullImage(imageUrl);
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.grey.withOpacity(0.3)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Image.network(
-          imageUrl,
-          width: 200,
-          height: 200,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              const Icon(Icons.broken_image, size: 50),
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return const SizedBox(
-              width: 200,
-              height: 200,
-              child: Center(child: CircularProgressIndicator()),
-            );
-          },
-        ),
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Column(
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              // هنا بنفتح الصورة في Full Screen
+              if (imageUrl.isNotEmpty) {
+                _showFullImage(imageUrl);
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.network(
+                imageUrl,
+                width: 250,
+                height: 180,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.broken_image, size: 50),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const SizedBox(
+                    width: 250,
+                    height: 180,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              "${msg.createdAt.hour}:${msg.createdAt.minute.toString().padLeft(2, '0')}",
+              style: const TextStyle(fontSize: 10, color: Colors.grey),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -216,42 +225,56 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   // show message files
   Widget _buildFileBubble(MessageEntity msg, bool isDark) {
     final String formattedFileUrl = _getFormattedUrl(msg.mediaUrl);
-    final String fileName = msg.text.isNotEmpty ? msg.text : "Document File";
+    final String fileName = "Document File";
 
-    return InkWell(
-      onTap: () async {
-        final Uri url = Uri.parse(formattedFileUrl);
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        } else {
-          print("Could not launch $formattedFileUrl");
-        }
-      },
-      child: Container(
-        width: 220,
-        padding: const EdgeInsets.all(12),
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        decoration: BoxDecoration(
-          color: msg.isMe ? Colors.blue.withOpacity(0.1) : Colors.grey[200],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue.withOpacity(0.2)),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.insert_drive_file, color: Colors.blue, size: 30),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                fileName,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
+    return Align(
+      alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Column(
+        crossAxisAlignment: msg.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () async {
+              final Uri url = Uri.parse(formattedFileUrl);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("لا يمكن فتح هذا الملف")),
+                );
+              }
+            },
+            child: Container(
+              width: 220,
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                color: msg.isMe ? Colors.blue.withOpacity(0.1) : Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.insert_drive_file, color: Colors.blue, size: 30),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      fileName,
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          Text(
+            "${msg.createdAt.hour}:${msg.createdAt.minute.toString().padLeft(2, '0')}",
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
+          ),
+        ],
       ),
     );
   }
@@ -268,7 +291,6 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
           GestureDetector(
             onTap: () {
               String finalUrl = msg.mediaUrl ?? "";
-              // لو الرابط مش كامل (جاي من السيرفر كمسار فقط) كمله بالـ BaseUrl
               if (!finalUrl.startsWith('http') && !finalUrl.startsWith('/')) {
                 finalUrl = "${ApiConstants.baseUrl}$finalUrl";
               }
@@ -282,8 +304,8 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             },
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 5),
-              width: 200,
-              height: 150,
+              width: 250,
+              height: 180,
               decoration: BoxDecoration(
                 color: Colors.black87,
                 borderRadius: BorderRadius.circular(15),
@@ -326,11 +348,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     return BlocListener<ChatSocketCubit, ChatSocketState>(
       listener: (context, state) {
         if (state is ChatSocketMessageReceived) {
-          // هنا بنستخدم state.message اللي هو الـ Object الجاهز
-          // وبنبعته للميثود اللي عدلناها فوق
-          context.read<ChatMessagesCubit>().addIncomingMessageFromSocket(
-            state.message,
-          );
+          context.read<ChatMessagesCubit>().addIncomingMessageFromSocket(state.message);
         }
       },
       child: Scaffold(
@@ -359,9 +377,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final msg = messages[index];
-                        final messageKey = ValueKey(
-                          "${msg.text}_${msg.createdAt.millisecondsSinceEpoch}",
-                        );
+                        final messageKey = ValueKey(msg.id);
                         final time =
                             "${msg.createdAt.hour.toString().padLeft(2, '0')}:${msg.createdAt.minute.toString().padLeft(2, '0')}";
 

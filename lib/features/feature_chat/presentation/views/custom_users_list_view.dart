@@ -32,7 +32,7 @@ class CustomUsersListView extends StatelessWidget {
             // لو استلمنا رسالة جديدة عن طريق السوكيت، نحدث القائمة
             if (state is ChatSocketMessageReceived) {
               context.read<ChatListCubit>().fetchChats();
-              print("🔔 Socket triggered ChatList update");
+              // print("🔔 Socket triggered ChatList update");
             }
           },
           child: BlocBuilder<ChatListCubit, ChatListState>(
@@ -165,7 +165,7 @@ class CustomUsersListView extends StatelessWidget {
                             ),
                           ),
                         ).then((_) {
-                          // عند العودة من الشات، نحدث القائمة للتأكد من اختفاء الإشعار
+                          if (!context.mounted) return;
                           context.read<ChatListCubit>().fetchChats();
                         });
                       },

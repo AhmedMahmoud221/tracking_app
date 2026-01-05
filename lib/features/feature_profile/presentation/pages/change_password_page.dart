@@ -150,7 +150,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
                         context.go(AppRouter.kLoginPageView);
                       } catch (e) {
-                        print('error is $e');
+                        // print('error is $e');
                         // if (!context.mounted) return;
                         context.go(AppRouter.kLoginPageView);
                         ScaffoldMessenger.of(

@@ -59,7 +59,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
         (d) => d.id == widget.device.id,
         orElse: () => currentDevice, 
       );
-      print("UI Updated with new brand: ${currentDevice.brand}");
+      // print("UI Updated with new brand: ${currentDevice.brand}");
     }
         return Scaffold(
           backgroundColor: isDark ? Colors.black : Colors.white,

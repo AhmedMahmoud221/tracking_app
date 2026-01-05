@@ -15,26 +15,24 @@ class MessageModel extends MessageEntity {
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json, String myId) {
-    // 1. فك تغليف السوكيت
+    
     final data = json.containsKey('message') ? json['message'] : json;
     
-    // 2. تأمين الـ ID (لو فاضي نستخدم الثابت)
-    final activeId = (myId.isEmpty) ? "6935eccd50c25daeb0dea0b5" : myId;
+    // final activeId = (myId.isEmpty) ? "6935eccd50c25daeb0dea0b5" : myId;
 
-    // 3. استخراج بيانات الراسل (senderId) بذكاء
     String sId = "";
     String sName = "User";
     String? sImage;
 
-    final senderData = data['senderId']; // بناخد من data مش من json
+    final senderData = data['senderId'];
 
     if (senderData is Map) {
       sId = senderData['_id']?.toString() ?? "";
       sName = senderData['name']?.toString() ?? "User";
-      sImage = senderData['profile_image']?.toString();
+      sImage = senderData['profilePicture']?.toString();
     } else {
       sId = senderData?.toString() ?? "";
-      sName = data['senderName']?.toString() ?? "User";
+      // sName = data['senderName']?.toString() ?? "User";
     }
 
     // 4. معالجة التاريخ
@@ -48,21 +46,32 @@ class MessageModel extends MessageEntity {
     }
 
     // السطر السحري اللي بيحدد يمين ولا شمال
-    bool checkIsMe = (sId == activeId);
+    bool checkIsMe = (sId == myId);
 
-    print("DEBUG: sId: '$sId' | activeId: '$activeId' | Final isMe: $checkIsMe");
+    // print("DEBUG: sId: '$sId' | activeId: '$activeId' | Final isMe: $checkIsMe");
+
+    String textContent = "";
+    if (data['content'] != null) {
+      textContent = data['content'].toString();
+    } else if (data['text'] != null) {
+      textContent = data['text'].toString();
+    } else if (json['message'] is String) {
+      // أحياناً السيرفر بيبعت الرسالة كـ String مباشرة في حقل message
+      textContent = json['message'].toString();
+    }
 
     return MessageModel(
       id: data['_id']?.toString() ?? "",
       senderId: sId,
       senderName: sName,
       senderImage: sImage,
-      text: data['text']?.toString() ?? (data['content']?.toString() ?? ""), // دعم المسميين
+      text: textContent,
+      // text: data['message']?.toString() ?? data['text']?.toString() ?? "",
       messageType: data['messageType']?.toString() ?? "text",
       mediaUrl: data['mediaUrl']?.toString(),
       fileName: data['fileName']?.toString(),
       createdAt: parsedDate,
-      isMe: checkIsMe, // القيمة النهائية
+      isMe: checkIsMe,
     );
   }
 

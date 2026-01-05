@@ -75,29 +75,24 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
       if (state is ChatMessagesSuccess) {
         final currentMessages = (state as ChatMessagesSuccess).messages;
 
-        // 1. فحص هل السوكيت سبقنا وضاف الرسالة؟
         bool alreadyAddedBySocket = currentMessages.any(
           (m) => m.id == newMessage.id,
         );
 
         List<MessageEntity> newList;
         if (alreadyAddedBySocket) {
-          // لو موجودة، بنشيل الـ temp اللي كنا ضايفينها بس
           newList = currentMessages
               .where((m) => m.id != tempMessage.id)
               .toList();
         } else {
-          // لو مش موجودة، بنبدل الـ temp بالحقيقية
           newList = currentMessages
               .map((m) => m.id == tempMessage.id ? newMessage : m)
               .toList();
         }
 
-        // 2. الترتيب (الخطوة السحرية عشان الترتيب ما يبوظش لما تقفل وتفتح)
-        // بنرتب بحيث الأحدث (createdAt الأكبر) يكون هو اللي في الأول (index 0)
+
         newList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-        // 3. إرسال الحالة النهائية مرة واحدة فقط
         emit(ChatMessagesSuccess(messages: newList));
       }
     });
@@ -108,7 +103,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   Future<void> fetchMessages(String chatId, String currentUserId) async {
     emit(ChatMessagesLoading());
 
-    print("CUBIT RECEIVED ID: $currentUserId");
+    // print("CUBIT RECEIVED ID: $currentUserId");
 
     final result = await getChatMessagesUseCase(chatId);
     result.fold((error) => emit(ChatMessagesError(error)), (messagesList) {
@@ -116,7 +111,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
           .map((e) => MessageModel.fromJson(e.toJson(), currentUserId))
           .toList()
           .reversed
-          .toList(); // ✅ ضيفنا العكس هنا
+          .toList(); 
 
       emit(ChatMessagesSuccess(messages: messages));
     });
@@ -126,22 +121,35 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   void addIncomingMessageFromSocket(MessageModel newMessage) {
     final currentState = state;
     if (currentState is ChatMessagesSuccess) {
-      // 1. فحص هل الرسالة موجودة فعلاً (عشان ما نكررهاش لو السوكيت بعتها مرتين)
+      // 1. فحص الـ ID (الوسيلة الأضمن لمنع التكرار)
       bool existsById = currentState.messages.any((m) => m.id == newMessage.id);
 
-      // 2. فحص هل دي رسالة "أنا" اللي بعتها ولسه ظاهرة كـ Temp؟
-      bool isMyOwnTempMessage = currentState.messages.any(
-        (m) => m.text == newMessage.text && m.isMe == true && m.id.length > 15,
-      );
+      // 2. إذا كانت الرسالة ليست مكررة بالـ ID
+      if (!existsById) {
+        // هل هذه الرسالة تخصني أنا (التي أرسلتها للتو)؟ 
+        // نتحقق من ذلك عن طريق مطابقة النص وأن الحالة السابقة كانت "Me"
+        // مع استبدال الرسالة المؤقتة (التي ليس لها ID حقيقي بعد) بالرسالة الجديدة
+        
+        final updatedList = List<MessageEntity>.from(currentState.messages);
+        
+        // ابحث عن الرسالة المؤقتة التي أرسلتها أنا بنفس النص (لو موجودة)
+        int tempMessageIndex = updatedList.indexWhere(
+          (m) => m.text == newMessage.text && m.isMe && m.id.length < 5 // افترضنا أن الـ Temp ID قصير أو غير موجود
+        );
 
-      if (!existsById && !isMyOwnTempMessage) {
-        final updatedList = List<MessageEntity>.from(currentState.messages)
-          ..insert(0, newMessage); // إضافة الرسالة في أول القائمة
+        if (tempMessageIndex != -1 && newMessage.isMe) {
+          // تحديث الرسالة المؤقتة ببيانات السيرفر (مثل الـ ID الحقيقي)
+          updatedList[tempMessageIndex] = newMessage;
+          // print("✅ Socket: Temp message updated with real ID");
+        } else {
+          // إذا كانت رسالة جديدة تماماً من الطرف الآخر أو مني ولم تكن موجودة
+          updatedList.insert(0, newMessage);
+          // print("✅ Socket: New message added to list");
+        }
 
         emit(ChatMessagesSuccess(messages: updatedList));
-        print("✅ Socket: New Object Message Added");
       } else {
-        print("⚠️ Socket: Message ignored (Duplicate or My own temp)");
+        // print("⚠️ Socket: Message already exists (ID duplicate)");
       }
     }
   }
