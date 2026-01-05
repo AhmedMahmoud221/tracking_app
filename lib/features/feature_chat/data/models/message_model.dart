@@ -3,6 +3,7 @@ import 'package:live_tracking/features/feature_chat/domain/enities/message_entit
 class MessageModel extends MessageEntity {
   MessageModel({
     required super.id,
+    required super.chatId,
     required super.senderId,
     required super.senderName,
     super.senderImage,
@@ -15,6 +16,7 @@ class MessageModel extends MessageEntity {
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json, String myId) {
+    // print("DEBUG SOCKET JSON: $json");
     Map<String, dynamic> body;
 
     if (json.containsKey('data') && json['data'] is Map && json['data'].containsKey('message')) {
@@ -59,6 +61,7 @@ class MessageModel extends MessageEntity {
 
     return MessageModel(
       id: body['_id']?.toString() ?? "",
+      chatId: body['chatId']?.toString() ?? "",
       senderId: sId,
       senderName: sName,
       senderImage: sImage,

@@ -8,3 +8,8 @@ class ChatSocketMessageReceived extends ChatSocketState {
   final MessageModel message; // البيانات الخام اللي جاية من السيرفر
   ChatSocketMessageReceived(this.message);
 }
+
+class ChatSocketLastMessageUpdate extends ChatSocketState {
+  final Map<String, dynamic> data;
+  ChatSocketLastMessageUpdate(this.data);
+}

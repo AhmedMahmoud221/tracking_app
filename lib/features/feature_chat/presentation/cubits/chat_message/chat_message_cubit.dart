@@ -58,6 +58,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
 
     final tempMessage = MessageEntity(
       id: DateTime.now().millisecondsSinceEpoch.toString(), // ID مؤقت
+      chatId: myId,
       text: params.text ?? "",
       senderId: myId,
       senderName: "Me",
@@ -120,38 +121,39 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   // show messages from socket
   void addIncomingMessageFromSocket(MessageModel newMessage) {
     final currentState = state;
-    if (currentState is ChatMessagesSuccess) {
-      // 1. فحص الـ ID (الوسيلة الأضمن لمنع التكرار)
-      bool existsById = currentState.messages.any((m) => m.id == newMessage.id);
-
-      // 2. إذا كانت الرسالة ليست مكررة بالـ ID
-      if (!existsById) {
-        // هل هذه الرسالة تخصني أنا (التي أرسلتها للتو)؟ 
-        // نتحقق من ذلك عن طريق مطابقة النص وأن الحالة السابقة كانت "Me"
-        // مع استبدال الرسالة المؤقتة (التي ليس لها ID حقيقي بعد) بالرسالة الجديدة
-        
+      if (currentState is ChatMessagesSuccess) {
         final updatedList = List<MessageEntity>.from(currentState.messages);
-        
-        // ابحث عن الرسالة المؤقتة التي أرسلتها أنا بنفس النص (لو موجودة)
-        int tempMessageIndex = updatedList.indexWhere(
-          (m) => m.text == newMessage.text && m.isMe && m.id.length < 5 // افترضنا أن الـ Temp ID قصير أو غير موجود
-        );
 
-        if (tempMessageIndex != -1 && newMessage.isMe) {
-          // تحديث الرسالة المؤقتة ببيانات السيرفر (مثل الـ ID الحقيقي)
-          updatedList[tempMessageIndex] = newMessage;
-          // print("✅ Socket: Temp message updated with real ID");
+        // 1. ابحث أولاً بالـ ID (لو الرسالة موجودة فعلاً لتجنب التكرار)
+        int existingIndex = updatedList.indexWhere((m) => m.id == newMessage.id);
+
+        if (existingIndex != -1) {
+          updatedList[existingIndex] = newMessage;
+          print("🔄 Socket: Message updated by ID");
         } else {
-          // إذا كانت رسالة جديدة تماماً من الطرف الآخر أو مني ولم تكن موجودة
-          updatedList.insert(0, newMessage);
-          // print("✅ Socket: New message added to list");
+          // 2. لو مش موجودة، ابحث عن الرسالة المؤقتة اللي أنا بعتها
+          // هنقارن بـ (النص) "أو" (اسم الملف) عشان نغطي الصور والملفات
+          int tempMessageIndex = updatedList.indexWhere((m) {
+            bool isTemp = m.id.length < 10; // الرسائل المؤقتة عادة الـ ID بتاعها قصير أو UUID مختلف
+            bool sameText = (m.text == newMessage.text && m.text.isNotEmpty);
+            bool sameFile = (m.fileName == newMessage.fileName && m.fileName != null);
+            
+            return isTemp && m.isMe && (sameText || sameFile);
+          });
+
+          if (tempMessageIndex != -1) {
+            updatedList[tempMessageIndex] = newMessage;
+            print("✅ Socket: Temp message replaced successfully");
+          } else {
+            // 3. رسالة جديدة تماماً (أو من الشخص الآخر)
+            updatedList.insert(0, newMessage);
+            print("✅ Socket: New message inserted at index 0");
+          }
         }
 
+        // أهم سطر: إصدار الحالة الجديدة لتحديث الـ UI والـ Last Message
         emit(ChatMessagesSuccess(messages: updatedList));
-      } else {
-        // print("⚠️ Socket: Message already exists (ID duplicate)");
       }
-    }
   }
 
   // updatelist

@@ -56,7 +56,6 @@ class ChatRemoteDataSource {
     return MessageModel.fromJson(response.data['data']['message'], myId ?? '');
   }
 
-  // 2. ميثود الميديا الموحدة (للصور، الفويس، الفيديو، والملفات)
   Future<MessageModel> sendMediaMessage({
     required String chatId,
     required String filePath,
@@ -65,7 +64,6 @@ class ChatRemoteDataSource {
     final token = await SecureStorage.readToken();
     final myId = await SecureStorage.readUserId();
 
-    // استخراج اسم الملف من المسار
     String fileName = filePath.split('/').last;
 
     FormData formData = FormData.fromMap({

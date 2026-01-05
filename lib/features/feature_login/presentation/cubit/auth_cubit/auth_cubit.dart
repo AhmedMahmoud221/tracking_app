@@ -10,6 +10,10 @@ class AuthCubit extends Cubit<AuthState> {
   //--------------------------------------------
   // 1. Login Method
   Future<void> login({required String email, required String password}) async {
+    // void loginSuccess(String token) {
+    //   sl<SocketService>().init(token);
+    //   emit(AuthAuthenticated());
+    // }
     emit(AuthLoading());
     try {
       final authData = await authService.login(

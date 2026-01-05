@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:live_tracking/core/providers/app_providers.dart';
+import 'package:live_tracking/core/socketService/socket_service.dart';
 import 'package:live_tracking/core/theme/app_theme.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
@@ -15,8 +16,17 @@ final sl = GetIt.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   String savedLang = await SecureStorage.readLanguage() ?? 'ar';
-  await init(savedLang: savedLang );
+  String? token = await SecureStorage.readToken();
+
+  await init(savedLang: savedLang);
+
+  if (token != null && token.isNotEmpty) {
+    sl<SocketService>().init(token);
+    print("🚀 Socket initialized from main with token");
+  }
+
   runApp(const LiveTrackingApp());
 }
 

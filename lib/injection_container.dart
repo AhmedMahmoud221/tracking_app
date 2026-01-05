@@ -64,7 +64,7 @@ Future<void> init({String savedLang = 'ar'}) async {
 
   sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
 
-  sl.registerFactory(() => ChatListCubit(sl()));
+  sl.registerFactory(() => ChatListCubit(sl(), sl<ChatSocketCubit>()));
 
   // ------------------Use Case---------------
   sl.registerLazySingleton<AuthService>(() => AuthService());
@@ -122,5 +122,5 @@ Future<void> init({String savedLang = 'ar'}) async {
       sl<SendMessageUseCase>(),
     ),
   );
-  sl.registerLazySingleton(() => ChatSocketCubit(sl<SocketService>()));
+  sl.registerLazySingleton(() => ChatSocketCubit(sl()));
 }

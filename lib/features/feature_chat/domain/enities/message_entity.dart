@@ -1,5 +1,6 @@
 class MessageEntity {
   final String id;
+  final String chatId;
   final String senderId;
   final String senderName;
   final String? senderImage;
@@ -12,6 +13,7 @@ class MessageEntity {
 
   MessageEntity({
     required this.id,
+    required this.chatId,
     required this.senderId,
     required this.senderName,
     this.senderImage,

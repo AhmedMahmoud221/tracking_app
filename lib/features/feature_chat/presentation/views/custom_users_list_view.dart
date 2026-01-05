@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
@@ -15,171 +14,162 @@ class CustomUsersListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. نبدأ بجلب الـ ID الخاص بالمستخدم الحالي
-    return FutureBuilder<String?>(
-      future: SecureStorage.readUserId(),
-      builder: (context, snapshot) {
-        // لو لسه بيجيب الـ ID من الـ Storage
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final String myId = snapshot.data ?? "";
-
-        // 2. بمجرد الحصول على الـ ID، نشغل الـ Logic بتاع الـ Bloc
-        return BlocListener<ChatSocketCubit, ChatSocketState>(
-          listener: (context, state) {
-            // لو استلمنا رسالة جديدة عن طريق السوكيت، نحدث القائمة
-            if (state is ChatSocketMessageReceived) {
-              context.read<ChatListCubit>().fetchChats();
-              // print("🔔 Socket triggered ChatList update");
+    final myId = context.read<ChatListCubit>().myId;
+    return BlocListener<ChatSocketCubit, ChatSocketState>(
+      listener: (context, state) {
+        print("🔔 [Listener Debug] New State Received: $state");
+        if (state is ChatSocketMessageReceived) {
+        print('message : ${state.message.text}');
+          // في حالة استلام رسالة كاملة (وأنت جوه الشات)
+          context.read<ChatListCubit>().updateFromLastMessageEvent({
+            'chatId': state.message.chatId,
+            'lastMessage': {
+              'text': state.message.text,
+              'senderId': state.message.senderId,
+              'createdAt': state.message.createdAt.toIso8601String(),
+              'messageType': state.message.messageType,
             }
-          },
-          child: BlocBuilder<ChatListCubit, ChatListState>(
-            builder: (context, state) {
-              if (state is ChatListLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+          });
+        } else if (state is ChatSocketLastMessageUpdate) {
+          context.read<ChatListCubit>().updateFromLastMessageEvent(state.data);
+        }
+      },
+      child: BlocBuilder<ChatListCubit, ChatListState>(
+        builder: (context, state) {
+          if (state is ChatListLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              if (state is ChatListError) {
-                return Center(child: Text(state.message));
-              }
+          if (state is ChatListError) {
+            return Center(child: Text(state.message));
+          }
 
-              if (state is ChatListSuccess) {
-                final chats = state.chats;
+          if (state is ChatListSuccess) {
+            final chats = state.chats;
 
-                if (chats.isEmpty) {
-                  return const Center(child: Text("No chats yet."));
-                }
+            if (chats.isEmpty) {
+              return const Center(child: Text("No chats yet."));
+            }
 
-                return ListView.separated(
-                  itemCount: chats.length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(indent: 85, endIndent: 15, height: 1),
-                  itemBuilder: (context, index) {
-                    final chat = chats[index];
-                    return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      leading: CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.blue.withOpacity(0.1),
-                        backgroundImage:
-                            chat.profilePicture != null &&
-                                chat.profilePicture!.isNotEmpty
-                            ? NetworkImage(chat.profilePicture!)
-                            : null,
-                        child:
-                            chat.profilePicture == null ||
-                                chat.profilePicture!.isEmpty
-                            ? Text(
-                                chat.otherUserName.isNotEmpty
-                                    ? chat.otherUserName[0]
-                                    : "?",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            : null,
-                      ),
-                      title: Text(
-                        chat.otherUserName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      subtitle: Text(
-                        // لو الـ senderId هو الـ ID بتاعي، زود كلمة "You: "
-                        (chat.lastMessageSenderId == myId ? "You: " : "") +
-                            chat.lastMessage,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          // لو فيه رسائل غير مقروءة وأنا مش الراسل، نخلي الخط تقيل (Bold)
-                          fontWeight:
-                              (chat.hasUnreadMessages &&
-                                  chat.lastMessageSenderId != myId)
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                          // لو فيه رسائل غير مقروءة، نخلي اللون أسود واضح، غير كدة رمادي
-                          color:
-                              (chat.hasUnreadMessages &&
-                                  chat.lastMessageSenderId != myId)
-                              ? Colors.black87
-                              : Colors.grey[600],
-                        ),
-                      ),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            formatChatTime(chat.createdAt),
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+            return ListView.separated(
+              itemCount: chats.length,
+              separatorBuilder: (context, index) =>
+                  const Divider(indent: 85, endIndent: 15, height: 1),
+              itemBuilder: (context, index) {
+                final chat = chats[index];
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.blue.withOpacity(0.1),
+                    backgroundImage:
+                        chat.profilePicture != null &&
+                            chat.profilePicture!.isNotEmpty
+                        ? NetworkImage(chat.profilePicture!)
+                        : null,
+                    child:
+                        chat.profilePicture == null ||
+                            chat.profilePicture!.isEmpty
+                        ? Text(
+                            chat.otherUserName.isNotEmpty
+                                ? chat.otherUserName[0]
+                                : "?",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-
-                          // شرط ظهور علامة التعجب:
-                          // 1. يوجد رسائل غير مقروءة
-                          // 2. آخر رسالة ليست مني (الطرف التاني هو اللي باعت)
-                          if (chat.hasUnreadMessages &&
+                          )
+                        : null,
+                  ),
+                  title: Text(
+                    chat.otherUserName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: Text(
+                    (chat.lastMessageSenderId == myId ? "You: " : "") +
+                        chat.lastMessage,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight:
+                          (chat.hasUnreadMessages &&
                               chat.lastMessageSenderId != myId)
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: const BoxDecoration(
-                                color: Colors.blue,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Text(
-                                "!",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                        ],
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color:
+                          (chat.hasUnreadMessages &&
+                              chat.lastMessageSenderId != myId)
+                          ? Colors.black87
+                          : Colors.grey[600],
+                    ),
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        formatChatTime(chat.createdAt),
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      onTap: () {
-                        // إرسال إشارة Seen للسيرفر
-                        context.read<ChatSocketCubit>().markAsRead(chat.chatId);
+                      const SizedBox(height: 8),
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider(
-                              create: (context) => sl<ChatMessagesCubit>(),
-                              child: ChatMessagesScreen(
-                                userName: chat.otherUserName,
-                                chatId: chat.chatId,
-                              ),
+                      if (chat.hasUnreadMessages &&
+                          chat.lastMessageSenderId != myId)
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Text(
+                            "!",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ).then((_) {
-                          if (!context.mounted) return;
-                          context.read<ChatListCubit>().fetchChats();
-                        });
-                      },
-                    );
+                        ),
+                    ],
+                  ),
+                  onTap: () {
+                    context.read<ChatSocketCubit>().markAsRead(chat.chatId);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (context) => sl<ChatMessagesCubit>(),
+                          child: ChatMessagesScreen(
+                            userName: chat.otherUserName,
+                            chatId: chat.chatId,
+                          ),
+                        ),
+                      ),
+                    ).then((_) {
+                      if (!context.mounted) return;
+                      context.read<ChatListCubit>().fetchChats(showLoading: false);
+                    });
                   },
                 );
-              }
-              return const SizedBox();
-            },
-          ),
-        );
-      },
+              },
+            );
+          }
+          return const SizedBox();
+        },
+      ),
     );
-  }
+  }  
 }
 
 String formatChatTime(DateTime date) {

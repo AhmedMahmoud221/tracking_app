@@ -1,3 +1,4 @@
+import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/chat_entity.dart';
 
 class ChatModel extends ChatEntity {
@@ -12,9 +13,13 @@ class ChatModel extends ChatEntity {
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
+      final myId = SecureStorage.readUserId();
     final List userIds = json['userIds'] ?? [];
-    final Map<String, dynamic> otherUser = userIds.isNotEmpty ? userIds[0] : {};
     final lastMsgData = json['lastMessage'];
+    final otherUser = userIds.firstWhere(
+      (user) => user['_id'] != myId,
+      orElse: () => userIds[0],
+    );
 
     bool unread = false;
     String lastMsgText = "";
@@ -25,11 +30,9 @@ class ChatModel extends ChatEntity {
       unread = lastMsgData['seen'] == false;
       senderId = lastMsgData['senderId']?.toString() ?? "";
 
-      if (lastMsgData['content'] != null &&
-          lastMsgData['content'].toString().isNotEmpty) {
-        lastMsgText = lastMsgData['content'];
-      } else if (lastMsgData['text'] != null &&
-          lastMsgData['text'].toString().isNotEmpty) {
+      if (lastMsgData['message'] != null) {
+          lastMsgText = lastMsgData['message'];
+      } else if (lastMsgData['text'] != null) {
         lastMsgText = lastMsgData['text'];
       } else {
         String type = lastMsgData['messageType'] ?? "message";
