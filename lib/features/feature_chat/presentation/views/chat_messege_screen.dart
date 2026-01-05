@@ -219,13 +219,27 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     if (path == null || path.isEmpty) return "";
     if (path.startsWith('http')) return path;
 
-    return "${ApiConstants.baseUrl}/";
+    final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    final base = ApiConstants.baseUrl.endsWith('/') 
+        ? ApiConstants.baseUrl.substring(0, ApiConstants.baseUrl.length - 1) 
+        : ApiConstants.baseUrl;
+
+    return "$base/$cleanPath";
   }
 
   // show message files
   Widget _buildFileBubble(MessageEntity msg, bool isDark) {
+    print("DEBUG: mediaUrl = ${msg.mediaUrl}");
+    print("DEBUG: msg.text = ${msg.text}");
+    print("DEBUG: msg.fileName = ${msg.fileName}");
     final String formattedFileUrl = _getFormattedUrl(msg.mediaUrl);
-    final String fileName = "Document File";
+
+    String displayFileName = "Document File";
+
+    if (msg.fileName != null && msg.fileName!.isNotEmpty) {
+      displayFileName = msg.fileName!;
+    } 
+    
 
     return Align(
       alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -255,15 +269,16 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               child: Row(
                 children: [
                   const Icon(Icons.insert_drive_file, color: Colors.blue, size: 30),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      fileName,
+                      displayFileName,
                       style: TextStyle(
                         color: isDark ? Colors.white : Colors.black,
                         fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                 ],
@@ -417,7 +432,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                           );
                         }
                         // 4. حالة الملفات/المستندات (جديد)
-                        else if (msgType == 'file' || msgType == 'document') {
+                        else if (msgType == 'file' || msgType == 'document' || msgType.contains('application')) {
                           return Container(
                             key: messageKey,
                             child: _buildFileBubble(msg, isDark),

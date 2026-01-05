@@ -15,16 +15,21 @@ class MessageModel extends MessageEntity {
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json, String myId) {
-    
-    final data = json.containsKey('message') ? json['message'] : json;
-    
-    // final activeId = (myId.isEmpty) ? "6935eccd50c25daeb0dea0b5" : myId;
+    Map<String, dynamic> body;
+
+    if (json.containsKey('data') && json['data'] is Map && json['data'].containsKey('message')) {
+      body = json['data']['message'];
+    } else if (json.containsKey('message') && json['message'] is Map) {
+      body = json['message'];
+    } else {
+      body = json;
+    }
 
     String sId = "";
     String sName = "User";
     String? sImage;
 
-    final senderData = data['senderId'];
+    final senderData = body['senderId'];
 
     if (senderData is Map) {
       sId = senderData['_id']?.toString() ?? "";
@@ -32,44 +37,35 @@ class MessageModel extends MessageEntity {
       sImage = senderData['profilePicture']?.toString();
     } else {
       sId = senderData?.toString() ?? "";
-      // sName = data['senderName']?.toString() ?? "User";
     }
 
-    // 4. معالجة التاريخ
+    String textContent = body['text']?.toString() ?? 
+                         body['content']?.toString() ?? "";
+    
+    if (textContent.isEmpty && json['message'] is String) {
+      textContent = json['message'].toString();
+    }
+
     DateTime parsedDate;
     try {
-      parsedDate = data['createdAt'] != null 
-          ? DateTime.parse(data['createdAt']) 
+      parsedDate = body['createdAt'] != null 
+          ? DateTime.parse(body['createdAt']) 
           : DateTime.now();
     } catch (e) {
       parsedDate = DateTime.now();
     }
 
-    // السطر السحري اللي بيحدد يمين ولا شمال
     bool checkIsMe = (sId == myId);
 
-    // print("DEBUG: sId: '$sId' | activeId: '$activeId' | Final isMe: $checkIsMe");
-
-    String textContent = "";
-    if (data['content'] != null) {
-      textContent = data['content'].toString();
-    } else if (data['text'] != null) {
-      textContent = data['text'].toString();
-    } else if (json['message'] is String) {
-      // أحياناً السيرفر بيبعت الرسالة كـ String مباشرة في حقل message
-      textContent = json['message'].toString();
-    }
-
     return MessageModel(
-      id: data['_id']?.toString() ?? "",
+      id: body['_id']?.toString() ?? "",
       senderId: sId,
       senderName: sName,
       senderImage: sImage,
       text: textContent,
-      // text: data['message']?.toString() ?? data['text']?.toString() ?? "",
-      messageType: data['messageType']?.toString() ?? "text",
-      mediaUrl: data['mediaUrl']?.toString(),
-      fileName: data['fileName']?.toString(),
+      messageType: body['messageType']?.toString() ?? "text",
+      mediaUrl: body['mediaUrl']?.toString(),
+      fileName: body['fileName']?.toString(),
       createdAt: parsedDate,
       isMe: checkIsMe,
     );
@@ -84,6 +80,7 @@ class MessageModel extends MessageEntity {
       'text': text,
       'messageType': messageType,
       'mediaUrl': mediaUrl,
+      'fileName': fileName,
       'createdAt': createdAt.toIso8601String(),
     };
   }
