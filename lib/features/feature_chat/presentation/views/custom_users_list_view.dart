@@ -7,6 +7,7 @@ import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_mes
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 import 'package:live_tracking/main.dart';
 
 class CustomUsersListView extends StatelessWidget {
@@ -14,6 +15,7 @@ class CustomUsersListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;   
     final myId = context.read<ChatListCubit>().myId;
     return BlocListener<ChatSocketCubit, ChatSocketState>(
       listener: (context, state) {
@@ -48,7 +50,7 @@ class CustomUsersListView extends StatelessWidget {
             final chats = state.chats;
 
             if (chats.isEmpty) {
-              return const Center(child: Text("No chats yet."));
+              return Center(child: Text('${AppLocalizations.of(context)!.nochats}'));
             }
 
             return ListView.separated(
@@ -59,8 +61,8 @@ class CustomUsersListView extends StatelessWidget {
                 final chat = chats[index];
                 return ListTile(
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+                    horizontal: 12,
+                    vertical: 6,
                   ),
                   leading: CircleAvatar(
                     radius: 30,
@@ -91,7 +93,7 @@ class CustomUsersListView extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    (chat.lastMessageSenderId == myId ? "You: " : "") +
+                    (chat.lastMessageSenderId == myId ? "${AppLocalizations.of(context)!.you} : " : "") +
                         chat.lastMessage,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -105,7 +107,7 @@ class CustomUsersListView extends StatelessWidget {
                       color:
                           (chat.hasUnreadMessages &&
                               chat.lastMessageSenderId != myId)
-                          ? Colors.black87
+                          ? Colors.white
                           : Colors.grey[600],
                     ),
                   ),
@@ -116,7 +118,7 @@ class CustomUsersListView extends StatelessWidget {
                       Text(
                         formatChatTime(chat.createdAt),
                         style: TextStyle(
-                          color: Theme.of(context).primaryColor,
+                          color: isDark ? Colors.white : Colors.black,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),

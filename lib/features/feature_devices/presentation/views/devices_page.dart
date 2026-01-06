@@ -49,7 +49,7 @@ class _DevicesPageState extends State<DevicesPage> {
                   content: Text(
                     AppLocalizations.of(context)!.deviceupdatedsuccessfully,
                   ),
-                ), // يمكنك تغيير الترجمة لـ Deleted
+                ),
               );
             }
             if (state is DeleteDeviceError) {
@@ -65,7 +65,7 @@ class _DevicesPageState extends State<DevicesPage> {
       ],
       child: BlocBuilder<DevicesCubit, DevicesState>(
         builder: (context, state) {
-          // حساب عدد الأجهزة المتاحة حالياً في الـ UI
+          // Count Devices
           int count = 0;
           if (state is DevicesLoaded) {
             count = state.devices.length;
@@ -77,7 +77,7 @@ class _DevicesPageState extends State<DevicesPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 12),
-                  // السيرش بار موجود هنا
+                  // Search Bar
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: _SearchBar(isDark: isDark, controller: searchController),
@@ -145,7 +145,6 @@ class _DevicesPageState extends State<DevicesPage> {
     );
   }
 
-  // دالة بناء المحتوى لفصل المنطق عن التصميم
   Widget _buildBody(DevicesState state, bool isDark) {
     if (state is DevicesLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -186,10 +185,9 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 }
 
-// السيرش بار كـ Widget منفصل كما أرسلته أنت
 class _SearchBar extends StatefulWidget {
   final bool isDark;
-  final TextEditingController controller; // 1. أضف هذا السطر هنا
+  final TextEditingController controller; 
 
   const _SearchBar({required this.isDark, required this.controller});
 
@@ -208,7 +206,7 @@ class _SearchBarState extends State<_SearchBar> {
 
   @override
   void dispose() {
-    controller.dispose(); // مهم جداً لتجنب تسريب الذاكرة
+    controller.dispose();
     super.dispose();
   }
 

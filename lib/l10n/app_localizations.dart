@@ -556,6 +556,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat'**
   String get chat;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @am.
+  ///
+  /// In en, this message translates to:
+  /// **'AM'**
+  String get am;
+
+  /// No description provided for @pm.
+  ///
+  /// In en, this message translates to:
+  /// **'PM'**
+  String get pm;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get search;
+
+  /// No description provided for @nochats.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats yet.'**
+  String get nochats;
+
+  /// No description provided for @privatechat.
+  ///
+  /// In en, this message translates to:
+  /// **'Private Chat'**
+  String get privatechat;
+
+  /// No description provided for @chatwith.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with a single person'**
+  String get chatwith;
+
+  /// No description provided for @groupchat.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Chat'**
+  String get groupchat;
+
+  /// No description provided for @creategroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a group with multiple people'**
+  String get creategroup;
+
+  /// No description provided for @typemessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message'**
+  String get typemessage;
+
+  /// No description provided for @vedio.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get vedio;
+
+  /// No description provided for @document.
+  ///
+  /// In en, this message translates to:
+  /// **'Decument'**
+  String get document;
+
+  /// No description provided for @slidetocancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide to cancel'**
+  String get slidetocancel;
+
+  /// No description provided for @block.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get block;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

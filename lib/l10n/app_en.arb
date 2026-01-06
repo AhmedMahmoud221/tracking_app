@@ -76,5 +76,22 @@
   "resetyourpassword": "Reset your password",
   "pleasefillallfields": "Please fill all fields",
   "emailrequired": "Email is required",
-  "chat": "Chat"
+  "chat": "Chat",
+  "you": "You",
+  "am": "AM",
+  "pm": "PM",
+  "search": "Search...",
+  "nochats": "No chats yet.",
+  "privatechat": "Private Chat",
+  "chatwith": "Chat with a single person",
+  "groupchat": "Group Chat",
+  "creategroup": "Create a group with multiple people",
+  "typemessage": "Type a message",
+  "vedio": "Video",
+  "document": "Decument",
+  "slidetocancel": "Slide to cancel",
+  "block": "Block",
+  "phone": "Phone",
+  "about": "About",
+  "yesterday": "Yesterday"
 }

@@ -76,5 +76,22 @@
   "resetyourpassword": "إعادة تعيين كلمة المرور",
   "pleasefillallfields": "يرجى ملء جميع الحقول",
   "emailrequired": "البريد الإلكتروني مطلوب",
-  "chat": "الدردشة"
+  "chat": "الدردشة",
+  "you": "أنت",
+  "am": "صباحا",
+  "pm": "مساءا",
+  "search": "بحث...",
+  "nochats": "لا يوجد محادثات دردشة.",
+  "privatechat": "محادثة خاصة",
+  "chatwith": "تحدث مع شخص واحد",
+  "groupchat": "محادثة جماعية",
+  "creategroup": "أنشئ مجموعة تضم عدة أشخاص",
+  "typemessage": "اكتب رسالة...",
+  "vedio": "فيديو",
+  "document": "مستندات",
+  "slidetocancel": "اسحب للإلغاء",
+  "block": "حظر",
+  "phone": "الهاتف",
+  "about": "حول",
+  "yesterday": "أمس"
 }

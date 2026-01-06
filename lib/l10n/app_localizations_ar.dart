@@ -238,4 +238,55 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chat => 'الدردشة';
+
+  @override
+  String get you => 'أنت';
+
+  @override
+  String get am => 'صباحا';
+
+  @override
+  String get pm => 'مساءا';
+
+  @override
+  String get search => 'بحث...';
+
+  @override
+  String get nochats => 'لا يوجد محادثات دردشة.';
+
+  @override
+  String get privatechat => 'محادثة خاصة';
+
+  @override
+  String get chatwith => 'تحدث مع شخص واحد';
+
+  @override
+  String get groupchat => 'محادثة جماعية';
+
+  @override
+  String get creategroup => 'أنشئ مجموعة تضم عدة أشخاص';
+
+  @override
+  String get typemessage => 'اكتب رسالة...';
+
+  @override
+  String get vedio => 'فيديو';
+
+  @override
+  String get document => 'مستندات';
+
+  @override
+  String get slidetocancel => 'اسحب للإلغاء';
+
+  @override
+  String get block => 'حظر';
+
+  @override
+  String get phone => 'الهاتف';
+
+  @override
+  String get about => 'حول';
+
+  @override
+  String get yesterday => 'أمس';
 }

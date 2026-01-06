@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class CustomSearchbarUsersList extends StatelessWidget {
   const CustomSearchbarUsersList({super.key, required this.isDark});
@@ -14,7 +15,7 @@ class CustomSearchbarUsersList extends StatelessWidget {
         context.read<ChatListCubit>().searchChats(value);
       },
       decoration: InputDecoration(
-        hintText: "Search...",
+        hintText: AppLocalizations.of(context)!.search,
         hintStyle: const TextStyle(color: Colors.grey),
         prefixIcon: const Icon(Icons.search, color: Colors.blue),
         filled: true,

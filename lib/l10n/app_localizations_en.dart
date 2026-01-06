@@ -238,4 +238,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chat => 'Chat';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get am => 'AM';
+
+  @override
+  String get pm => 'PM';
+
+  @override
+  String get search => 'Search...';
+
+  @override
+  String get nochats => 'No chats yet.';
+
+  @override
+  String get privatechat => 'Private Chat';
+
+  @override
+  String get chatwith => 'Chat with a single person';
+
+  @override
+  String get groupchat => 'Group Chat';
+
+  @override
+  String get creategroup => 'Create a group with multiple people';
+
+  @override
+  String get typemessage => 'Type a message';
+
+  @override
+  String get vedio => 'Video';
+
+  @override
+  String get document => 'Decument';
+
+  @override
+  String get slidetocancel => 'Slide to cancel';
+
+  @override
+  String get block => 'Block';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get yesterday => 'Yesterday';
 }

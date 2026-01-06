@@ -14,17 +14,20 @@ import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_soc
 import 'package:live_tracking/features/feature_chat/presentation/views/audio_bubble.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_header_chat_screen.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/video_player_screen.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 import 'package:record/record.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatMessagesScreen extends StatefulWidget {
   final String userName;
   final String chatId;
+  final String? profilePicture;
 
   const ChatMessagesScreen({
     super.key,
     required this.userName,
-    required this.chatId,
+    required this.chatId, 
+    this.profilePicture,
   });
 
   @override
@@ -239,7 +242,6 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     if (msg.fileName != null && msg.fileName!.isNotEmpty) {
       displayFileName = msg.fileName!;
     } 
-    
 
     return Align(
       alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -267,7 +269,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                color: msg.isMe ? Colors.blue.withOpacity(0.1) : Colors.grey[200],
+                color: msg.isMe ? Colors.blue.withOpacity(0.1) : Colors.grey[800],
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.blue.withOpacity(0.2)),
               ),
@@ -376,6 +378,9 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         appBar: AppBar(
           titleSpacing: 0,
           title: CustomHeaderChatScreen(widget: widget),
+          surfaceTintColor: Colors.transparent, // يمنع تداخل الألوان عند السكرول
+          scrolledUnderElevation: 0,
+          backgroundColor: isDark ? Colors.grey[900] : Colors.white,
         ),
         body: Column(
           children: [
@@ -549,11 +554,11 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                       child: Wrap(
                         children: [
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.camera_alt,
-                              color: Colors.blue,
+                              color: Colors.grey[700],
                             ),
-                            title: const Text('Camera'),
+                            title: Text(AppLocalizations.of(context)!.camera),
                             onTap: () {
                               Navigator.pop(context);
                               _pickImage(
@@ -562,11 +567,11 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                             },
                           ),
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.photo_library,
-                              color: Colors.purple,
+                              color: Colors.grey[700],
                             ),
-                            title: const Text('Gallery'),
+                            title: Text(AppLocalizations.of(context)!.gallery),
                             onTap: () {
                               Navigator.pop(context);
                               _pickImage(
@@ -575,22 +580,22 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                             },
                           ),
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.videocam,
-                              color: Colors.red,
+                              color: Colors.grey[700],
                             ),
-                            title: const Text('Video'),
+                            title: Text(AppLocalizations.of(context)!.vedio),
                             onTap: () {
                               Navigator.pop(context);
                               _pickVideo(); // ميثود اختيار الفيديو
                             },
                           ),
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.insert_drive_file,
-                              color: Colors.orange,
+                              color: Colors.grey[700],
                             ),
-                            title: const Text('Document'),
+                            title: Text(AppLocalizations.of(context)!.document),
                             onTap: () {
                               Navigator.pop(context);
                               _pickDocument(); // ميثود اختيار الملفات
@@ -617,7 +622,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                   if (_swipePosition < -120) {
                     _isRecording = false;
                     _stopTimer();
-                    audioRecorder.stop(); // إيقاف التسجيل عند السحب للحذف
+                    audioRecorder.stop(); 
                   }
                 });
               }
@@ -642,7 +647,6 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             onTap: () {
               if (_messageController.text.trim().isNotEmpty) {
                 context.read<ChatMessagesCubit>().sendMessage(widget.chatId);
-                // مش محتاج تعمل setState هنا لأن الـ BlocBuilder هيحس بالتغيير فوراً
               }
             },
             child: CircleAvatar(
@@ -666,8 +670,10 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     return TextField(
       controller: _messageController,
       onChanged: (val) => setState(() {}),
+      maxLines: 5,
+      minLines: 1,
       decoration: InputDecoration(
-        hintText: "Type a message...",
+        hintText: AppLocalizations.of(context)!.typemessage,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
           borderSide: BorderSide.none,
@@ -676,7 +682,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         fillColor: isDark ? Colors.black : Colors.grey[100],
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 15,
-          vertical: 10,
+          vertical: 14,
         ),
       ),
     );
@@ -720,10 +726,10 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
           const Spacer(),
           Opacity(
             opacity: (1.0 + (_swipePosition / 120)).clamp(0.0, 1.0),
-            child: const Row(
+            child: Row(
               children: [
                 Icon(Icons.arrow_back_ios, size: 12, color: Colors.grey),
-                Text(" Slide to cancel", style: TextStyle(color: Colors.grey)),
+                Text(AppLocalizations.of(context)!.slidetocancel, style: TextStyle(color: Colors.grey)),
               ],
             ),
           ),

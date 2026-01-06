@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class UserProfileScreen extends StatelessWidget {
   // final String userName;
@@ -24,7 +25,7 @@ class UserProfileScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                 ),
 
-                icon: const Icon(Icons.more_vert),
+                icon: Icon(Icons.more_vert, color: isDark ? Colors.white : Colors.white,),
                 onSelected: (value) {
                   switch (value) {
                     case 'block':
@@ -34,11 +35,11 @@ class UserProfileScreen extends StatelessWidget {
                 },
                 
                 itemBuilder: (BuildContext context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'block',
                     child: ListTile(
                       leading: Icon(Icons.block, color: Colors.red, size: 20),
-                      title: Text('Block', style: TextStyle(color: Colors.red)),
+                      title: Text(AppLocalizations.of(context)!.block, style: TextStyle(color: Colors.red)),
                       contentPadding: EdgeInsets.zero,
                       visualDensity: VisualDensity.compact,
                     ),
@@ -51,9 +52,7 @@ class UserProfileScreen extends StatelessWidget {
             pinned: true,
             backgroundColor: Colors.blue,
             flexibleSpace: FlexibleSpaceBar(
-              title: Align(
-                alignment: Alignment(-1.5, 1),
-                child: Text(widget.userName, style: TextStyle(color: isDark ? Colors.white : Colors.black),)),
+              title: Text(widget.userName, style: TextStyle(color: isDark ? Colors.grey[200] : Colors.white),),
               background: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -75,9 +74,9 @@ class UserProfileScreen extends StatelessWidget {
             delegate: SliverChildListDelegate(
               [
                 const SizedBox(height: 20),
-                _infoTile(Icons.phone, "Phone", "0123456789"),
-                _infoTile(Icons.email, "Email", "user@mail.com"),
-                _infoTile(Icons.info, "About", "CEO at Example Inc."),
+                _infoTile(Icons.phone, AppLocalizations.of(context)!.phone, "0123456789"),
+                _infoTile(Icons.email, AppLocalizations.of(context)!.email, "user@mail.com"),
+                _infoTile(Icons.info, AppLocalizations.of(context)!.about, "CEO at Example Inc."),
                 const SizedBox(height: 400),
               ],
             ),

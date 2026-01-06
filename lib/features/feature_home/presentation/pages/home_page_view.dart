@@ -24,6 +24,8 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
+      color: Colors.white,
+      backgroundColor: Colors.blue[400],
       onRefresh: () async {
         await context.read<DevicesCubit>().fetchDevices();
       },

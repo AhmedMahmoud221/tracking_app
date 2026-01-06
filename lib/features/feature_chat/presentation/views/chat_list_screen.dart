@@ -4,6 +4,7 @@ import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_lis
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_searchbar_users_list.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/custom_users_list_view.dart';
 import 'package:live_tracking/injection_container.dart';
+import 'package:live_tracking/l10n/app_localizations.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -61,21 +62,21 @@ void _showCreateChatSheet(BuildContext context) {
           children: [
             ListTile(
               leading: CircleAvatar(
-                backgroundColor: isDark ? Colors.white70 : Colors.blue[400],
+                backgroundColor: isDark ? Colors.blue[400] : Colors.blue[400],
                 child: Icon(
                   Icons.person,
                   color: isDark ? Colors.black : Colors.white,
                 ),
               ),
               title: Text(
-                "Private Chat",
+                AppLocalizations.of(context)!.privatechat,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               subtitle: Text(
-                "Chat with a single person",
+                AppLocalizations.of(context)!.chatwith,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: isDark ? Colors.white : Colors.black,
@@ -88,21 +89,21 @@ void _showCreateChatSheet(BuildContext context) {
             ),
             ListTile(
               leading: CircleAvatar(
-                backgroundColor: isDark ? Colors.white70 : Colors.blue[400],
+                backgroundColor: isDark ? Colors.blue[400] : Colors.blue[400],
                 child: Icon(
                   Icons.group,
                   color: isDark ? Colors.black : Colors.white,
                 ),
               ),
               title: Text(
-                "Group Chat",
+                AppLocalizations.of(context)!.groupchat,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               subtitle: Text(
-                "Create a group with multiple people",
+                AppLocalizations.of(context)!.creategroup,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: isDark ? Colors.white : Colors.black,
