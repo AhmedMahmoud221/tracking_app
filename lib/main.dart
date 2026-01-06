@@ -22,9 +22,9 @@ void main() async {
 
   await init(savedLang: savedLang);
 
-  if (token != null && token.isNotEmpty) {
+  if (token!.isNotEmpty) {
     sl<SocketService>().init(token);
-    print("🚀 Socket initialized from main with token");
+    // print("🚀 Socket initialized from main with token");
   }
 
   runApp(const LiveTrackingApp());
