@@ -30,17 +30,14 @@ class AppRouter {
   static const kForgotPassword = '/forgotPassword';
 
   static final router = GoRouter(
-    initialLocation: '/', //splash first
+    initialLocation: kSplashView, //splash first
 
     redirect: (context, state) {
       final authState = context.read<AuthCubit>().state;
 
       // لو إحنا في صفحة الـ Splash وبنشوف هنروح فين
-      if (state.fullPath == '/') {
-        if (authState is AuthSuccess) return kHomePage;
-        if (authState is AuthInitial || authState is AuthFailure) {
-          return kLoginPageView;
-        }
+      if (authState is! AuthSuccess && state.fullPath == kProfile) {
+        return kLoginPageView;
       }
 
       return null; // كمل في طريقك عادي لو مفيش شرط تحقق
