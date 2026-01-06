@@ -248,12 +248,17 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         children: [
           InkWell(
             onTap: () async {
-              final Uri url = Uri.parse(formattedFileUrl);
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              } else {
+              final String rawUrl = formattedFileUrl.trim();
+              final Uri url = Uri.parse(rawUrl);
+
+              try {
+                await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication,
+                );
+              } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("لا يمكن فتح هذا الملف")),
+                  const SnackBar(content: Text("لا يوجد تطبيق لفتح هذا الملف")),
                 );
               }
             },
