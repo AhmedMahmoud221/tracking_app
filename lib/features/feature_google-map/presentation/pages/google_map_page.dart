@@ -31,8 +31,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   GoogleMapController? _mapController;
 
   final Map<String, Marker> _deviceMarkers = {};
-  final Map<String, List<LatLng>> _devicePaths = {};
-  final Map<String, Polyline> _polylines = {};
+  // final Map<String, List<LatLng>> _devicePaths = {};
+  // final Map<String, Polyline> _polylines = {};
 
   BitmapDescriptor? _customMarker;
 
@@ -120,8 +120,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   void _initializeMarkersAndPaths(List<DeviceEntity> devices) {
     setState(() {
       _deviceMarkers.clear();
-      _devicePaths.clear();
-      _polylines.clear();
+      // _devicePaths.clear();
+      // _polylines.clear();
 
       for (final device in devices) {
         final deviceId = device.id;
@@ -152,17 +152,17 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           },
         );
 
-        _devicePaths[deviceId] = [initialPos];
+        // _devicePaths[deviceId] = [initialPos];
 
-        _polylines[deviceId] = Polyline(
-          polylineId: PolylineId(deviceId),
-          points: _devicePaths[deviceId]!,
-          color: Colors.blueAccent,
-          width: 4,
-        );
+        // _polylines[deviceId] = Polyline(
+        //   polylineId: PolylineId(deviceId),
+        //   points: _devicePaths[deviceId]!,
+        //   color: Colors.blueAccent,
+        //   width: 4,
+        // );
       }
     });
-    
+
     final selectedDevice = context.read<DevicesCubit>().state is DevicesLoaded 
       ? (context.read<DevicesCubit>().state as DevicesLoaded).selectedDevice 
       : widget.initialDevice;
@@ -203,15 +203,15 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     }
 
     setState(() {
-      _devicePaths.putIfAbsent(deviceId, () => []);
-      _devicePaths[deviceId]!.add(newPos);
+      // _devicePaths.putIfAbsent(deviceId, () => []);
+      // _devicePaths[deviceId]!.add(newPos);
 
-      _polylines[deviceId] = Polyline(
-        polylineId: PolylineId(deviceId),
-        points: _devicePaths[deviceId]!,
-        color: Colors.blueAccent,
-        width: 4,
-      );
+      // _polylines[deviceId] = Polyline(
+      //   polylineId: PolylineId(deviceId),
+      //   points: _devicePaths[deviceId]!,
+      //   color: Colors.blueAccent,
+      //   width: 4,
+      // );
 
       final oldMarker = _deviceMarkers[deviceId]!;
 
@@ -308,7 +308,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
                     zoom: 12,
                   ),
                   markers: _deviceMarkers.values.toSet(),
-                  polylines: _polylines.values.toSet(),
+                  // polylines: _polylines.values.toSet(),
                   onMapCreated: (controller) {
                     _mapController = controller;
                     if (!_controllerCompleter.isCompleted) {
