@@ -189,19 +189,26 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage>
   }
 
   void _showDeleteDialog(BuildContext context, DeviceEntity currentDevice) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         title: Text(AppLocalizations.of(context)!.delete),
         content: Text(AppLocalizations.of(context)!.areyousureyouwanttodeletethisdevice),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel,
+            style: TextStyle( color: isDark ? Colors.white : Colors.black)
+          )),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              context.read<DeleteDeviceCubit>().deleteDevice(currentDevice.id);
-              context.pop(); 
-            },
+            Navigator.pop(dialogContext);
+            
+            context.read<DeleteDeviceCubit>().deleteDevice(currentDevice.id);
+            
+            context.pop(); 
+          },
             child: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],

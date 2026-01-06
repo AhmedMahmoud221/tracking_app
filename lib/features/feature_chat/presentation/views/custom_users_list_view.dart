@@ -19,9 +19,9 @@ class CustomUsersListView extends StatelessWidget {
     final myId = context.read<ChatListCubit>().myId;
     return BlocListener<ChatSocketCubit, ChatSocketState>(
       listener: (context, state) {
-        print("🔔 [Listener Debug] New State Received: $state");
+        // print("🔔 [Listener Debug] New State Received: $state");
         if (state is ChatSocketMessageReceived) {
-        print('message : ${state.message.text}');
+        // print('message : ${state.message.text}');
           // في حالة استلام رسالة كاملة (وأنت جوه الشات)
           context.read<ChatListCubit>().updateFromLastMessageEvent({
             'chatId': state.message.chatId,
@@ -50,7 +50,7 @@ class CustomUsersListView extends StatelessWidget {
             final chats = state.chats;
 
             if (chats.isEmpty) {
-              return Center(child: Text('${AppLocalizations.of(context)!.nochats}'));
+              return Center(child: Text(AppLocalizations.of(context)!.nochats));
             }
 
             return ListView.separated(

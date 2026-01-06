@@ -10,16 +10,18 @@ class ChatModel extends ChatEntity {
     required super.createdAt,
     required super.hasUnreadMessages,
     required super.lastMessageSenderId,
+    required super.email,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
-      final myId = SecureStorage.readUserId();
+    final myId = SecureStorage.readUserId();
     final List userIds = json['userIds'] ?? [];
     final lastMsgData = json['lastMessage'];
     final otherUser = userIds.firstWhere(
       (user) => user['_id'] != myId,
       orElse: () => userIds[0],
     );
+    final String extractedEmail = otherUser['email'] ?? '';
 
     bool unread = false;
     String lastMsgText = "";
@@ -53,6 +55,7 @@ class ChatModel extends ChatEntity {
       chatId: json['_id'] ?? '',
       otherUserName: otherUser['name'] ?? 'Unknown',
       profilePicture: otherUser['profilePicture'],
+      email: extractedEmail,
       lastMessage: lastMsgText,
       hasUnreadMessages: unread,
       lastMessageSenderId: senderId,

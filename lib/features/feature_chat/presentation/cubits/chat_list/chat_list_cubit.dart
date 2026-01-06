@@ -36,12 +36,23 @@ class ChatListCubit extends Cubit<ChatListState> {
   }
 
   void searchChats(String query) {
-    if (query.isEmpty) {
+    final searchTerm = query.toLowerCase().trim();
+
+    // طباعة للتأكد من البيانات في الذاكرة (للمرة الأخيرة)
+    for (var chat in allChats) {
+      print("Chat: ${chat.otherUserName} | Email: '${chat.email}'");
+    }
+
+    if (searchTerm.isEmpty) {
       emit(ChatListSuccess(allChats));
     } else {
+      // فلترة القائمة بناءً على الاسم أو الإيميل
       final filteredList = allChats.where((chat) {
-        return chat.otherUserName.toLowerCase().contains(query.toLowerCase());
+        return chat.email.toLowerCase().contains(searchTerm) || 
+              chat.otherUserName.toLowerCase().contains(searchTerm);
       }).toList();
+
+      print("Search query: $searchTerm | Results found: ${filteredList.length}");
       emit(ChatListSuccess(filteredList));
     }
   }

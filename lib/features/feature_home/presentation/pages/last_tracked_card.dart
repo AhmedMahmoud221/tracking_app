@@ -17,6 +17,10 @@ class LastTrackedCard extends StatelessWidget {
     final lastDevice = device; // الجهاز الأخير
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
+    if (device == null) {
+      return _buildEmptyState(context, isDark);
+    }
+
     return Card(
       color: isDark ? Colors.grey[850] : Colors.grey[100],
       elevation: 2,
@@ -36,7 +40,7 @@ class LastTrackedCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              device != null ? '${device.brand} ${device.model}' : 'No Device',
+              '${device.brand} ${device.model}',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -120,6 +124,31 @@ class LastTrackedCard extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, bool isDark) {
+    return Card(
+      color: isDark ? Colors.grey[850] : Colors.grey[100],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(Icons.history, color: Colors.grey, size: 30),
+              const SizedBox(height: 8),
+              Text(
+                "No Activities yet!",
+                style: TextStyle(
+                  color: isDark ? Colors.white70 : Colors.black54,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

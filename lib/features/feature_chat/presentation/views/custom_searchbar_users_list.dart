@@ -14,8 +14,13 @@ class CustomSearchbarUsersList extends StatelessWidget {
       onChanged: (value) {
         context.read<ChatListCubit>().searchChats(value);
       },
+      textInputAction: TextInputAction.search, 
+      onSubmitted: (value) {
+        context.read<ChatListCubit>().searchChats(value);
+      },
+      keyboardType: TextInputType.emailAddress, 
       decoration: InputDecoration(
-        hintText: AppLocalizations.of(context)!.search,
+        hintText: AppLocalizations.of(context)!.search, 
         hintStyle: const TextStyle(color: Colors.grey),
         prefixIcon: const Icon(Icons.search, color: Colors.blue),
         filled: true,
