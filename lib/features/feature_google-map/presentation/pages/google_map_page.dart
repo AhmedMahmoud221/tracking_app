@@ -138,6 +138,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           markerId: MarkerId(deviceId),
           position: initialPos,
           rotation: record.rotation,
+          anchor: const Offset(0.5, 0.5),
+          flat: true,
           icon: _customMarker ?? BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: device.model,
@@ -160,6 +162,18 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         );
       }
     });
+    
+    final selectedDevice = context.read<DevicesCubit>().state is DevicesLoaded 
+      ? (context.read<DevicesCubit>().state as DevicesLoaded).selectedDevice 
+      : widget.initialDevice;
+
+    if (selectedDevice?.lastRecord != null) {
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(selectedDevice!.lastRecord!.lat, selectedDevice.lastRecord!.lng),
+        ),
+      );
+    }
   }
 
   Future<void> _setMapStyle(bool isDark) async {
@@ -177,7 +191,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     final lat = data['lat'];
     final lng = data['lng'];
     final speed = data['speed'] ?? 0;
-    final double rotation = data['rotation']?.toDouble() ?? 0.0;
+    final double rotation = (data['rotation'] ?? 0.0).toDouble();
 
     if (deviceId == null || lat == null || lng == null) return;
 
@@ -216,6 +230,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
       _deviceMarkers[deviceId] = oldMarker.copyWith(
         positionParam: newPos,
         rotationParam: rotation,
+        anchorParam: const Offset(0.5, 0.5),
+        flatParam: true,
         iconParam: _customMarker,
         infoWindowParam: InfoWindow(
           title: deviceName,
