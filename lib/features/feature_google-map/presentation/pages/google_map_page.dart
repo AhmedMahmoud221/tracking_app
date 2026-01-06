@@ -137,6 +137,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         _deviceMarkers[deviceId] = Marker(
           markerId: MarkerId(deviceId),
           position: initialPos,
+          rotation: record.rotation,
           icon: _customMarker ?? BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: device.model,
@@ -176,6 +177,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     final lat = data['lat'];
     final lng = data['lng'];
     final speed = data['speed'] ?? 0;
+    final double rotation = data['rotation']?.toDouble() ?? 0.0;
 
     if (deviceId == null || lat == null || lng == null) return;
 
@@ -213,6 +215,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
       _deviceMarkers[deviceId] = oldMarker.copyWith(
         positionParam: newPos,
+        rotationParam: rotation,
         iconParam: _customMarker,
         infoWindowParam: InfoWindow(
           title: deviceName,

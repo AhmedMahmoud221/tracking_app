@@ -35,12 +35,10 @@ class AppRouter {
     redirect: (context, state) {
       final authState = context.read<AuthCubit>().state;
 
-      // لو إحنا في صفحة الـ Splash وبنشوف هنروح فين
       if (authState is! AuthSuccess && state.fullPath == kProfile) {
         return kLoginPageView;
       }
-
-      return null; // كمل في طريقك عادي لو مفيش شرط تحقق
+      return null;
     },
 
     routes: [
