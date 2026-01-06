@@ -25,9 +25,9 @@ class ChatEntity {
     String? lastMessageSenderId,
   }) {
     return ChatEntity(
-      chatId: this.chatId, // ثابت
-      otherUserName: this.otherUserName, // ثابت
-      profilePicture: this.profilePicture, // ثابت
+      chatId: chatId, // ثابت
+      otherUserName: otherUserName, // ثابت
+      profilePicture: profilePicture, // ثابت
       lastMessage: lastMessage ?? this.lastMessage,
       createdAt: createdAt ?? this.createdAt,
       hasUnreadMessages: hasUnreadMessages ?? this.hasUnreadMessages,

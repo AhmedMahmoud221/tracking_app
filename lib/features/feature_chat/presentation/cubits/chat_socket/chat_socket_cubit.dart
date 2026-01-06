@@ -14,7 +14,6 @@ class ChatSocketCubit extends Cubit<ChatSocketState> {
     });
   }
 
-  // 1. إعداد الاتصال والـ Listeners الأساسية
   void _establishConnection() {
     final s = _socketService.socket;
 

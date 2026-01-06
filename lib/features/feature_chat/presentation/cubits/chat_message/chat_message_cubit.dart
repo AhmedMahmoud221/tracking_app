@@ -27,7 +27,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   // 2. ميثود الفويس
   Future<void> sendVoice(String chatId, String path) async {
     await _handleSending(
-      SendMessageParams(chatId: chatId, messageType: 'voice', mediaPath: path),
+      SendMessageParams(chatId: chatId, messageType: 'audio', mediaPath: path),
     );
   }
 

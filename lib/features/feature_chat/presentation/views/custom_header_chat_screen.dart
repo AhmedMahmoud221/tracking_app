@@ -18,7 +18,7 @@ class CustomHeaderChatScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (_) => UserProfileScreen(
-              userName: widget.userName,
+              widget: widget,
             ),
           ),
         );

@@ -104,7 +104,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         _startTimer();
       }
     } catch (e) {
-      // print("Error starting record: $e");
+      print("Error starting record: $e");
     }
   }
 

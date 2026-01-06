@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
 
 class UserProfileScreen extends StatelessWidget {
-  final String userName;
+  // final String userName;
+  final ChatMessagesScreen widget;
 
-  const UserProfileScreen({super.key, required this.userName});
+  const UserProfileScreen({super.key, required this.widget});
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +51,15 @@ class UserProfileScreen extends StatelessWidget {
             pinned: true,
             backgroundColor: Colors.blue,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(userName),
+              title: Align(
+                alignment: Alignment(-1.5, 1),
+                child: Text(widget.userName, style: TextStyle(color: isDark ? Colors.white : Colors.black),)),
               background: Stack(
                 fit: StackFit.expand,
                 children: [
                   Image.network(
-                    'https://via.placeholder.com/400',
+                    'https://i.pravatar.cc/150?u=${widget.userName}',
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: Colors.white),
                     fit: BoxFit.cover,
                   ),
                   Container(
