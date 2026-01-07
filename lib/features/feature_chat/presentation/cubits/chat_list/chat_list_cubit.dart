@@ -19,11 +19,14 @@ class ChatListCubit extends Cubit<ChatListState> {
     _loadUserId();
   }
 
+  //===============================================================================
   // load user ID
   Future<void> _loadUserId() async {
     myId = await SecureStorage.readUserId();
   }
 
+  //===============================================================================
+  // fetch chats
   Future<void> fetchChats({bool showLoading = true}) async {
     if (showLoading) emit(ChatListLoading());
 
@@ -31,7 +34,7 @@ class ChatListCubit extends Cubit<ChatListState> {
     result.fold(
       (error) => emit(ChatListError(error)), 
       (chatsList) {
-      allChats = chatsList;
+      allChats = chatsList.cast<ChatEntity>().toList();
       emit(ChatListSuccess(List.from(allChats)));
     });
 
@@ -39,27 +42,7 @@ class ChatListCubit extends Cubit<ChatListState> {
     socketCubit.joinAllChats(chatIds);
   }
 
-  // search chats
-  // void searchChats(String query) {
-  //   final searchTerm = query.toLowerCase().trim();
-
-  //   for (var chat in allChats) {
-  //     print("Chat: ${chat.otherUserName} | Email: '${chat.email}'");
-  //   }
-
-  //   if (searchTerm.isEmpty) {
-  //     emit(ChatListSuccess(allChats));
-  //   } else {
-  //     final filteredList = allChats.where((chat) {
-  //       return chat.email.toLowerCase().contains(searchTerm) || 
-  //             chat.otherUserName.toLowerCase().contains(searchTerm);
-  //     }).toList();
-
-  //     print("Search query: $searchTerm | Results found: ${filteredList.length}");
-  //     emit(ChatListSuccess(filteredList));
-  //   }
-  // }
-
+  //===============================================================================
   // search remote
   Future<void> searchChatsRemote(String query) async {
     final searchTerm = query.toLowerCase().trim();
@@ -86,42 +69,67 @@ class ChatListCubit extends Cubit<ChatListState> {
     });
   }
 
+  //===============================================================================
   // update form last message event
   void updateFromLastMessageEvent(Map<String, dynamic> data) {
-    print("🛠️ Attempting to update list with: $data");
+  final String incomingChatId = data['chatId']?.toString() ?? "";
+  final lastMsg = data['lastMessage'];
+  if (incomingChatId.isEmpty || lastMsg == null) return;
 
-    if (state is ChatListSuccess) {
-      final String incomingChatId = data['chatId']?.toString() ?? "";
-      final lastMsg = data['lastMessage'];
+  // استخراج الـ senderId بشكل صحيح (سواء كان String أو Map)
+  final senderData = lastMsg['senderId'];
+  final String senderId = (senderData is Map) 
+      ? senderData['_id'].toString() 
+      : senderData.toString();
 
-      if (incomingChatId.isEmpty || lastMsg == null) {
-        print("⚠️ Missing data in socket payload");
-        return;
-      }
+  final index = allChats.indexWhere((c) => c.chatId.toString() == incomingChatId);
 
-      final index = allChats.indexWhere((c) => c.chatId.toString() == incomingChatId);
+  if (index != -1) {
+    // تأكد أنك لا تنور الإشعار لنفسك
+    bool isMe = senderId == myId;
 
-      if (index != -1) {
-        print("🎯 Match found at index $index. Updating...");
-        
-        final updatedChat = allChats[index].copyWith(
-          lastMessage: lastMsg['text'] ?? "Media content",
-          lastMessageSenderId: lastMsg['senderId']?.toString(),
-          createdAt: lastMsg['createdAt'] != null 
-              ? DateTime.parse(lastMsg['createdAt']) 
-              : DateTime.now(),
-          hasUnreadMessages: true,
-        );
+    final updatedChat = allChats[index].copyWith(
+      lastMessage: lastMsg['text'] ?? "Media content",
+      lastMessageSenderId: senderId,
+      createdAt: lastMsg['createdAt'] != null 
+          ? DateTime.parse(lastMsg['createdAt']) 
+          : DateTime.now(),
+      hasUnreadMessages: !isMe, // هنا تنور الدايرة الزرقاء
+    );
 
-        allChats.removeAt(index);
-        allChats.insert(0, updatedChat);
+    final List<ChatEntity> updatedList = List<ChatEntity>.from(allChats);
+    updatedList.removeAt(index);
+    updatedList.insert(0, updatedChat);
 
-        emit(ChatListSuccess(List.from(allChats)));
-        print("✅ UI Updated for chatId: $incomingChatId");
-      } else {
-        print("❓ ChatId $incomingChatId not in list. Fetching from server...");
-        fetchChats(showLoading: false);
-      }
-    }
+    allChats = updatedList;
+
+    emit(ChatListSuccess(allChats));
+    print("🔔 Notification Status: ${!isMe} for chat: $incomingChatId");
+  } else {
+    fetchChats(showLoading: false);
+    // لو الشات مش موجود، هاته من السيرفر وحوله لـ Entity فوراً
+    _fetchAndMarkAsUnread(incomingChatId);
   }
+}
+
+
+
+
+Future<void> _fetchAndMarkAsUnread(String chatId) async {
+  final result = await repository.getMyChats();
+  result.fold(
+    (error) => emit(ChatListError(error)),
+    (chatsList) {
+      // تحويل القائمة لـ Entity عشان تقبل الـ copyWith
+      allChats = chatsList.cast<ChatEntity>().toList();
+      
+      int index = allChats.indexWhere((c) => c.chatId == chatId);
+      if (index != -1) {
+        allChats[index] = allChats[index].copyWith(hasUnreadMessages: true);
+      }
+      
+      emit(ChatListSuccess(List.from(allChats)));
+    },
+  );
+}
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_state.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -39,18 +42,58 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
 
       actions: [
-        IconButton(
-          icon: Icon(
-            Icons.notifications_active,
-            color: isDark ? Colors.white : Colors.black,
-          ),
-          onPressed: () {
-            // Handle notification icon press
+        BlocBuilder<ChatListCubit, ChatListState>(
+          builder: (context, state) {
+            bool hasUnread = false;
+            
+            if (state is ChatListSuccess) {
+              print("Check unread: ${state.chats.map((e) => e.hasUnreadMessages)}");
+              hasUnread = state.chats.any((chat) => chat.hasUnreadMessages);
+            }
+            print("AppBar UI is Rebuilding! hasUnread: $hasUnread");
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.notifications_active,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                  onPressed: () {
+                    // Navigator
+                  },
+                ),
+                // blue circel
+                if (hasUnread)
+                  Positioned(
+                    right: 12,
+                    top: 12,
+                    child: Container(
+                      width: 12,
+                      height: 12,
+                      // padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue, // الدايرة الزرقاء
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isDark ? Colors.blue : Colors.black,
+                          width: 2,
+                        ),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            );
           },
         ),
       ],
     );
   }
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

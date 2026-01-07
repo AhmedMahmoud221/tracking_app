@@ -24,7 +24,9 @@ class ProfileDataCubit extends Cubit<ProfileDataState> {
   Future<void> updateUserProfile({required String name, File? profilePicture}) async {
     try {
       await updateProfileUseCase(name: name, profilePicture: profilePicture);
-      await fetchProfile();
+
+      final newProfile = await getUserProfile();
+      emit(ProfileDataLoaded(newProfile));
     } catch (e) {
       emit(ProfileDataError(e.toString()));
     }

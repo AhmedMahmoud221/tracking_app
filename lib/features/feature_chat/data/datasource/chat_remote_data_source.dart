@@ -9,6 +9,7 @@ class ChatRemoteDataSource {
   final Dio _dio;
   ChatRemoteDataSource(this._dio);
 
+  // =======================================================================
   // Get Chats Method
   Future<ChatResponseModel> getChats() async {
     final token = await SecureStorage.readToken();
@@ -19,7 +20,8 @@ class ChatRemoteDataSource {
     );
     return ChatResponseModel.fromJson(response.data);
   }
-
+  
+  // =======================================================================
   // Get Chat Messages Method
   Future<MessageResponseModel> getChatMessages({required String chatId}) async {
     final token = await SecureStorage.readToken();
@@ -33,7 +35,7 @@ class ChatRemoteDataSource {
     return MessageResponseModel.fromJson(response.data, myId ?? '');
   }
 
-  //============================================================================
+  //=========================================================================
   // send message
   Future<MessageModel> sendMessage({
     required String chatId,
@@ -56,6 +58,8 @@ class ChatRemoteDataSource {
     return MessageModel.fromJson(response.data['data']['message'], myId ?? '');
   }
 
+  // =======================================================================
+  // send media message method
   Future<MessageModel> sendMediaMessage({
     required String chatId,
     required String filePath,
@@ -89,20 +93,24 @@ class ChatRemoteDataSource {
     }
   }
 
+  // =======================================================================
+  // search chats mesthod
   Future<List<ChatModel>> searchChats(String query) async {
     try {
       final token = await SecureStorage.readToken();
       final response = await _dio.get(
-        '${ApiConstants.baseUrl}api/user/all',
+        '${ApiConstants.baseUrl}api/chat',
         queryParameters: {'name': query}, 
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       print("Search Response: ${response.data}");
 
-      final List usersList = response.data['data']['users'] ?? [];
+      final myId = await SecureStorage.readUserId();
 
-      return usersList.map((json) => ChatModel.fromJson(json)).toList();
+      final List usersList = response.data['data']['chats'] ?? [];
+
+      return usersList.map((json) => ChatModel.fromJson(json, myId)).toList();
     } catch (e) {
       print("Mapping Error: $e");
       rethrow;

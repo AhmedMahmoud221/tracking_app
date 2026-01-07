@@ -3,6 +3,7 @@ import 'package:live_tracking/features/feature_chat/domain/enities/chat_entity.d
 abstract class ChatListState{}
 
 class ChatListInitial extends ChatListState {}
+
 class ChatListLoading extends ChatListState {}
 
 class ChatListSuccess extends ChatListState {

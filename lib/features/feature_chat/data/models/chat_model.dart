@@ -13,7 +13,7 @@ class ChatModel extends ChatEntity {
     required super.email,
   });
 
-  factory ChatModel.fromJson(Map<String, dynamic> json) {
+  factory ChatModel.fromJson(Map<String, dynamic> json, [String? myId]) {
   // 1. أول خطوة: هل ده مستخدم من البحث؟ 
   // بنعرفه بإن الـ Root فيه email أو ميهوش userIds
   final bool isSearchResult = json.containsKey('email') && !json.containsKey('userIds');
@@ -54,8 +54,8 @@ class ChatModel extends ChatEntity {
   final myId = SecureStorage.readUserId(); // تأكد إنها مش Future هنا أو ابعتها كـ Parameter
   
   final otherUser = userIds.firstWhere(
-    (user) => user['_id'].toString() != myId.toString(),
-    orElse: () => userIds[0],
+    (user) => user['_id'].toString() != myId,
+    orElse: () => userIds.isNotEmpty ? userIds[0] : {},
   );
 
   final String extractedEmail = otherUser['email'] ?? '';

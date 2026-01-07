@@ -27,7 +27,6 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
   }
 
   Future<void> _editProfile() async {
-    // بنجهز الـ Controller بالاسم الحالي
     final TextEditingController nameController = TextEditingController(text: widget.profile.name);
     final GlobalKey<FormState> dialogFormKey = GlobalKey<FormState>();
     final locale = AppLocalizations.of(context)!;
@@ -106,15 +105,19 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
                   backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if (dialogFormKey.currentState!.validate()) {
-                    // 1. نبعت البيانات للـ Cubit
-                    context.read<ProfileDataCubit>().updateUserProfile(
-                          name: nameController.text.trim(),
-                          profilePicture: _pickedImage, // الصورة (سواء اتغيرت أو لأ)
-                        );
+                    final cubit = context.read<ProfileDataCubit>();
 
-                    // 2. نقفل الـ Dialog
+                    await cubit.updateUserProfile(
+                      name: nameController.text.trim(),
+                      profilePicture: _pickedImage,
+                    );
+
+                    setState(() {
+                      _pickedImage = null;
+                    });
+
                     Navigator.pop(context);
                   }
                 },
@@ -131,10 +134,8 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
   void didUpdateWidget(covariant CustomProfileHeader oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.profile.name != oldWidget.profile.name || 
-      widget.profile.profilepicture != oldWidget.profile.profilepicture) {
-      setState(() {
-        _pickedImage = null;
-      });
+        widget.profile.profilepicture != oldWidget.profile.profilepicture) {
+      _pickedImage = null; 
     }
   }
 
