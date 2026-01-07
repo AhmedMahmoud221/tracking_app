@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/core/socketService/socket_service.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/features/feature_chat/data/Repository/chat_repository.dart';
@@ -26,10 +27,12 @@ import 'package:live_tracking/features/feature_home/presentation/cubits/delete_d
 import 'package:live_tracking/features/feature_home/presentation/cubits/update_device_cubit/update_device_cubit.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
+import 'package:live_tracking/features/feature_profile/data/datasources/user_profile_data_source.dart';
 import 'package:live_tracking/features/feature_profile/data/repositories/user_profile_repository_impl.dart';
 import 'package:live_tracking/features/feature_profile/domain/repositories/user_profile_repository.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
+import 'package:live_tracking/features/feature_profile/domain/usecases/update_user_profile_usecase.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/language_cubit/languageCubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/logout_cubit/logout_cubit.dart';
 import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
@@ -49,7 +52,7 @@ Future<void> init({String savedLang = 'ar'}) async {
   sl.registerFactory(() => MapSocketCubit(sl<SocketService>()));
 
   sl.registerFactory<ProfileDataCubit>(
-    () => ProfileDataCubit(sl<GetUserProfileUseCase>()),
+    () => ProfileDataCubit(sl<GetUserProfileUseCase>(), sl<UpdateUserProfileUseCase>()),
   );
 
   sl.registerFactory<LogOutCubit>(() => LogOutCubit(sl<LogoutUseCase>()));
@@ -83,13 +86,17 @@ Future<void> init({String savedLang = 'ar'}) async {
 
   sl.registerLazySingleton(() => UpdateDeviceUseCase(sl()));
 
+  sl.registerLazySingleton(
+    () => UpdateUserProfileUseCase(sl<UserProfileRepository>()),
+  );
+
   // ----------------Repository---------------
   sl.registerLazySingleton<DeviceRepository>(
     () => DeviceRepositoryImpl(sl<DeviceRemoteDataSource>(), dio: sl<Dio>()),
   );
 
   sl.registerLazySingleton<UserProfileRepository>(
-    () => UserProfileRepositoryImpl(sl()),
+    () => UserProfileRepositoryImpl(sl<UserProfileDataSource>()),
   );
 
   // -----------------Data source---------------
@@ -97,17 +104,21 @@ Future<void> init({String savedLang = 'ar'}) async {
     () => DeviceRemoteDataSourceImpl(sl<Dio>()),
   );
 
+  sl.registerLazySingleton<UserProfileDataSource>(
+    () => UserProfileDataSource(ApiConstants.baseUrl),
+  );
+
   //=================Chat===================//
 
   // -----------------Data source---------------
   sl.registerLazySingleton<ChatRemoteDataSource>(
-    () => ChatRemoteDataSource(sl<Dio>()), // تأكد إنه بياخد الـ Dio
+    () => ChatRemoteDataSource(sl<Dio>()), 
   );
 
   // ----------------Repository---------------
   sl.registerLazySingleton<ChatRepository>(
     () => ChatRepositoryImpl(
-      sl<ChatRemoteDataSource>(), // بياخد الـ DataSource بس
+      sl<ChatRemoteDataSource>(), 
     ),
   );
 

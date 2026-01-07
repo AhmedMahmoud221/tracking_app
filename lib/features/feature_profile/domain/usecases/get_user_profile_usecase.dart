@@ -3,7 +3,6 @@ import 'package:live_tracking/features/feature_profile/domain/repositories/user_
 
 class GetUserProfileUseCase {
   final UserProfileRepository repository;
-
   GetUserProfileUseCase(this.repository);
 
   Future<UserProfile> call() async {

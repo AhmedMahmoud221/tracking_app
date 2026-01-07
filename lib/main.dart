@@ -24,7 +24,7 @@ void main() async {
 
   if (token != null && token.isNotEmpty) {
     sl<SocketService>().init(token);
-    print("🚀 Socket initialized from main with token");
+    // print("🚀 Socket initialized from main with token");
   }
 
   runApp(const LiveTrackingApp());

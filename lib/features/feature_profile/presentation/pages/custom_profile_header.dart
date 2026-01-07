@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/core/utils/assets.dart';
 import 'package:live_tracking/features/feature_profile/domain/entities/user_profile.dart';
+import 'package:live_tracking/features/feature_profile/presentation/cubit/profile_data_cubit/cubit/profile_data_cubit_cubit.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomProfileHeader extends StatefulWidget {
   final UserProfile profile;
@@ -17,169 +19,137 @@ class CustomProfileHeader extends StatefulWidget {
 
 class _CustomProfileHeaderState extends State<CustomProfileHeader> {
   File? _pickedImage;
-  String? _currentUserName;
   final ImagePicker _picker = ImagePicker();
-  
-  static const String _imgKey = 'profile_image_path';
-  static const String _nameKey = 'profile_username';
 
   @override
   void initState() {
     super.initState();
-    _loadProfileData();
   }
 
-  Future<void> _loadProfileData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _currentUserName = prefs.getString(_nameKey) ?? widget.profile.name;
-      final path = prefs.getString(_imgKey);
-      if (path != null && File(path).existsSync()) {
-        _pickedImage = File(path);
-      }
-    });
-  }
-
-  Future<void> _editUserName() async {
-    final TextEditingController controller = TextEditingController(text: _currentUserName);
+  Future<void> _editProfile() async {
+    // بنجهز الـ Controller بالاسم الحالي
+    final TextEditingController nameController = TextEditingController(text: widget.profile.name);
     final GlobalKey<FormState> dialogFormKey = GlobalKey<FormState>();
     final locale = AppLocalizations.of(context)!;
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        title: Text(
-          locale.editprofile,
-          style: TextStyle(color: isDark ? Colors.white : Colors.black),
-          ),
-
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: Form(
-            key: dialogFormKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // height as needed
-              children: [
-                TextFormField(
-                  controller: controller,
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                  decoration: InputDecoration(
-                    hintText: locale.username,
-                    hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
-                    filled: true,
-                    fillColor: isDark ? Colors.white10 : Colors.grey[200],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+      builder: (context) => StatefulBuilder( // استخدمنا StatefulBuilder عشان نحدث الصورة جوه الـ Dialog
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Text(locale.editprofile, textAlign: TextAlign.center),
+            content: SingleChildScrollView(
+              child: Form(
+                key: dialogFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // --- اختيار الصورة داخل الـ Dialog ---
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundImage: _pickedImage != null
+                              ? FileImage(_pickedImage!)
+                              : (widget.profile.profilepicture.isNotEmpty 
+                                  ? NetworkImage(widget.profile.profilepicture.startsWith('http') 
+                                      ? widget.profile.profilepicture 
+                                      : '${ApiConstants.baseUrl}${widget.profile.profilepicture}') 
+                                  : const AssetImage(AssetsData.profile)) as ImageProvider,
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () async {
+                              // بننادي ميثود اختيار الصورة اللي إحنا كاتبينها
+                              await _pickImage(ImageSource.gallery); 
+                              setDialogState(() {}); // بنحدث حالة الـ Dialog عشان الصورة تظهر فوراً
+                            },
+                            child: CircleAvatar(
+                              radius: 15,
+                              backgroundColor: Colors.blue,
+                              child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    // --- حقل إدخال الاسم ---
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: locale.username,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        prefixIcon: const Icon(Icons.person),
                       ),
-                  ),
-                  // Validation for the username
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return locale.required; //fill this field
-                    }
-                    if (value.trim().length < 3) {
-                      return "Min 3 characters"; // if on 3 characters
-                    }
-                    return null;
-                  },
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) return locale.required;
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              locale.cancel,
-              style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[700]),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white, 
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () async {
-              if (dialogFormKey.currentState!.validate()) {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setString(_nameKey, controller.text.trim());
-                
-                setState(() {
-                  _currentUserName = controller.text.trim();
-                });
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(locale.cancel, style: const TextStyle(color: Colors.red)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  if (dialogFormKey.currentState!.validate()) {
+                    // 1. نبعت البيانات للـ Cubit
+                    context.read<ProfileDataCubit>().updateUserProfile(
+                          name: nameController.text.trim(),
+                          profilePicture: _pickedImage, // الصورة (سواء اتغيرت أو لأ)
+                        );
 
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Profile Updated!")),
-                );
-              }
-            },
-            child: Text(locale.edit),
-          ),
-        ],
+                    // 2. نقفل الـ Dialog
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text(locale.edit, style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
       ),
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomProfileHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.profile.name != oldWidget.profile.name || 
+      widget.profile.profilepicture != oldWidget.profile.profilepicture) {
+      setState(() {
+        _pickedImage = null;
+      });
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
     final XFile? image = await _picker.pickImage(source: source, maxWidth: 600);
     if (image != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_imgKey, image.path);
       setState(() {
         _pickedImage = File(image.path);
       });
     }
   }
 
-  void _showPickOptions() {
-     showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.camera_alt, size: 30),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _pickImage(ImageSource.camera);
-                  },
-                ),
-                Text(AppLocalizations.of(context)!.camera),
-              ],
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.photo, size: 30),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _pickImage(ImageSource.gallery);
-                  },
-                ),
-                Text(AppLocalizations.of(context)!.gallery),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // void showProfileImage() {
+     
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -207,31 +177,24 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
           Stack(
             children: [
               GestureDetector(
-                onTap: _showPickOptions,
+                // onTap: ,
                 child: CircleAvatar(
                   radius: 56,
+                  backgroundColor: Colors.grey[200], 
                   backgroundImage: _pickedImage != null
-                      ? FileImage(_pickedImage!)
-                      : const AssetImage(AssetsData.profile) as ImageProvider,
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: _showPickOptions,
-                  child: CircleAvatar(
-                    radius: 14,
-                    backgroundColor: isDark ? Colors.grey[500] : Colors.blue,
-                    child: const Icon(Icons.edit, color: Colors.white, size: 18),
-                  ),
+                      ? FileImage(_pickedImage!) 
+                      : (widget.profile.profilepicture.isNotEmpty 
+                          ? NetworkImage(widget.profile.profilepicture.startsWith('http') 
+                              ? widget.profile.profilepicture 
+                              : '${ApiConstants.baseUrl}${widget.profile.profilepicture}')
+                          : const AssetImage(AssetsData.profile)) as ImageProvider, 
                 ),
               ),
             ],
           ),
           const SizedBox(height: 15),
           Text(
-            _currentUserName ?? widget.profile.name,
+            widget.profile.name,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
@@ -244,7 +207,7 @@ class _CustomProfileHeaderState extends State<CustomProfileHeader> {
           ),
           const SizedBox(height: 15),
           GestureDetector(
-            onTap: _editUserName, // Edit profile button tap
+            onTap: _editProfile, // Edit profile button tap
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
