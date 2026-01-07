@@ -12,11 +12,11 @@ class CustomSearchbarUsersList extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       onChanged: (value) {
-        context.read<ChatListCubit>().searchChats(value);
+        context.read<ChatListCubit>().searchChatsRemote(value);
       },
       textInputAction: TextInputAction.search, 
       onSubmitted: (value) {
-        context.read<ChatListCubit>().searchChats(value);
+        context.read<ChatListCubit>().searchChatsRemote(value);
       },
       keyboardType: TextInputType.emailAddress, 
       decoration: InputDecoration(

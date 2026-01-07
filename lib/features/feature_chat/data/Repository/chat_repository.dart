@@ -9,4 +9,6 @@ abstract class ChatRepository {
   Future<Either<String, List<MessageEntity>>> getChatMessages(String chatId);
 
   Future<Either<String, MessageEntity>> sendMessage(SendMessageParams params);
+
+  Future<Either<String, List<ChatEntity>>> searchChats(String query);
 }

@@ -14,54 +14,78 @@ class ChatModel extends ChatEntity {
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
-    final myId = SecureStorage.readUserId();
-    final List userIds = json['userIds'] ?? [];
-    final lastMsgData = json['lastMessage'];
-    final otherUser = userIds.firstWhere(
-      (user) => user['_id'] != myId,
-      orElse: () => userIds[0],
-    );
-    final String extractedEmail = otherUser['email'] ?? '';
+  // 1. أول خطوة: هل ده مستخدم من البحث؟ 
+  // بنعرفه بإن الـ Root فيه email أو ميهوش userIds
+  final bool isSearchResult = json.containsKey('email') && !json.containsKey('userIds');
 
-    bool unread = false;
-    String lastMsgText = "";
-    String senderId = "";
-    DateTime displayDate = DateTime.now();
-
-    if (lastMsgData != null && lastMsgData is Map) {
-      unread = lastMsgData['seen'] == false;
-      senderId = lastMsgData['senderId']?.toString() ?? "";
-
-      if (lastMsgData['message'] != null) {
-          lastMsgText = lastMsgData['message'];
-      } else if (lastMsgData['text'] != null) {
-        lastMsgText = lastMsgData['text'];
-      } else {
-        String type = lastMsgData['messageType'] ?? "message";
-        lastMsgText = "Sent a $type";
-      }
-
-      if (lastMsgData['createdAt'] != null) {
-        displayDate = DateTime.parse(lastMsgData['createdAt']).toLocal();
-      }
-    } else {
-      // لو مفيش رسائل خالص، نستخدم تاريخ إنشاء الشات نفسه
-      if (json['createdAt'] != null) {
-        displayDate = DateTime.parse(json['createdAt']).toLocal();
-      }
-    }
-
+  if (isSearchResult) {
     return ChatModel(
       chatId: json['_id'] ?? '',
-      otherUserName: otherUser['name'] ?? 'Unknown',
-      profilePicture: otherUser['profilePicture'],
-      email: extractedEmail,
-      lastMessage: lastMsgText,
-      hasUnreadMessages: unread,
-      lastMessageSenderId: senderId,
-      createdAt: displayDate,
+      otherUserName: json['name'] ?? 'Unknown',
+      profilePicture: json['profilePicture'],
+      email: json['email'] ?? '',
+      lastMessage: '', 
+      hasUnreadMessages: false,
+      lastMessageSenderId: '',
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt']).toLocal() 
+          : DateTime.now(),
     );
   }
+
+  // 2. لو مش بحث، يبقى محادثة عادية (Inbox)
+  // هنا بس نبدأ نعرف المتغيرات الخاصة بالمحادثة
+  final List userIds = json['userIds'] ?? [];
+  
+  // حماية إضافية لو القائمة جات فاضية من السيرفر لأي سبب
+  if (userIds.isEmpty) {
+    return ChatModel(
+      chatId: json['_id'] ?? '',
+      otherUserName: 'Unknown User',
+      lastMessage: '',
+      email: '',
+      hasUnreadMessages: false,
+      lastMessageSenderId: '',
+      createdAt: DateTime.now(),
+    );
+  }
+
+  // الآن نقدر ننفذ الـ Logic بتاع الـ Inbox بأمان
+  final myId = SecureStorage.readUserId(); // تأكد إنها مش Future هنا أو ابعتها كـ Parameter
+  
+  final otherUser = userIds.firstWhere(
+    (user) => user['_id'].toString() != myId.toString(),
+    orElse: () => userIds[0],
+  );
+
+  final String extractedEmail = otherUser['email'] ?? '';
+  final lastMsgData = json['lastMessage'];
+
+  bool unread = false;
+  String lastMsgText = "";
+  String senderId = "";
+  DateTime displayDate = DateTime.now();
+
+  if (lastMsgData != null && lastMsgData is Map) {
+    unread = lastMsgData['seen'] == false;
+    senderId = lastMsgData['senderId']?.toString() ?? "";
+    lastMsgText = lastMsgData['message'] ?? lastMsgData['text'] ?? "Media content";
+    if (lastMsgData['createdAt'] != null) {
+      displayDate = DateTime.parse(lastMsgData['createdAt']).toLocal();
+    }
+  }
+
+  return ChatModel(
+    chatId: json['_id'] ?? '',
+    otherUserName: otherUser['name'] ?? 'Unknown',
+    profilePicture: otherUser['profilePicture'],
+    email: extractedEmail,
+    lastMessage: lastMsgText,
+    hasUnreadMessages: unread,
+    lastMessageSenderId: senderId,
+    createdAt: displayDate,
+  );
+}
 }
 
 class ChatResponseModel {

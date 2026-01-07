@@ -393,7 +393,21 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                     final messages = state.messages;
 
                     if (messages.isEmpty) {
-                      return const Center(child: Text("Say Hello! 👋"));
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey),
+                            const SizedBox(height: 16),
+                            const Text(
+                              "No messages yet",
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text("Say Hello to start the conversation! 👋"),
+                          ],
+                        ),
+                      );
                     }
 
                     return ListView.builder(

@@ -34,7 +34,7 @@ class ChatRemoteDataSource {
   }
 
   //============================================================================
-  // 1. إرسال النصوص (تظل كما هي أو نحدثها بسيطاً)
+  // send message
   Future<MessageModel> sendMessage({
     required String chatId,
     required String text,
@@ -86,6 +86,26 @@ class ChatRemoteDataSource {
       );
     } else {
       throw Exception("فشل رفع الملف من نوع $messageType");
+    }
+  }
+
+  Future<List<ChatModel>> searchChats(String query) async {
+    try {
+      final token = await SecureStorage.readToken();
+      final response = await _dio.get(
+        '${ApiConstants.baseUrl}api/user/all',
+        queryParameters: {'name': query}, 
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      print("Search Response: ${response.data}");
+
+      final List usersList = response.data['data']['users'] ?? [];
+
+      return usersList.map((json) => ChatModel.fromJson(json)).toList();
+    } catch (e) {
+      print("Mapping Error: $e");
+      rethrow;
     }
   }
 }

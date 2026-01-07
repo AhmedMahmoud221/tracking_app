@@ -60,4 +60,14 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left(e.toString());
     }
   }
+
+  @override
+  Future<Either<String, List<ChatEntity>>> searchChats(String query) async {
+    try {
+      final results = await remoteDataSource.searchChats(query);
+      return Right(results);
+    } catch (e) {
+      return Left((e.toString()));
+    }
+  }
 }

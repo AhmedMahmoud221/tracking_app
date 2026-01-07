@@ -4,18 +4,22 @@ import 'package:live_tracking/features/feature_chat/data/Repository/chat_reposit
 import 'package:live_tracking/features/feature_chat/domain/enities/chat_entity.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
+import 'dart:async';
 
 class ChatListCubit extends Cubit<ChatListState> {
   final ChatRepository repository;
   final ChatSocketCubit socketCubit;
-  String? myId;
 
+  Timer? _debounce;
+
+  String? myId;
   List<ChatEntity> allChats = [];
 
   ChatListCubit(this.repository, this.socketCubit) : super(ChatListInitial()) {
     _loadUserId();
   }
 
+  // load user ID
   Future<void> _loadUserId() async {
     myId = await SecureStorage.readUserId();
   }
@@ -35,28 +39,54 @@ class ChatListCubit extends Cubit<ChatListState> {
     socketCubit.joinAllChats(chatIds);
   }
 
-  void searchChats(String query) {
+  // search chats
+  // void searchChats(String query) {
+  //   final searchTerm = query.toLowerCase().trim();
+
+  //   for (var chat in allChats) {
+  //     print("Chat: ${chat.otherUserName} | Email: '${chat.email}'");
+  //   }
+
+  //   if (searchTerm.isEmpty) {
+  //     emit(ChatListSuccess(allChats));
+  //   } else {
+  //     final filteredList = allChats.where((chat) {
+  //       return chat.email.toLowerCase().contains(searchTerm) || 
+  //             chat.otherUserName.toLowerCase().contains(searchTerm);
+  //     }).toList();
+
+  //     print("Search query: $searchTerm | Results found: ${filteredList.length}");
+  //     emit(ChatListSuccess(filteredList));
+  //   }
+  // }
+
+  // search remote
+  Future<void> searchChatsRemote(String query) async {
     final searchTerm = query.toLowerCase().trim();
 
-    // طباعة للتأكد من البيانات في الذاكرة (للمرة الأخيرة)
-    for (var chat in allChats) {
-      print("Chat: ${chat.otherUserName} | Email: '${chat.email}'");
-    }
-
     if (searchTerm.isEmpty) {
-      emit(ChatListSuccess(allChats));
-    } else {
-      // فلترة القائمة بناءً على الاسم أو الإيميل
-      final filteredList = allChats.where((chat) {
-        return chat.email.toLowerCase().contains(searchTerm) || 
-              chat.otherUserName.toLowerCase().contains(searchTerm);
-      }).toList();
-
-      print("Search query: $searchTerm | Results found: ${filteredList.length}");
-      emit(ChatListSuccess(filteredList));
+      emit(ChatListSuccess(List.from(allChats)));
+      return;
     }
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      
+      // emit(ChatListSearchLoading()); 
+
+      final result = await repository.searchChats(searchTerm);
+
+      result.fold(
+        (error) => emit(ChatListError(error)),
+        (searchResults) {
+          emit(ChatListSuccess(searchResults));
+        },
+      );
+    });
   }
 
+  // update form last message event
   void updateFromLastMessageEvent(Map<String, dynamic> data) {
     print("🛠️ Attempting to update list with: $data");
 
@@ -69,7 +99,6 @@ class ChatListCubit extends Cubit<ChatListState> {
         return;
       }
 
-      // تعديل الـ allChats (المرجع الأساسي) والـ state
       final index = allChats.indexWhere((c) => c.chatId.toString() == incomingChatId);
 
       if (index != -1) {
@@ -84,11 +113,9 @@ class ChatListCubit extends Cubit<ChatListState> {
           hasUnreadMessages: true,
         );
 
-        // تحديث المرجع الأساسي عشان السيرش يفضل شغال صح
         allChats.removeAt(index);
         allChats.insert(0, updatedChat);
 
-        // إرسال الحالة الجديدة
         emit(ChatListSuccess(List.from(allChats)));
         print("✅ UI Updated for chatId: $incomingChatId");
       } else {

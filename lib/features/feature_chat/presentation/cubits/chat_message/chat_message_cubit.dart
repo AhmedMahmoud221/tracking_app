@@ -104,18 +104,34 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   Future<void> fetchMessages(String chatId, String currentUserId) async {
     emit(ChatMessagesLoading());
 
-    // print("CUBIT RECEIVED ID: $currentUserId");
-
     final result = await getChatMessagesUseCase(chatId);
-    result.fold((error) => emit(ChatMessagesError(error)), (messagesList) {
-      final messages = messagesList
-          .map((e) => MessageModel.fromJson(e.toJson(), currentUserId))
-          .toList()
-          .reversed
-          .toList(); 
 
-      emit(ChatMessagesSuccess(messages: messages));
-    });
+    result.fold(
+      (error) {
+        final String errorMessage = error.toString();
+        
+        // هنا بنفحص رسالة الخطأ اللي جاية من السيرفر
+        // لو فيها كلمة userIds أو 404 أو null، بنعتبرها حالة نجاح لشات جديد
+        if (errorMessage.contains('userIds') || 
+            errorMessage.contains('404') || 
+            errorMessage.contains('null')) {
+          
+          print("💡 New chat detected (Server error bypassed)");
+          emit(const ChatMessagesSuccess(messages: [])); // اظهر شاشة فاضية (Say Hello)
+        } else {
+          emit(ChatMessagesError(errorMessage));
+        }
+      },
+      (messagesList) {
+        final messages = messagesList
+            .map((e) => MessageModel.fromJson(e.toJson(), currentUserId))
+            .toList()
+            .reversed
+            .toList();
+
+        emit(ChatMessagesSuccess(messages: messages));
+      },
+    );
   }
 
   // show messages from socket

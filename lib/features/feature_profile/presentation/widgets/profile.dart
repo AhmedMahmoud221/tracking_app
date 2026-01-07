@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
-import 'package:live_tracking/features/feature_profile/data/datasources/user_profile_api.dart';
+import 'package:live_tracking/features/feature_profile/data/datasources/user_profile_data_source.dart';
 import 'package:live_tracking/features/feature_profile/data/repositories/user_profile_repository_impl.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
@@ -34,7 +34,7 @@ class Profile extends StatelessWidget {
           BlocProvider(
             create: (_) => ProfileDataCubit(
               GetUserProfileUseCase(
-                UserProfileRepositoryImpl(UserProfileApi(ApiConstants.baseUrl)),
+                UserProfileRepositoryImpl(UserProfileDataSource(ApiConstants.baseUrl)),
               ),
             )..fetchProfile(),
           ),

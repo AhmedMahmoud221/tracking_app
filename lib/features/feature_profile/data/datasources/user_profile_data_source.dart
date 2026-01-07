@@ -7,16 +7,16 @@ import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_profile/data/models/user_profile_model.dart';
 
-class UserProfileApi {
+class UserProfileDataSource {
   final String baseUrl;
 
-  UserProfileApi(this.baseUrl);
+  UserProfileDataSource(this.baseUrl);
 
   Future<UserProfileModel> fetchUserProfile() async {
     final token = await SecureStorage.readToken();
 
     final response = await http.get(
-      Uri.parse('${ApiConstants.baseUrl}api/user/'),
+      Uri.parse('${ApiConstants.baseUrl}api/user/me'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
