@@ -38,10 +38,6 @@ class CustomUsersListView extends StatelessWidget {
       },
       child: BlocBuilder<ChatListCubit, ChatListState>(
         builder: (context, state) {
-          if (state is ChatListLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
           if (state is ChatListError) {
             return Center(child: Text(state.message));
           }

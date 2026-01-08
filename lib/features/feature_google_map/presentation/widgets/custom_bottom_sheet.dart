@@ -83,11 +83,9 @@ class CustomBottomSheet extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                Icon(
-                                  Icons.directions_car,
-                                  size: 32,
-                                  color: textColor,
-                                ),
+
+                                _buildDeviceThumbnail(d.image, isDark),
+
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
@@ -117,7 +115,9 @@ class CustomBottomSheet extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '${AppLocalizations.of(context)!.speed} : ${d.lastRecord?.speed}',
+                                        (d.lastRecord?.speed == null) 
+                                            ? "Out of Service" 
+                                            : '${AppLocalizations.of(context)!.speed} : ${d.lastRecord!.speed} km/h',
                                         style: TextStyle(color: textColor),
                                       ),
                                     ],
@@ -126,8 +126,8 @@ class CustomBottomSheet extends StatelessWidget {
                                 Row(
                                   children: [
                                     Container(
-                                      width: 12,
-                                      height: 12,
+                                      width: 10,
+                                      height: 10,
                                       decoration: BoxDecoration(
                                         color: statusColor,
                                         shape: BoxShape.circle,
@@ -160,13 +160,67 @@ class CustomBottomSheet extends StatelessWidget {
           },
         );
       },
+      child: _buildFloatingActionIcon(devices.isNotEmpty ? devices.first.image : null)
+    );
+  }
+  // ويدجت لعرض صورة الجهاز المصغرة داخل القائمة
+  Widget _buildDeviceThumbnail(String? imageUrl, bool isDark) {
+    return Container(
+      width: 65,
+      height: 65,
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[800] : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: (imageUrl != null && imageUrl.isNotEmpty)
+            ? Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.directions_car, size: 30),
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                },
+              )
+            : const Icon(Icons.directions_car, size: 30, color: Colors.grey),
+      ),
+    );
+  }
+
+  // ويدجت للزر العائم الخارجي
+  Widget _buildFloatingActionIcon(String? imageUrl) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
       child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(40),
+        width: 50,
+        height: 50,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
         ),
-        child: const Icon(Icons.car_rental, color: Colors.white),
+        child: ClipOval(
+          child: (imageUrl != null && imageUrl.isNotEmpty)
+              ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.directions_car, color: Colors.blue),
+                )
+              : const Icon(Icons.directions_car, color: Colors.blue),
+        ),
       ),
     );
   }

@@ -18,7 +18,7 @@ import 'package:live_tracking/features/feature_devices/data/datasource/device_re
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
 import 'package:live_tracking/features/feature_devices/domain/usecases/get_devices_list.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/map_socket_cubit.dart';
+import 'package:live_tracking/features/feature_google_map/presentation/socket_cubit/map_socket_cubit.dart';
 import 'package:live_tracking/features/feature_home/domain/create_device_use_case.dart';
 import 'package:live_tracking/features/feature_home/domain/delete_device_use_case.dart';
 import 'package:live_tracking/features/feature_home/domain/update_device_use_case.dart';

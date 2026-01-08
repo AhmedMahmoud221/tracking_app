@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_page_body.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/devices_page.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
+import 'package:live_tracking/features/feature_google_map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/custom_app_bar.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/custom_bottom_bar.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/home_page_body.dart';

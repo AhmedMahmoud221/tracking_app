@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/core/socketService/socket_service.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/socket_cubit/map_socket_state.dart';
+import 'package:live_tracking/features/feature_google_map/presentation/socket_cubit/map_socket_state.dart';
 
 class MapSocketCubit extends Cubit<MapSocketState> {
   final SocketService _socketService;

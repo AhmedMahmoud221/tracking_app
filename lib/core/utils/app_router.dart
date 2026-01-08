@@ -4,7 +4,7 @@ import 'package:live_tracking/features/feature_chat/presentation/widgets/chat_pa
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/add_device.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/device_details_page.dart';
-import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
+import 'package:live_tracking/features/feature_google_map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/widgets/home_page.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
