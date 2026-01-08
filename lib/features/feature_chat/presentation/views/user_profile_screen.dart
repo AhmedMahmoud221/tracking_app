@@ -3,6 +3,7 @@ import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/chat_entity.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserProfileScreen extends StatelessWidget {
   final ChatMessagesScreen widget;
@@ -148,13 +149,28 @@ class UserProfileScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _statItem("128", "Media", isDark),
+        _statItem("Media", "128", isDark),
         _verticalDivider(isDark),
-        _statItem("45", "Files", isDark),
+        _statItem("Files", "45", isDark),
         _verticalDivider(isDark),
-        _statItem("12", "Links", isDark),
+        _statItem("Links", "12", isDark),
       ],
     );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    // بننظف الرقم من أي مسافات
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber.replaceAll(' ', ''),
+    );
+    
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      // لو فيه مشكلة (زي إن الجهاز مفيش فيه تطبيق اتصال)
+      debugPrint('Could not launch $launchUri');
+    }
   }
 
   Widget _statItem(String value, String label, bool isDark) {
@@ -186,11 +202,18 @@ class UserProfileScreen extends StatelessWidget {
     return Column(
       children: [
         // كارت رقم الهاتف
-        _buildSingleInfoCard(
-          bgColor, 
-          Icons.phone_outlined, 
-          AppLocalizations.of(context)!.phone,
-          chat.phoneNumber
+        GestureDetector(
+          onTap: () {
+            if (chat.phoneNumber.isNotEmpty) {
+              _makePhoneCall(chat.phoneNumber);
+            }
+          },
+          child: _buildSingleInfoCard(
+            bgColor, 
+            Icons.phone_outlined, 
+            AppLocalizations.of(context)!.phone,
+            chat.phoneNumber
+          ),
         ),
         const SizedBox(height: 16), // مسافة بين الكروت
         
