@@ -103,7 +103,7 @@ class CustomUsersListView extends StatelessWidget {
                       color:
                           (chat.hasUnreadMessages &&
                               chat.lastMessageSenderId != myId)
-                          ? Colors.white
+                          ? ( isDark ? Colors.white : Colors.black)
                           : Colors.grey[600],
                     ),
                   ),

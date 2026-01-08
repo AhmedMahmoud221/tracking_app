@@ -128,22 +128,24 @@ class ChatListCubit extends Cubit<ChatListState> {
     );
   }
 
+  //==============================================================================
   // جوه ChatListCubit
-void markChatAsRead(String chatId) {
-  final index = allChats.indexWhere((c) => c.chatId.toString() == chatId);
-  
-  if (index != -1) {
-    allChats[index] = allChats[index].copyWith(hasUnreadMessages: false);
+  void markChatAsRead(String chatId) {
+    final index = allChats.indexWhere((c) => c.chatId.toString() == chatId);
     
-    emit(ChatListSuccess(List.from(allChats)));
-    
-    print("✅ Chat $chatId marked as read localy");
+    if (index != -1) {
+      allChats[index] = allChats[index].copyWith(hasUnreadMessages: false);
+      
+      emit(ChatListSuccess(List.from(allChats)));
+      
+      print("✅ Chat $chatId marked as read localy");
+    }
   }
-}
 
-// داخل ChatListCubit
-void clearAllNotifications() {
-  allChats = allChats.map((chat) => chat.copyWith(hasUnreadMessages: false)).toList();
-  emit(ChatListSuccess(List.from(allChats)));
-}
+  //==============================================================================
+  // داخل ChatListCubit
+  void clearAllNotifications() {
+    allChats = allChats.map((chat) => chat.copyWith(hasUnreadMessages: false)).toList();
+    emit(ChatListSuccess(List.from(allChats)));
+  }
 }
