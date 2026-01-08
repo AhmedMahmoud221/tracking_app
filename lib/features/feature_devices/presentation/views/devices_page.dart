@@ -135,7 +135,12 @@ class _DevicesPageState extends State<DevicesPage> {
                   ),
                   const SizedBox(height: 12),
                   // محتوى الشبكة (Grid)
-                  Expanded(child: _buildBody(state, isDark)),
+                  Expanded(child: RefreshIndicator(
+                    color: Colors.blue,
+                    onRefresh: () async {
+                      await context.read<DevicesCubit>().fetchDevices();
+                    },
+                    child: _buildBody(state, isDark))),
                 ],
               ),
             ),

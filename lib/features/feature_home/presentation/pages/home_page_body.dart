@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/core/errors/show_snack_bar.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
@@ -33,11 +34,12 @@ class _HomePageBodyState extends State<HomePageBody> {
           } else if (state is DevicesLoaded) {
             final allDevices = state.devices;
 
+            if (allDevices.isEmpty) {
+              return const Center(child: Text("لا توجد أجهزة مضافة حالياً"));
+            }
+
             final total = allDevices.length;
 
-            // final online = allDevices
-            //     .where((d) => d.status.toLowerCase() == 'online')
-            //     .length;
             final towed = allDevices
                 .where((d) => d.status.toLowerCase() == 'towed')
                 .length;
@@ -50,62 +52,90 @@ class _HomePageBodyState extends State<HomePageBody> {
 
             final lastDevice = allDevices.isNotEmpty ? allDevices.last : null;
 
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      childAspectRatio: 2.3,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      children: [
-                        StatCard(
-                          title: AppLocalizations.of(context)!.totaldevices,
-                          value: '$total',
-                          icon: Icons.devices,
-                        ),
-                        StatCard(
-                          title: AppLocalizations.of(context)!.towed,
-                          value: '$towed',
-                          icon: Icons.car_crash,
-                        ),
-                        StatCard(
-                          title: AppLocalizations.of(context)!.parking,
-                          value: '$parking',
-                          icon: Icons.directions_car,
-                        ),
-                        StatCard(
-                          title: AppLocalizations.of(context)!.moving,
-                          value: '$moving',
-                          icon: Icons.speed,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    LastTrackedCard(
-                      device: lastDevice,
-                      onTrack: widget.onTrackLastDevice
-                    ),
-                    // const SizedBox(height: 16),
-                    // QuickActionsCard(),
-                    const SizedBox(height: 20),
-
-                    RecentActivitiesCard(),
-
-                    const SizedBox(height: 20),
-                  ],
+            return RefreshIndicator(
+              color: Colors.blue,
+              onRefresh: () async => context.read<DevicesCubit>().fetchDevices(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        crossAxisCount: 2,
+                        childAspectRatio: 2.3,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        children: [
+                          StatCard(
+                            title: AppLocalizations.of(context)!.totaldevices,
+                            value: '$total',
+                            icon: Icons.devices,
+                          ),
+                          StatCard(
+                            title: AppLocalizations.of(context)!.towed,
+                            value: '$towed',
+                            icon: Icons.car_crash,
+                          ),
+                          StatCard(
+                            title: AppLocalizations.of(context)!.parking,
+                            value: '$parking',
+                            icon: Icons.directions_car,
+                          ),
+                          StatCard(
+                            title: AppLocalizations.of(context)!.moving,
+                            value: '$moving',
+                            icon: Icons.speed,
+                          ),
+                        ],
+                      ),
+              
+                      const SizedBox(height: 20),
+              
+                      LastTrackedCard(
+                        device: lastDevice,
+                        onTrack: widget.onTrackLastDevice
+                      ),
+                      // const SizedBox(height: 16),
+                      // QuickActionsCard(),
+                      const SizedBox(height: 20),
+              
+                      RecentActivitiesCard(),
+              
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             );
           } else if (state is DevicesError) {
-            return Center(child: Text('Error: ${state.message}'));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.cloud_off_outlined, size: 80, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    Text(
+                      // هنا بنستخدم الـ Handler اللي أنت بعته عشان نترجم الخطأ
+                      ApiErrorHandler.handle(state.message), 
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () => context.read<DevicesCubit>().fetchDevices(), // استدعاء الداتا تاني
+                      icon: const Icon(Icons.refresh),
+                      label: const Text("إعادة المحاولة"),
+                    ),
+                  ],
+                ),
+              ),
+            );
           } else {
             return const SizedBox.shrink();
           }

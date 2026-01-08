@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_page_body.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/devices_page.dart';
 import 'package:live_tracking/features/feature_google-map/presentation/pages/google_map_page.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/custom_app_bar.dart';
@@ -23,36 +21,29 @@ class _HomePageViewState extends State<HomePageView> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      color: Colors.white,
-      backgroundColor: Colors.blue[400],
-      onRefresh: () async {
-        await context.read<DevicesCubit>().fetchDevices();
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: CustomAppBar(),
-        body: IndexedStack(
-          index: selectedIndex,
-          children: [
-            HomePageBody(
-              onTrackLastDevice: (device) {
-                setState(() {
-                  selectedDevice = device; 
-                  selectedIndex = 2;
-                });
-              },
-            ),
-            DevicesPage(isActive: selectedIndex == 1),
-            GoogleMapPage(),
-            ChatPageBody(),
-            Profile(),
-          ],
-        ),
-        bottomNavigationBar: CustomBottomBar(
-          currentIndex: selectedIndex,
-          onTap: (index) => setState(() => selectedIndex = index),
-        ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: CustomAppBar(),
+      body: IndexedStack(
+        index: selectedIndex,
+        children: [
+          HomePageBody(
+            onTrackLastDevice: (device) {
+              setState(() {
+                selectedDevice = device; 
+                selectedIndex = 2;
+              });
+            },
+          ),
+          DevicesPage(isActive: selectedIndex == 1),
+          GoogleMapPage(),
+          ChatPageBody(),
+          Profile(),
+        ],
+      ),
+      bottomNavigationBar: CustomBottomBar(
+        currentIndex: selectedIndex,
+        onTap: (index) => setState(() => selectedIndex = index),
       ),
     );
   }

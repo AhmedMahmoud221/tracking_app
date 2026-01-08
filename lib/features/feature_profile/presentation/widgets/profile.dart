@@ -43,68 +43,72 @@ class Profile extends StatelessWidget {
             if (state is ProfileDataLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is ProfileDataLoaded) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // الـ Header هياخد الداتا الجديدة مباشرة من الـ state
-                    CustomProfileHeader(profile: state.profile),
-                    
-                    const SizedBox(height: 10),
-                    
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: CustomToggle(),
-                    ),
-
-                    CustomProfileitems(
-                      title: AppLocalizations.of(context)!.notification,
-                      icon: Icons.notifications,
-                      onTap: () {},
-                    ),
-                    
-                    CustomProfileitems(
-                      title: AppLocalizations.of(context)!.language,
-                      icon: Icons.language,
-                      onTap: () {
-                        _showLanguageBottomSheet(context);
-                      },
-                    ),
-                    
-                    CustomProfileitems(
-                      title: AppLocalizations.of(context)!.changePassword,
-                      icon: Icons.lock,
-                      onTap: () {
-                        context.push(AppRouter.kChangePassword);
-                      },
-                    ),
-
-                    // جزء الـ Logout مع الـ Listener الخاص به
-                    BlocListener<LogOutCubit, LogOutState>(
-                      listener: (context, state) {
-                        if (state is LogoutSuccessState) {
-                          context.go('/login');
-                        } else if (state is LogoutErrorState) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.message)),
-                          );
-                        }
-                      },
-                      child: BlocBuilder<LogOutCubit, LogOutState>(
-                        builder: (context, state) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: LogoutButton(
-                              isLoading: state is LogoutLoadingState,
-                              onTap: () {
-                                context.read<LogOutCubit>().logout();
-                              },
-                            ),
-                          );
+              return RefreshIndicator(
+                color: Colors.blue,
+                onRefresh: () async => context.read<ProfileDataCubit>().fetchProfile(),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: [
+                      CustomProfileHeader(profile: state.profile),
+                      
+                      const SizedBox(height: 10),
+                      
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: CustomToggle(),
+                      ),
+                  
+                      CustomProfileitems(
+                        title: AppLocalizations.of(context)!.notification,
+                        icon: Icons.notifications,
+                        onTap: () {},
+                      ),
+                      
+                      CustomProfileitems(
+                        title: AppLocalizations.of(context)!.language,
+                        icon: Icons.language,
+                        onTap: () {
+                          _showLanguageBottomSheet(context);
                         },
                       ),
-                    ),
-                    const SizedBox(height: 40),
-                  ],
+                      
+                      CustomProfileitems(
+                        title: AppLocalizations.of(context)!.changePassword,
+                        icon: Icons.lock,
+                        onTap: () {
+                          context.push(AppRouter.kChangePassword);
+                        },
+                      ),
+                  
+                      // جزء الـ Logout مع الـ Listener الخاص به
+                      BlocListener<LogOutCubit, LogOutState>(
+                        listener: (context, state) {
+                          if (state is LogoutSuccessState) {
+                            context.go('/login');
+                          } else if (state is LogoutErrorState) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(state.message)),
+                            );
+                          }
+                        },
+                        child: BlocBuilder<LogOutCubit, LogOutState>(
+                          builder: (context, state) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: LogoutButton(
+                                isLoading: state is LogoutLoadingState,
+                                onTap: () {
+                                  context.read<LogOutCubit>().logout();
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               );
             } else if (state is ProfileDataError) {

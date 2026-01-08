@@ -29,17 +29,21 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
         // header and chat list
         body: SafeArea(
-          child: Column(
-            children: [
-              // Search Bar
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CustomSearchbarUsersList(isDark: isDark),
-              ),
-
-              // Chat List
-              Expanded(child: CustomUsersListView()),
-            ],
+          child: RefreshIndicator(
+            color: Colors.blue,
+            onRefresh: () async => context.read<ChatListCubit>().fetchChats(),
+            child: Column(
+              children: [
+                // Search Bar
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CustomSearchbarUsersList(isDark: isDark),
+                ),
+            
+                // Chat List
+                Expanded(child: CustomUsersListView()),
+              ],
+            ),
           ),
         ),
       ),
