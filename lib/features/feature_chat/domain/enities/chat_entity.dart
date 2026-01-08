@@ -7,6 +7,8 @@ class ChatEntity {
   final bool hasUnreadMessages;
   final String lastMessageSenderId;
   final String email;
+  final String phoneNumber;
+  final String userStatus;
 
   ChatEntity({
     required this.chatId,
@@ -16,7 +18,9 @@ class ChatEntity {
     required this.createdAt,
     required this.hasUnreadMessages,
     required this.lastMessageSenderId,
-    required this.email
+    required this.email,
+    required this.phoneNumber,
+    required this.userStatus,
   });
 
   // ميثود تسمح بإنشاء نسخة جديدة مع تعديل بعض القيم فقط
@@ -35,6 +39,8 @@ class ChatEntity {
       hasUnreadMessages: hasUnreadMessages ?? this.hasUnreadMessages,
       lastMessageSenderId: lastMessageSenderId ?? this.lastMessageSenderId,
       email: email,
+      phoneNumber: phoneNumber,
+      userStatus: userStatus,
     );
   }
 }

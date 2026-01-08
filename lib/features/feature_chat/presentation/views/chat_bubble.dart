@@ -8,6 +8,8 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Align(
       alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -21,6 +23,13 @@ class ChatBubble extends StatelessWidget {
             bottomLeft: Radius.circular(message.isMe ? 16 : 0),
             bottomRight: Radius.circular(message.isMe ? 0 : 16),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity( isDark ? 0.3 : 0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            )
+          ]
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,

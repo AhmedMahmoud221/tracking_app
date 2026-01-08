@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:live_tracking/core/constants/api_constants.dart';
+import 'package:live_tracking/features/feature_chat/domain/enities/chat_entity.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_messege_screen.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/user_profile_screen.dart';
 
@@ -19,6 +21,18 @@ class CustomHeaderChatScreen extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => UserProfileScreen(
               widget: widget,
+              chat: ChatEntity( // بنعمل كائن مؤقت بالبيانات اللي معانا
+                chatId: widget.chatId,
+                otherUserName: widget.userName,
+                profilePicture: widget.profilePicture, // تمرير الصورة هنا
+                email: widget.email, // لو مش معاك الايميل هنا سيبه فاضي
+                lastMessage: "",
+                createdAt: DateTime.now(),
+                hasUnreadMessages: false,
+                lastMessageSenderId: "",
+                phoneNumber: widget.phoneNumber,
+                userStatus: widget.userStatus,
+              ),
             ),
           ),
         );
@@ -30,9 +44,11 @@ class CustomHeaderChatScreen extends StatelessWidget {
             backgroundColor: Colors.grey[300],
             child: ClipOval(
               child: Image.network(
-                'https://i.pravatar.cc/150?u=${widget.userName}',
+                _getFormattedUrl(widget.profilePicture),
                 errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: Colors.white),
                 fit: BoxFit.cover,
+                width: 36,
+                height: 36,
               ),
             ),
           ),
@@ -42,4 +58,16 @@ class CustomHeaderChatScreen extends StatelessWidget {
       ),
     );
   }
+}
+// String _getFormattedUrl(String? path) {
+//   if (path == null || path.isEmpty) return 'https://i.pravatar.cc/150';
+//   if (path.startsWith('http')) return path;
+  
+//   final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+//   return "${ApiConstants.baseUrl}/$cleanPath";
+// }
+String _getFormattedUrl(String? path) {
+  if (path == null || path.isEmpty) return 'https://i.pravatar.cc/150';
+  if (path.startsWith('http')) return path;
+  return "${ApiConstants.baseUrl}/${path.startsWith('/') ? path.substring(1) : path}";
 }

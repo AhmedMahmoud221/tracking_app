@@ -37,7 +37,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       },
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: TextStyle(color: isDark ? Colors.white : Colors.black),
+        hintStyle: TextStyle(color: isDark ? Colors.white : Colors.black54),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!),

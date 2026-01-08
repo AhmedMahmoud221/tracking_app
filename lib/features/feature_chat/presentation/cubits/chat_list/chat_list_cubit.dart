@@ -76,7 +76,6 @@ class ChatListCubit extends Cubit<ChatListState> {
   final lastMsg = data['lastMessage'];
   if (incomingChatId.isEmpty || lastMsg == null) return;
 
-  // استخراج الـ senderId بشكل صحيح (سواء كان String أو Map)
   final senderData = lastMsg['senderId'];
   final String senderId = (senderData is Map) 
       ? senderData['_id'].toString() 
@@ -85,7 +84,6 @@ class ChatListCubit extends Cubit<ChatListState> {
   final index = allChats.indexWhere((c) => c.chatId.toString() == incomingChatId);
 
   if (index != -1) {
-    // تأكد أنك لا تنور الإشعار لنفسك
     bool isMe = senderId == myId;
 
     final updatedChat = allChats[index].copyWith(
@@ -107,29 +105,45 @@ class ChatListCubit extends Cubit<ChatListState> {
     print("🔔 Notification Status: ${!isMe} for chat: $incomingChatId");
   } else {
     fetchChats(showLoading: false);
-    // لو الشات مش موجود، هاته من السيرفر وحوله لـ Entity فوراً
     _fetchAndMarkAsUnread(incomingChatId);
   }
 }
 
+  //===============================================================================
+  // update form last message event
+  Future<void> _fetchAndMarkAsUnread(String chatId) async {
+    final result = await repository.getMyChats();
+    result.fold(
+      (error) => emit(ChatListError(error)),
+      (chatsList) {
+        allChats = chatsList.cast<ChatEntity>().toList();
+        
+        int index = allChats.indexWhere((c) => c.chatId == chatId);
+        if (index != -1) {
+          allChats[index] = allChats[index].copyWith(hasUnreadMessages: true);
+        }
+        
+        emit(ChatListSuccess(List.from(allChats)));
+      },
+    );
+  }
 
+  // جوه ChatListCubit
+void markChatAsRead(String chatId) {
+  final index = allChats.indexWhere((c) => c.chatId.toString() == chatId);
+  
+  if (index != -1) {
+    allChats[index] = allChats[index].copyWith(hasUnreadMessages: false);
+    
+    emit(ChatListSuccess(List.from(allChats)));
+    
+    print("✅ Chat $chatId marked as read localy");
+  }
+}
 
-
-Future<void> _fetchAndMarkAsUnread(String chatId) async {
-  final result = await repository.getMyChats();
-  result.fold(
-    (error) => emit(ChatListError(error)),
-    (chatsList) {
-      // تحويل القائمة لـ Entity عشان تقبل الـ copyWith
-      allChats = chatsList.cast<ChatEntity>().toList();
-      
-      int index = allChats.indexWhere((c) => c.chatId == chatId);
-      if (index != -1) {
-        allChats[index] = allChats[index].copyWith(hasUnreadMessages: true);
-      }
-      
-      emit(ChatListSuccess(List.from(allChats)));
-    },
-  );
+// داخل ChatListCubit
+void clearAllNotifications() {
+  allChats = allChats.map((chat) => chat.copyWith(hasUnreadMessages: false)).toList();
+  emit(ChatListSuccess(List.from(allChats)));
 }
 }

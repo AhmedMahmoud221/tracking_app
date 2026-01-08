@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/features/feature_chat/presentation/widgets/chat_page-view.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/add_device.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/device_details_page.dart';
@@ -28,6 +29,7 @@ class AppRouter {
   static const kDeviceDetails = '/device-details';
   static const kChangePassword = '/change-password';
   static const kForgotPassword = '/forgotPassword';
+  static const kChatPageView = '/chat-page';
 
   static final router = GoRouter(
     initialLocation: kSplashView, //splash first
@@ -94,6 +96,10 @@ class AppRouter {
         path: '/change-password',
         builder: (context, state) => const ChangePasswordPage(),
       ),
+      GoRoute(
+        path: 'chat_page',
+        builder: (context, state) => const ChatPageView(),
+      )
     ],
   );
 }

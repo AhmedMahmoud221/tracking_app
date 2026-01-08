@@ -155,6 +155,10 @@ class CustomUsersListView extends StatelessWidget {
                           child: ChatMessagesScreen(
                             userName: chat.otherUserName,
                             chatId: chat.chatId,
+                            email: chat.email,
+                            phoneNumber: chat.phoneNumber,
+                            profilePicture: chat.profilePicture,
+                            userStatus: chat.userStatus,
                           ),
                         ),
                       ),

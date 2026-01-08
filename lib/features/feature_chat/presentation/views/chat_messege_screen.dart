@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
+import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
@@ -22,12 +23,18 @@ class ChatMessagesScreen extends StatefulWidget {
   final String userName;
   final String chatId;
   final String? profilePicture;
+  final String email;
+  final String phoneNumber;
+  final String userStatus;
 
   const ChatMessagesScreen({
     super.key,
     required this.userName,
-    required this.chatId, 
+    required this.chatId,
+    required this.email, 
     this.profilePicture,
+    required this.phoneNumber,
+    required this.userStatus,
   });
 
   @override
@@ -51,6 +58,8 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     super.initState();
     audioRecorder = AudioRecorder();
     _messageController = context.read<ChatMessagesCubit>().messageController;
+
+    context.read<ChatListCubit>().markChatAsRead(widget.chatId);
 
     // نداء ميثود واحدة منظمة
     _startChatFlow();
@@ -160,8 +169,15 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                color: isMe ? Colors.blue : (isDark ? Colors.grey[800] : Colors.white),
+                borderRadius: BorderRadius.circular(15), 
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.08), // الظل أخف في اللايت مود
+                    blurRadius: 8,
+                    offset: const Offset(0, 2), // إزاحة الظل للأسفل قليلاً
+                  ),
+                ],
               ),
               clipBehavior: Clip.antiAlias,
               child: Image.network(
@@ -269,9 +285,22 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                color: msg.isMe ? Colors.blue.withOpacity(0.1) : Colors.grey[800],
+                // --- التعديل هنا ---
+                color: msg.isMe 
+                    ? (isDark ? Colors.blue.withOpacity(0.2) : Colors.blue.withOpacity(0.1)) 
+                    : (isDark ? Colors.grey[800] : Colors.white), // خلفية بيضاء في اللايت، ورمادي في الدارك
+                // ------------------
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue.withOpacity(0.2)),
+                border: Border.all(
+                  color: isDark ? Colors.blue.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
+                ),
+                boxShadow: isDark ? [] : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  )
+                ],
               ),
               child: Row(
                 children: [
@@ -330,7 +359,14 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               height: 180,
               decoration: BoxDecoration(
                 color: Colors.black87,
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15), 
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.08), // الظل أخف في اللايت مود
+                    blurRadius: 8,
+                    offset: const Offset(0, 2), // إزاحة الظل للأسفل قليلاً
+                  ),
+                ],
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -497,6 +533,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     );
   }
 
+  // show Message Bubble
   Widget _buildChatBubble(String text, bool isMe, String time, bool isDark) {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -513,6 +550,13 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             bottomLeft: Radius.circular(isMe ? 15 : 0),
             bottomRight: Radius.circular(isMe ? 0 : 15),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.75,

@@ -494,7 +494,7 @@ abstract class AppLocalizations {
   /// No description provided for @signup.
   ///
   /// In en, this message translates to:
-  /// **'Sign Up'**
+  /// **'Sign up'**
   String get signup;
 
   /// No description provided for @forgetpassword.

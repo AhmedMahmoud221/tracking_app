@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/core/errors/show_snack_bar.dart';
 import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'auth_state.dart';
@@ -10,10 +11,6 @@ class AuthCubit extends Cubit<AuthState> {
   //--------------------------------------------
   // 1. Login Method
   Future<void> login({required String email, required String password}) async {
-    // void loginSuccess(String token) {
-    //   sl<SocketService>().init(token);
-    //   emit(AuthAuthenticated());
-    // }
     emit(AuthLoading());
     try {
       final authData = await authService.login(
@@ -26,10 +23,10 @@ class AuthCubit extends Cubit<AuthState> {
 
       await SecureStorage.saveUserData(token: token, userId: userId);
 
-      // print("Login Success - User ID: $userId");
       emit(AuthSuccess(token: token));
     } catch (e) {
-      emit(AuthFailure(e.toString()));
+      final String errorMessage = ApiErrorHandler.handle(e);
+      emit(AuthFailure(errorMessage));
     }
   }
 
@@ -37,11 +34,11 @@ class AuthCubit extends Cubit<AuthState> {
   // 1. Check Auth Status Method
   Future<void> checkAuthStatus() async {
     final token =
-        await SecureStorage.readToken(); // تأكد من استخدام المفتاح الصحيح
+        await SecureStorage.readToken(); 
     if (token != null) {
-      emit(AuthSuccess(token: token)); // لو لقيت توكن، دخله علطول
+      emit(AuthSuccess(token: token));
     } else {
-      emit(AuthInitial()); // لو مفيش، خليه في صفحة اللوجن
+      emit(AuthInitial()); 
     }
   }
 
@@ -67,10 +64,10 @@ class AuthCubit extends Cubit<AuthState> {
 
       await SecureStorage.saveUserData(token: token, userId: userId);
 
-      // print("Signup Success - User ID: $userId");
       emit(AuthSuccess(token: token));
     } catch (e) {
-      emit(AuthFailure(e.toString()));
+      final String errorMessage = ApiErrorHandler.handle(e);
+      emit(AuthFailure(errorMessage));
     }
   }
 
@@ -82,7 +79,8 @@ class AuthCubit extends Cubit<AuthState> {
       await authService.forgetPassword(email: email);
       emit(ForgetPasswordSuccess());
     } catch (e) {
-      emit(AuthFailure(e.toString()));
+      final String errorMessage = ApiErrorHandler.handle(e);
+      emit(AuthFailure(errorMessage));
     }
   }
 }

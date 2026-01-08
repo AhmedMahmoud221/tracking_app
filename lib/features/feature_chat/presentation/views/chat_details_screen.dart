@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:live_tracking/features/feature_chat/domain/enities/chat_entity.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/views/chat_bubble.dart';
@@ -7,11 +8,13 @@ import 'package:live_tracking/features/feature_chat/presentation/views/chat_bubb
 class ChatDetailsScreen extends StatefulWidget {
   final String chatId;
   final String userName;
+  final ChatEntity chat;
 
   const ChatDetailsScreen({
     super.key,
     required this.chatId,
     required this.userName,
+    required this.chat
   });
 
   @override
@@ -24,13 +27,18 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     super.initState();
 
     const String myId = "6935eccd50c25daeb0dea0b5";
-    context.read<ChatMessagesCubit>().fetchMessages(widget.chatId, myId);
+    context.read<ChatMessagesCubit>().fetchMessages(widget.chat.chatId, myId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.userName)),
+      appBar: AppBar(
+        title: Text(widget.userName),
+        iconTheme: const IconThemeData(
+          color: Colors.blue
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
