@@ -70,4 +70,26 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left((e.toString()));
     }
   }
+
+  @override
+  Future<Either<String, MessageEntity>> editMessage(String messageId, String newText) async {
+    try {
+      // نداء الـ Remote Data Source
+      final response = await remoteDataSource.editMessage(messageId, newText);
+      // تحويل الـ Model القادم من السيرفر إلى Entity
+      return Right(response); 
+    } catch (e) {
+      return Left((e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<String, Unit>> deleteMessage(String messageId) async {
+    try {
+      await remoteDataSource.deleteMessage(messageId);
+      return const Right(unit); 
+    } catch (e) {
+      return Left((e.toString()));
+    }
+  }
 }

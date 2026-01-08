@@ -116,4 +116,46 @@ class ChatRemoteDataSource {
       rethrow;
     }
   }
+
+
+// =======================================================================
+  // Edit Message Method
+  Future<MessageModel> editMessage(String messageId, String newText) async {
+    final token = await SecureStorage.readToken();
+    final myId = await SecureStorage.readUserId(); 
+
+    print("🚀 Requesting URL: ${ApiConstants.baseUrl}api/chat/message/$messageId");
+    final response = await _dio.patch(
+      '${ApiConstants.baseUrl}api/chat/message/$messageId',
+      data: {'newMessage': newText},
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    print('the request body is${response.data}');
+    print('the header is ${response.headers}');
+    print('the response is ${response.data['message']}');
+
+    if (response.statusCode == 200 || response.statusCode == 201 ||response.statusCode ==202) {
+
+      final responseData = response.data['data']['message'];
+      return MessageModel.fromJson(responseData, myId ?? '');
+    } else {
+      throw Exception("فشل تعديل الرسالة"); 
+    }
+  }
+
+  // =======================================================================
+  // Delete Message Method
+  Future<void> deleteMessage(String messageId) async {
+    final token = await SecureStorage.readToken();
+
+    print("🚀 Requesting URL: ${ApiConstants.baseUrl}api/chat/message/$messageId");
+    final response = await _dio.delete(
+      '${ApiConstants.baseUrl}api/chat/message/$messageId',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception("فشل حذف الرسالة");
+    }
+  }
 }

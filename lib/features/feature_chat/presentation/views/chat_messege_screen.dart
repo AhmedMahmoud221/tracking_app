@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
@@ -405,8 +406,13 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
 
     return BlocListener<ChatSocketCubit, ChatSocketState>(
       listener: (context, state) {
+        final chatCubit = context.read<ChatMessagesCubit>();
         if (state is ChatSocketMessageReceived) {
-          context.read<ChatMessagesCubit>().addIncomingMessageFromSocket(state.message);
+          chatCubit.addIncomingMessageFromSocket(state.message);
+        } else if (state is ChatSocketMessageDeleted) {
+          chatCubit.removeMessageLocally(state.messageId);
+        } else if (state is ChatSocketMessageEdited) {
+          chatCubit.updateMessageLocally(state.message);
         }
       },
       child: Scaffold(
@@ -502,13 +508,9 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                         else {
                           return Container(
                             key: messageKey, // <--- أضفنا الـ Key هنا
-                            child: _buildChatBubble(
-                              msg.text.isEmpty && msgType != 'text'
-                                  ? "وصلك ملف [$msgType] لا يمكن عرضه حالياً"
-                                  : msg.text,
-                              msg.isMe,
-                              time,
-                              isDark,
+                            child: GestureDetector(
+                              onLongPress: () => _showOptionsBottomSheet(msg),
+                              child: _buildChatBubble(msg, isDark),
                             ),
                           );
                         }
@@ -534,7 +536,15 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
   }
 
   // show Message Bubble
-  Widget _buildChatBubble(String text, bool isMe, String time, bool isDark) {
+  Widget _buildChatBubble(MessageEntity msg, bool isDark) {
+    final bool isMe = msg.isMe;
+    final String time = DateFormat('hh:mm a').format(msg.createdAt);
+
+    String displayText = msg.text;
+      if (displayText.isEmpty && msg.messageType != 'text') {
+        displayText = "وصلك ملف [${msg.messageType}]";
+      }
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -565,12 +575,14 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              text,
+              msg.isDeleted ? "هذه الرسالة محذوفة" : msg.text,
               style: TextStyle(
-                color: isMe || isDark ? Colors.white : Colors.black87,
-                fontSize: 16,
+                color: msg.isDeleted ? Colors.grey : (isMe || isDark ? Colors.white : Colors.black87),
+                fontStyle: msg.isDeleted ? FontStyle.italic : FontStyle.normal,
               ),
             ),
+            if (msg.isEdited && !msg.isDeleted)
+              const Text("معدلة", style: TextStyle(fontSize: 8, color: Colors.grey)),
             const SizedBox(height: 4),
             Text(
               time,
@@ -792,6 +804,91 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // void _showMessageOptions(MessageEntity msg) {
+  //   // لا تسمح بالتعديل أو الحذف إلا لرسائلك أنت فقط
+  //   if (!msg.isMe) return;
+
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (context) => SafeArea(
+  //       child: Wrap(
+  //         children: [
+  //           if (msg.messageType == 'text') // التعديل للنصوص فقط غالباً
+  //             ListTile(
+  //               leading: const Icon(Icons.edit, color: Colors.blue),
+  //               title: const Text("تعديل الرسالة"),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 _showEditDialog(msg);
+  //               },
+  //             ),
+  //           ListTile(
+  //             leading: const Icon(Icons.delete, color: Colors.red),
+  //             title: const Text("حذف الرسالة"),
+  //             onTap: () {
+  //               Navigator.pop(context);
+  //               _cubit.deleteMessage(widget.chatId);
+  //             },
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  void _showEditDialog(MessageEntity msg) {
+    final editController = TextEditingController(text: msg.text);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("تعديل الرسالة"),
+        content: TextField(controller: editController, autofocus: true),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
+          TextButton(
+            onPressed: () {
+              _cubit.editMessage(msg.id, msg.text);
+              Navigator.pop(context);
+            },
+            child: const Text("حفظ"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showOptionsBottomSheet(MessageEntity msg) {
+    // المنطق: لا يمكن حذف أو تعديل إلا رسائلي أنا
+    if (!msg.isMe) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            if (msg.messageType == 'text') // التعديل للنصوص فقط
+              ListTile(
+                leading: const Icon(Icons.edit, color: Colors.blue),
+                title: const Text("تعديل الرسالة"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showEditDialog(msg);
+                },
+              ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text("حذف للجميع"),
+              onTap: () {
+                Navigator.pop(context);
+                _cubit.deleteMessage(msg.id); // نداء الـ Cubit
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

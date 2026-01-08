@@ -13,3 +13,13 @@ class ChatSocketLastMessageUpdate extends ChatSocketState {
   final Map<String, dynamic> data;
   ChatSocketLastMessageUpdate(this.data);
 }
+
+class ChatSocketMessageDeleted extends ChatSocketState {
+  final String messageId;
+  ChatSocketMessageDeleted({required this.messageId});
+}
+
+class ChatSocketMessageEdited extends ChatSocketState {
+  final MessageModel message; // الرسالة كاملة بعد التعديل
+  ChatSocketMessageEdited({required this.message});
+}

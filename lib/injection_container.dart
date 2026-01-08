@@ -9,6 +9,8 @@ import 'package:live_tracking/features/feature_chat/data/Repository/chat_reposit
 import 'package:live_tracking/features/feature_chat/data/datasource/chat_remote_data_source.dart';
 import 'package:live_tracking/features/feature_chat/data/datasource/get_chat_messages_use_case.dart';
 import 'package:live_tracking/features/feature_chat/domain/repo/chat_repository_impl.dart';
+import 'package:live_tracking/features/feature_chat/domain/usecase/delete_message_use_case.dart';
+import 'package:live_tracking/features/feature_chat/domain/usecase/edit_message_use_case.dart';
 import 'package:live_tracking/features/feature_chat/domain/usecase/send_message_use_case.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
@@ -125,12 +127,16 @@ Future<void> init({String savedLang = 'ar'}) async {
   // ------------------Use Case---------------
   sl.registerLazySingleton(() => GetChatMessagesUseCase(sl<ChatRepository>()));
   sl.registerLazySingleton(() => SendMessageUseCase(sl<ChatRepository>()));
+  sl.registerLazySingleton(() => EditMessageUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteMessageUseCase(sl()));
 
   // -------------------------Cubit----------------------------
   sl.registerFactory(
     () => ChatMessagesCubit(
       sl<GetChatMessagesUseCase>(),
       sl<SendMessageUseCase>(),
+      sl<EditMessageUseCase>(),
+      sl<DeleteMessageUseCase>(),
     ),
   );
   sl.registerLazySingleton(() => ChatSocketCubit(sl()));

@@ -10,6 +10,8 @@ class MessageEntity {
   final String? fileName;
   final DateTime createdAt;
   final bool isMe; 
+  final bool isEdited;
+  final bool isDeleted;
 
   MessageEntity({
     required this.id,
@@ -23,6 +25,8 @@ class MessageEntity {
     this.fileName,
     required this.createdAt,
     required this.isMe,
+    this.isEdited = false,
+    this.isDeleted = false,
   });
 
   // داخل ملف message_entity.dart
@@ -34,6 +38,30 @@ class MessageEntity {
       'messageType': messageType,
       'mediaUrl': mediaUrl,
       'createdAt': createdAt.toIso8601String(),
+      'isEdited': isEdited,
+      'isDeleted': isDeleted,
     };
+  }
+
+  MessageEntity copyWith({
+    String? text,
+    bool? isEdited,
+    bool? isDeleted,
+  }) {
+    return MessageEntity(
+      id: id,
+      chatId: chatId,
+      senderId: senderId,
+      senderName: senderName,
+      senderImage: senderImage,
+      text: text ?? this.text,
+      messageType: messageType,
+      mediaUrl: mediaUrl,
+      fileName: fileName,
+      createdAt: createdAt,
+      isMe: isMe,
+      isEdited: isEdited ?? this.isEdited,
+      isDeleted: isDeleted ?? this.isDeleted,
+    );
   }
 }

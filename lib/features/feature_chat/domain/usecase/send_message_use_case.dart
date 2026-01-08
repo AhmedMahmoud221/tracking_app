@@ -7,10 +7,8 @@ class SendMessageUseCase {
 
   SendMessageUseCase(this.repository);
 
-  // ميثود واحدة تحكمهم جميعاً
   Future<Either<String, MessageEntity>> call(SendMessageParams params) {
     return repository.sendMessage(params);
-    // ملاحظة: لازم تعدل الـ Repository عشان يستقبل params بدل String chatId
   }
 }
 

@@ -13,6 +13,8 @@ class MessageModel extends MessageEntity {
     super.fileName,
     required super.createdAt,
     required super.isMe,
+    super.isDeleted,
+    super.isEdited,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json, String myId) {
@@ -71,6 +73,8 @@ class MessageModel extends MessageEntity {
       fileName: body['fileName']?.toString(),
       createdAt: parsedDate,
       isMe: checkIsMe,
+      isEdited: body['isEdited'] ?? false,
+      isDeleted: body['isDeleted'] ?? false,
     );
   }
 

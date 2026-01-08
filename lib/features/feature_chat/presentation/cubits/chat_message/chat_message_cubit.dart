@@ -4,17 +4,22 @@ import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_chat/data/datasource/get_chat_messages_use_case.dart';
 import 'package:live_tracking/features/feature_chat/data/models/message_model.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
+import 'package:live_tracking/features/feature_chat/domain/usecase/delete_message_use_case.dart';
+import 'package:live_tracking/features/feature_chat/domain/usecase/edit_message_use_case.dart';
 import 'package:live_tracking/features/feature_chat/domain/usecase/send_message_use_case.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_state.dart';
 
 class ChatMessagesCubit extends Cubit<ChatMessagesState> {
   final GetChatMessagesUseCase getChatMessagesUseCase;
   final SendMessageUseCase sendMessageUseCase;
+  final EditMessageUseCase editMessageUseCase;   // أضف هذا
+  final DeleteMessageUseCase deleteMessageUseCase;
 
-  ChatMessagesCubit(this.getChatMessagesUseCase, this.sendMessageUseCase)
+  ChatMessagesCubit(this.getChatMessagesUseCase, this.sendMessageUseCase, this.editMessageUseCase, this.deleteMessageUseCase)
     : super(ChatMessagesInitial());
   final TextEditingController messageController = TextEditingController();
 
+  //================================================================
   // 1. ميثود إرسال النص (تستخدم الـ Params الآن)
   Future<void> sendMessage(String chatId) async {
     final text = messageController.text.trim();
@@ -24,6 +29,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
     );
   }
 
+  //================================================================
   // 2. ميثود الفويس
   Future<void> sendVoice(String chatId, String path) async {
     await _handleSending(
@@ -31,6 +37,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
     );
   }
 
+  //================================================================
   // 3. ميثود الصور
   Future<void> sendImage(String chatId, String path) async {
     await _handleSending(
@@ -38,6 +45,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
     );
   }
 
+  //================================================================
   // 4. ميثود الفيديو
   Future<void> sendVideo(String chatId, String path) async {
     await _handleSending(
@@ -45,6 +53,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
     );
   }
 
+  //================================================================
   // 5. ميثود الملفات
   Future<void> sendFile(String chatId, String path) async {
     await _handleSending(
@@ -52,6 +61,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
     );
   }
 
+  //================================================================
   // الـ "ماكينة" اللي بتنفذ الإرسال الفعلي وتحدث الـ UI
   Future<void> _handleSending(SendMessageParams params) async {
     final myId = await SecureStorage.readUserId() ?? "";
@@ -134,6 +144,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
     );
   }
 
+  //================================================================
   // show messages from socket
   void addIncomingMessageFromSocket(MessageModel newMessage) {
     final currentState = state;
@@ -172,6 +183,7 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
       }
   }
 
+  //================================================================
   // updatelist
   void _updateMessagesList(MessageEntity newMessage) {
     if (state is ChatMessagesSuccess) {
@@ -184,5 +196,97 @@ class ChatMessagesCubit extends Cubit<ChatMessagesState> {
       emit(ChatMessagesSuccess(messages: [newMessage]));
       messageController.clear();
     }
+  }
+
+  //================================================================
+  // delete message
+  // Future<void> deleteMessage(String chatId, String messageId) async {
+
+  //   final result = await deleteMessageUseCase(messageId); 
+    
+  //   result.fold(
+  //     (l) => emit(ChatMessagesError(l.message)),
+  //     (r) {
+  //       // 2. احذف الرسالة من القائمة المحلية (Local List)
+  //       if (state is ChatMessagesSuccess) {
+  //         final currentMessages = (state as ChatMessagesSuccess).messages;
+  //         final updatedMessages = currentMessages.where((m) => m.id != messageId).toList();
+  //         emit(ChatMessagesSuccess(updatedMessages));
+  //       }
+  //     },
+  //   );
+  // }
+
+  //==========================================================================================
+  //edit message 
+  // Future<void> editMessage(String chatId, String messageId, String newText) async {
+  //   final result = await editMessageUseCase(messageId, newText);
+    
+  //   result.fold(
+  //     (l) => emit(ChatMessagesError(l.message)),
+  //     (r) {
+  //       // تحديث القائمة المحلية بالرسالة المعدلة
+  //       if (state is ChatMessagesSuccess) {
+  //         final currentMessages = (state as ChatMessagesSuccess).messages;
+  //         final index = currentMessages.indexWhere((m) => m.id == messageId);
+  //         if (index != -1) {
+  //           currentMessages[index] = currentMessages[index].copyWith(text: newText, isEdited: true);
+  //           emit(ChatMessagesSuccess(List.from(currentMessages)));
+  //         }
+  //       }
+  //     },
+  //   );
+  // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- تحديث محلي (Local Updates) ---
+  void removeMessageLocally(String messageId) {
+    if (state is ChatMessagesSuccess) {
+      final currentState = state as ChatMessagesSuccess;
+      final updatedMessages = currentState.messages.map((m) {
+        return m.id == messageId ? m.copyWith(isDeleted: true, text: "تم حذف هذه الرسالة") : m;
+      }).toList();
+      emit(ChatMessagesSuccess(messages: updatedMessages));
+    }
+  }
+
+  void updateMessageLocally(MessageEntity updatedMsg) {
+    if (state is ChatMessagesSuccess) {
+      final currentState = state as ChatMessagesSuccess;
+      final updatedMessages = currentState.messages.map((m) {
+        return m.id == updatedMsg.id ? updatedMsg : m;
+      }).toList();
+      emit(ChatMessagesSuccess(messages: updatedMessages));
+    }
+  }
+
+  // --- عمليات الـ API ---
+  Future<void> deleteMessage(String messageId) async {
+    final result = await deleteMessageUseCase(messageId);
+    result.fold(
+      (error) => emit(ChatMessagesError(error.toString())),
+      (_) => removeMessageLocally(messageId),
+    );
+  }
+
+  Future<void> editMessage(String messageId, String newText) async {
+    final result = await editMessageUseCase(messageId, newText);
+    result.fold(
+      (error) => emit(ChatMessagesError(error.toString())),
+      (updatedMsg) => updateMessageLocally(updatedMsg),
+    );
   }
 }

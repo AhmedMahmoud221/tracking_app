@@ -21,9 +21,24 @@ class ChatSocketCubit extends Cubit<ChatSocketState> {
       s.connect();
     }
 
+    // داخل كود الـ Socket Cubit (مكان ما بتعمل connect)
+    s.on('messageDeleted', (data) {
+      // data عادةً بتحتوي على messageId
+      emit(ChatSocketMessageDeleted(messageId: data['messageId'] ?? data['id']));
+    });
+
+    s.on('messageEdited', (data) async {
+      final myId = await SecureStorage.readUserId();
+      emit(ChatSocketMessageEdited(message: MessageModel.fromJson(data, myId ?? "")));
+    });
+
     s.on('lastMessage-updated', (data) {
       if (!isClosed) emit(ChatSocketLastMessageUpdate(data));
     });
+
+    // void editDelete(String messageId, String chatId) {
+    //   _socketService.socket.emit('delete_message', {'messageId': messageId, 'chatId': chatId});
+    // }
 
     _socketService.socket.connect();
 
