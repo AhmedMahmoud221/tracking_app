@@ -17,7 +17,7 @@ class UserProfileDataSource {
     final token = await SecureStorage.readToken();
 
     final response = await http.get(
-      Uri.parse('${ApiConstants.baseUrl}api/user/me'),
+      Uri.parse('${ApiConstants.baseUrl}api/user'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -30,9 +30,13 @@ class UserProfileDataSource {
       throw Exception('Failed to fetch profile');
     }
   }
+
   //=====================================================
   // user_profile_data_source.dart
-  Future<void> updateUserProfile({required String name, File? profilePicture}) async {
+  Future<void> updateUserProfile({
+    required String name,
+    File? profilePicture,
+  }) async {
     final token = await SecureStorage.readToken();
     final url = Uri.parse('${ApiConstants.baseUrl}api/user/update-user');
 
@@ -49,9 +53,9 @@ class UserProfileDataSource {
       if (profilePicture != null) {
         request.files.add(
           await http.MultipartFile.fromPath(
-            'profilePicture', 
+            'profilePicture',
             profilePicture.path,
-            contentType: http.MediaType('image', 'jpeg'), 
+            contentType: http.MediaType('image', 'jpeg'),
           ),
         );
       }

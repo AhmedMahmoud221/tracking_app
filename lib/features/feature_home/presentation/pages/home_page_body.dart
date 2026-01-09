@@ -11,7 +11,7 @@ import 'package:live_tracking/l10n/app_localizations.dart';
 
 class HomePageBody extends StatefulWidget {
   final void Function(DeviceEntity device) onTrackLastDevice;
-  
+
   const HomePageBody({super.key, required this.onTrackLastDevice});
 
   @override
@@ -40,8 +40,8 @@ class _HomePageBodyState extends State<HomePageBody> {
 
             final total = allDevices.length;
 
-            final towed = allDevices
-                .where((d) => d.status.toLowerCase() == 'towed')
+            final idling = allDevices
+                .where((d) => d.status.toLowerCase() == 'idling')
                 .length;
             final moving = allDevices
                 .where((d) => d.status.toLowerCase() == 'moving')
@@ -54,7 +54,8 @@ class _HomePageBodyState extends State<HomePageBody> {
 
             return RefreshIndicator(
               color: Colors.blue,
-              onRefresh: () async => context.read<DevicesCubit>().fetchDevices(),
+              onRefresh: () async =>
+                  context.read<DevicesCubit>().fetchDevices(),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Padding(
@@ -76,9 +77,9 @@ class _HomePageBodyState extends State<HomePageBody> {
                             icon: Icons.devices,
                           ),
                           StatCard(
-                            title: AppLocalizations.of(context)!.towed,
-                            value: '$towed',
-                            icon: Icons.car_crash,
+                            title: AppLocalizations.of(context)!.idling,
+                            value: '$idling',
+                            icon: Icons.pause_circle_filled,
                           ),
                           StatCard(
                             title: AppLocalizations.of(context)!.parking,
@@ -92,19 +93,19 @@ class _HomePageBodyState extends State<HomePageBody> {
                           ),
                         ],
                       ),
-              
+
                       const SizedBox(height: 20),
-              
+
                       LastTrackedCard(
                         device: lastDevice,
-                        onTrack: widget.onTrackLastDevice
+                        onTrack: widget.onTrackLastDevice,
                       ),
                       // const SizedBox(height: 16),
                       // QuickActionsCard(),
                       const SizedBox(height: 20),
-              
+
                       RecentActivitiesCard(),
-              
+
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -118,17 +119,23 @@ class _HomePageBodyState extends State<HomePageBody> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.cloud_off_outlined, size: 80, color: Colors.grey),
+                    const Icon(
+                      Icons.cloud_off_outlined,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       // هنا بنستخدم الـ Handler اللي أنت بعته عشان نترجم الخطأ
-                      ApiErrorHandler.handle(state.message), 
+                      ApiErrorHandler.handle(state.message),
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton.icon(
-                      onPressed: () => context.read<DevicesCubit>().fetchDevices(), // استدعاء الداتا تاني
+                      onPressed: () => context
+                          .read<DevicesCubit>()
+                          .fetchDevices(), // استدعاء الداتا تاني
                       icon: const Icon(Icons.refresh),
                       label: const Text("إعادة المحاولة"),
                     ),
