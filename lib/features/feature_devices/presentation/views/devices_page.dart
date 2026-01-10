@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
+import 'package:live_tracking/core/errors/show_snack_bar.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_devices/presentation/widgets/device_card.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/delete_device_cubit/delete_device_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/delete_device_cubit/delete_device_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/delete_device_cubit/delete_device_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/delete_device_cubit/delete_device_state.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
 
 class DevicesPage extends StatefulWidget {
@@ -55,7 +58,7 @@ class _DevicesPageState extends State<DevicesPage> {
             if (state is DeleteDeviceError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.message),
+                  content: Text(ApiErrorHandler.handle(e, context)),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -80,7 +83,10 @@ class _DevicesPageState extends State<DevicesPage> {
                   // Search Bar
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: _SearchBar(isDark: isDark, controller: searchController),
+                    child: _SearchBar(
+                      isDark: isDark,
+                      controller: searchController,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Padding(
@@ -135,12 +141,15 @@ class _DevicesPageState extends State<DevicesPage> {
                   ),
                   const SizedBox(height: 12),
                   // محتوى الشبكة (Grid)
-                  Expanded(child: RefreshIndicator(
-                    color: Colors.blue,
-                    onRefresh: () async {
-                      await context.read<DevicesCubit>().fetchDevices();
-                    },
-                    child: _buildBody(state, isDark))),
+                  Expanded(
+                    child: RefreshIndicator(
+                      color: Colors.blue,
+                      onRefresh: () async {
+                        await context.read<DevicesCubit>().fetchDevices();
+                      },
+                      child: _buildBody(state, isDark),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -151,15 +160,31 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 
   Widget _buildBody(DevicesState state, bool isDark) {
+    final loc = AppLocalizations.of(context)!;
     if (state is DevicesLoading) {
       return const Center(child: CircularProgressIndicator());
     }
     if (state is DevicesLoaded) {
       if (state.devices.isEmpty) {
         return Center(
-          child: Text(
-            AppLocalizations.of(context)!.nodevicesfound,
-            style: TextStyle(color: isDark ? Colors.white : Colors.black),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.devices_other,
+                size: 80,
+                color: isDark ? Colors.white24 : Colors.grey[300],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                loc.nodevicesfound, // "لا يوجد أجهزة"
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white70 : Colors.grey[600],
+                ),
+              ),
+            ],
           ),
         );
       }
@@ -180,9 +205,48 @@ class _DevicesPageState extends State<DevicesPage> {
     }
     if (state is DevicesError) {
       return Center(
-        child: Text(
-          "Error: ${state.message}",
-          style: const TextStyle(color: Colors.red),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.wifi_off_outlined, size: 70, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(
+                // هنا بنستخدم الـ Handler اللي أنت بعته عشان نترجم الخطأ
+                ApiErrorHandler.handle(state.message, context),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: isDark ? Colors.white70 : Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: () => context
+                    .read<DevicesCubit>()
+                    .fetchDevices(), // استدعاء الداتا تاني
+                icon: const Icon(Icons.refresh, color: Colors.blue),
+                label: Text(
+                  AppLocalizations.of(context)!.tryagain,
+                  style: TextStyle(color: Colors.black87),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? Colors.grey[100] : Colors.grey[400],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      25,
+                    ), // لجعل الحواف دائرية بشكل لطيف
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -192,7 +256,7 @@ class _DevicesPageState extends State<DevicesPage> {
 
 class _SearchBar extends StatefulWidget {
   final bool isDark;
-  final TextEditingController controller; 
+  final TextEditingController controller;
 
   const _SearchBar({required this.isDark, required this.controller});
 
@@ -224,7 +288,9 @@ class _SearchBarState extends State<_SearchBar> {
       },
       decoration: InputDecoration(
         hintText: "${AppLocalizations.of(context)!.searchdevices}...",
-        hintStyle: TextStyle(color: widget.isDark ? Colors.white54 : Colors.grey),
+        hintStyle: TextStyle(
+          color: widget.isDark ? Colors.white54 : Colors.grey,
+        ),
         prefixIcon: Icon(
           Icons.search,
           color: widget.isDark ? Colors.white : Colors.grey,

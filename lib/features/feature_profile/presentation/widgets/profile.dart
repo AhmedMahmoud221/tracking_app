@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:live_tracking/core/errors/show_snack_bar.dart';
 import 'package:live_tracking/core/utils/app_router.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_profile/domain/usecases/logout_usecase.dart';
@@ -24,12 +25,8 @@ class Profile extends StatelessWidget {
     // استخدمنا MultiBlocProvider عشان نجمع كل الـ Cubits في مكان واحد فوق الـ Scaffold
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => sl<ProfileDataCubit>()..fetchProfile(),
-        ),
-        BlocProvider(
-          create: (_) => LogOutCubit(LogoutUseCase(AuthService())),
-        ),
+        BlocProvider(create: (_) => sl<ProfileDataCubit>()..fetchProfile()),
+        BlocProvider(create: (_) => LogOutCubit(LogoutUseCase(AuthService()))),
       ],
       child: Scaffold(
         // استخدمنا BlocConsumer في الجسم الأساسي للشاشة
@@ -45,26 +42,27 @@ class Profile extends StatelessWidget {
             } else if (state is ProfileDataLoaded) {
               return RefreshIndicator(
                 color: Colors.blue,
-                onRefresh: () async => context.read<ProfileDataCubit>().fetchProfile(),
+                onRefresh: () async =>
+                    context.read<ProfileDataCubit>().fetchProfile(),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     children: [
                       CustomProfileHeader(profile: state.profile),
-                      
+
                       const SizedBox(height: 10),
-                      
+
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: CustomToggle(),
                       ),
-                  
+
                       CustomProfileitems(
                         title: AppLocalizations.of(context)!.notification,
                         icon: Icons.notifications,
                         onTap: () {},
                       ),
-                      
+
                       CustomProfileitems(
                         title: AppLocalizations.of(context)!.language,
                         icon: Icons.language,
@@ -72,7 +70,7 @@ class Profile extends StatelessWidget {
                           _showLanguageBottomSheet(context);
                         },
                       ),
-                      
+
                       CustomProfileitems(
                         title: AppLocalizations.of(context)!.changePassword,
                         icon: Icons.lock,
@@ -80,7 +78,7 @@ class Profile extends StatelessWidget {
                           context.push(AppRouter.kChangePassword);
                         },
                       ),
-                  
+
                       // جزء الـ Logout مع الـ Listener الخاص به
                       BlocListener<LogOutCubit, LogOutState>(
                         listener: (context, state) {
@@ -95,7 +93,9 @@ class Profile extends StatelessWidget {
                         child: BlocBuilder<LogOutCubit, LogOutState>(
                           builder: (context, state) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               child: LogoutButton(
                                 isLoading: state is LogoutLoadingState,
                                 onTap: () {
@@ -112,7 +112,58 @@ class Profile extends StatelessWidget {
                 ),
               );
             } else if (state is ProfileDataError) {
-              return Center(child: Text(state.message));
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.wifi_off_outlined,
+                        size: 70,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        // هنا بنستخدم الـ Handler اللي أنت بعته عشان نترجم الخطأ
+                        ApiErrorHandler.handle(state.message, context),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () => context
+                            .read<ProfileDataCubit>()
+                            .fetchProfile(), // استدعاء الداتا تاني
+                        icon: const Icon(Icons.refresh, color: Colors.blue),
+                        label: Text(
+                          AppLocalizations.of(context)!.tryagain,
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDark
+                              ? Colors.grey[100]
+                              : Colors.grey[400],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              25,
+                            ), // لجعل الحواف دائرية بشكل لطيف
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             }
             return const SizedBox.shrink();
           },

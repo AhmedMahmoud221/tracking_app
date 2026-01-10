@@ -93,5 +93,19 @@
   "block": "Block",
   "phone": "Phone",
   "about": "About",
-  "yesterday": "Yesterday"
+  "yesterday": "Yesterday",
+  "connectionTimeout": "Connection timeout, check your internet.",
+  "sendTimeout": "Failed to send data, please try again.",
+  "receiveTimeout": "The server did not respond in time.",
+  "processCancelled": "Process was cancelled.",
+  "noInternet": "No internet connection.",
+  "unexpectedError": "Sorry, an unexpected error occurred.",
+  "genericError": "Something went wrong, please try again later.",
+  "badRequest": "Invalid data.",
+  "unauthorized": "Unauthorized access.",
+  "forbidden": "You do not have access permission.",
+  "notFound": "Page or user not found.",
+  "internalServerError": "Internal server error, we are working on it.",
+  "unknownError": "An unknown error occurred",
+  "tryagain": "Try again"
 }

@@ -6,13 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/user_entity.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_cubit.dart';
 import 'package:live_tracking/core/theme/theme_cubit.dart';
 import 'package:live_tracking/core/theme/theme_state.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_state.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/update_device_cubit/update_device_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/update_device_cubit/update_device_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/create_device_cubit/create_device_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/create_device_cubit/create_device_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/update_device_cubit/update_device_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/update_device_cubit/update_device_state.dart';
 import 'package:live_tracking/l10n/app_localizations.dart';
 
 class AddEditDevicePage extends StatefulWidget {
@@ -111,20 +111,24 @@ class _AddEditDevicePageState extends State<AddEditDevicePage> {
                 },
               ),
               // داخل MultiBlocListener في صفحة AddEditDevicePage
-BlocListener<UpdateDeviceCubit, UpdateDeviceState>(
-  listener: (context, state) {
-    if (state is UpdateDeviceSuccess) {
-      // 1. تحديث القائمة في الـ Cubit الرئيسي فوراً
-      context.read<DevicesCubit>().updateDeviceInList(state.device);
+              BlocListener<UpdateDeviceCubit, UpdateDeviceState>(
+                listener: (context, state) {
+                  if (state is UpdateDeviceSuccess) {
+                    // 1. تحديث القائمة في الـ Cubit الرئيسي فوراً
+                    context.read<DevicesCubit>().updateDeviceInList(
+                      state.device,
+                    );
 
-      // 2. إظهار الرسالة
-      _showSnackBar(AppLocalizations.of(context)!.deviceupdatedsuccessfully);
+                    // 2. إظهار الرسالة
+                    _showSnackBar(
+                      AppLocalizations.of(context)!.deviceupdatedsuccessfully,
+                    );
 
-      // 3. الرجوع (Pop)
-      context.pop(); 
-    }
-  },
-),
+                    // 3. الرجوع (Pop)
+                    context.pop();
+                  }
+                },
+              ),
             ],
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -352,20 +356,22 @@ BlocListener<UpdateDeviceCubit, UpdateDeviceState>(
       // تأكدنا من الـ Validation، الآن نجهز البيانات ونعالج أي قيمة قد تكون Null
       final device = DeviceEntity(
         // 1. تأكد أن الـ ID لا يرسل Null أبداً
-        id: widget.device?.id ?? '', 
-        
+        id: widget.device?.id ?? '',
+
         brand: brandController.text.trim(),
         model: modelController.text.trim(),
         year: int.tryParse(yearController.text) ?? 0,
         plateNumber: plateController.text.trim(),
         type: selectedType,
-        
+
         // 2. الحماية من Null في الـ UserEntity
-        user: widget.device?.user ?? UserEntity(id: '0', name: 'Unknown', email: ''),
-        
+        user:
+            widget.device?.user ??
+            UserEntity(id: '0', name: 'Unknown', email: ''),
+
         // 3. الخطأ غالباً هنا: الـ Status لا يجب أن يكون Null
-        status: widget.device?.status ?? 'active', 
-        
+        status: widget.device?.status ?? 'active',
+
         lastRecord: widget.device?.lastRecord,
         image: widget.device?.image,
       );

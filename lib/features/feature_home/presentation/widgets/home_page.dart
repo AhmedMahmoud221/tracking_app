@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:live_tracking/features/feature_home/presentation/pages/home_page_view.dart';
+import 'package:live_tracking/features/feature_home/presentation/widgets/home_page_view.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

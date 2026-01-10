@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:live_tracking/core/errors/show_snack_bar.dart';
 import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'auth_state.dart';
@@ -25,20 +24,19 @@ class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthSuccess(token: token));
     } catch (e) {
-      final String errorMessage = ApiErrorHandler.handle(e);
-      emit(AuthFailure(errorMessage));
+      // final String errorMessage = ApiErrorHandler.handle(e);
+      emit(AuthFailure('e'));
     }
   }
 
   //--------------------------------------------
   // 1. Check Auth Status Method
   Future<void> checkAuthStatus() async {
-    final token =
-        await SecureStorage.readToken(); 
+    final token = await SecureStorage.readToken();
     if (token != null) {
       emit(AuthSuccess(token: token));
     } else {
-      emit(AuthInitial()); 
+      emit(AuthInitial());
     }
   }
 
@@ -66,8 +64,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthSuccess(token: token));
     } catch (e) {
-      final String errorMessage = ApiErrorHandler.handle(e);
-      emit(AuthFailure(errorMessage));
+      emit(AuthFailure('errorMessage'));
     }
   }
 
@@ -79,8 +76,7 @@ class AuthCubit extends Cubit<AuthState> {
       await authService.forgetPassword(email: email);
       emit(ForgetPasswordSuccess());
     } catch (e) {
-      final String errorMessage = ApiErrorHandler.handle(e);
-      emit(AuthFailure(errorMessage));
+      emit(AuthFailure('errorMessage'));
     }
   }
 }

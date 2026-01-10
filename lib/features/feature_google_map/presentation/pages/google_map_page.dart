@@ -6,8 +6,8 @@ import 'package:live_tracking/core/extensions/status_localization_extension.dart
 import 'package:live_tracking/core/socketService/socket_service.dart';
 import 'package:live_tracking/core/utils/secure_storage.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_google_map/presentation/socket_cubit/map_socket_cubit.dart';
 import 'package:live_tracking/features/feature_google_map/presentation/socket_cubit/map_socket_state.dart';
 import 'package:live_tracking/features/feature_google_map/presentation/widgets/custom_bottom_sheet.dart';
@@ -163,14 +163,17 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
       }
     });
 
-    final selectedDevice = context.read<DevicesCubit>().state is DevicesLoaded 
-      ? (context.read<DevicesCubit>().state as DevicesLoaded).selectedDevice 
-      : widget.initialDevice;
+    final selectedDevice = context.read<DevicesCubit>().state is DevicesLoaded
+        ? (context.read<DevicesCubit>().state as DevicesLoaded).selectedDevice
+        : widget.initialDevice;
 
     if (selectedDevice?.lastRecord != null) {
       _mapController?.animateCamera(
         CameraUpdate.newLatLng(
-          LatLng(selectedDevice!.lastRecord!.lat, selectedDevice.lastRecord!.lng),
+          LatLng(
+            selectedDevice!.lastRecord!.lat,
+            selectedDevice.lastRecord!.lng,
+          ),
         ),
       );
     }

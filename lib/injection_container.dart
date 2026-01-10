@@ -19,14 +19,14 @@ import 'package:live_tracking/features/feature_devices/data/Repository/device_re
 import 'package:live_tracking/features/feature_devices/data/datasource/device_remote_datasource.dart';
 import 'package:live_tracking/features/feature_devices/domain/repo/device_repo.dart';
 import 'package:live_tracking/features/feature_devices/domain/usecases/get_devices_list.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_cubit.dart';
 import 'package:live_tracking/features/feature_google_map/presentation/socket_cubit/map_socket_cubit.dart';
 import 'package:live_tracking/features/feature_home/domain/create_device_use_case.dart';
 import 'package:live_tracking/features/feature_home/domain/delete_device_use_case.dart';
 import 'package:live_tracking/features/feature_home/domain/update_device_use_case.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/delete_device_cubit/delete_device_cubit.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/update_device_cubit/update_device_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/create_device_cubit/create_device_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/delete_device_cubit/delete_device_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/update_device_cubit/update_device_cubit.dart';
 import 'package:live_tracking/features/feature_login/data/models/auth_service.dart';
 import 'package:live_tracking/features/feature_login/presentation/cubit/auth_cubit/auth_cubit.dart';
 import 'package:live_tracking/features/feature_profile/data/datasources/user_profile_data_source.dart';
@@ -54,7 +54,10 @@ Future<void> init({String savedLang = 'ar'}) async {
   sl.registerFactory(() => MapSocketCubit(sl<SocketService>()));
 
   sl.registerFactory<ProfileDataCubit>(
-    () => ProfileDataCubit(sl<GetUserProfileUseCase>(), sl<UpdateUserProfileUseCase>()),
+    () => ProfileDataCubit(
+      sl<GetUserProfileUseCase>(),
+      sl<UpdateUserProfileUseCase>(),
+    ),
   );
 
   sl.registerFactory<LogOutCubit>(() => LogOutCubit(sl<LogoutUseCase>()));
@@ -114,14 +117,12 @@ Future<void> init({String savedLang = 'ar'}) async {
 
   // -----------------Data source---------------
   sl.registerLazySingleton<ChatRemoteDataSource>(
-    () => ChatRemoteDataSource(sl<Dio>()), 
+    () => ChatRemoteDataSource(sl<Dio>()),
   );
 
   // ----------------Repository---------------
   sl.registerLazySingleton<ChatRepository>(
-    () => ChatRepositoryImpl(
-      sl<ChatRemoteDataSource>(), 
-    ),
+    () => ChatRepositoryImpl(sl<ChatRemoteDataSource>()),
   );
 
   // ------------------Use Case---------------

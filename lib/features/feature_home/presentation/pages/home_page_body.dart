@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/core/errors/show_snack_bar.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_cubit.dart';
-import 'package:live_tracking/features/feature_devices/presentation/cubit/devices_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_cubit.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/devices_cubit/devices_state.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/last_tracked_card.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/recent_activites_card.dart';
 import 'package:live_tracking/features/feature_home/presentation/pages/state_card.dart';
@@ -21,6 +21,7 @@ class HomePageBody extends StatefulWidget {
 class _HomePageBodyState extends State<HomePageBody> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = Theme.of(context).brightness == Brightness.dark
         ? Colors.black
         : Colors.white;
@@ -127,17 +128,38 @@ class _HomePageBodyState extends State<HomePageBody> {
                     const SizedBox(height: 16),
                     Text(
                       // هنا بنستخدم الـ Handler اللي أنت بعته عشان نترجم الخطأ
-                      ApiErrorHandler.handle(state.message),
+                      ApiErrorHandler.handle(state.message, context),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: () => context
                           .read<DevicesCubit>()
                           .fetchDevices(), // استدعاء الداتا تاني
-                      icon: const Icon(Icons.refresh),
-                      label: const Text("إعادة المحاولة"),
+                      icon: const Icon(Icons.refresh, color: Colors.blue),
+                      label: Text(
+                        AppLocalizations.of(context)!.tryagain,
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark
+                            ? Colors.grey[100]
+                            : Colors.grey[400],
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            25,
+                          ), // لجعل الحواف دائرية بشكل لطيف
+                        ),
+                      ),
                     ),
                   ],
                 ),

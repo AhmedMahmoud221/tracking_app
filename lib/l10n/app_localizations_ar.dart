@@ -289,4 +289,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get yesterday => 'أمس';
+
+  @override
+  String get connectionTimeout => 'انتهت مهلة الاتصال، تأكد من الإنترنت.';
+
+  @override
+  String get sendTimeout => 'فشل إرسال البيانات، حاول مرة أخرى.';
+
+  @override
+  String get receiveTimeout => 'الخادم لم يستجب في الوقت المحدد.';
+
+  @override
+  String get processCancelled => 'تم إلغاء العملية.';
+
+  @override
+  String get noInternet => 'لا يوجد اتصال بالإنترنت.';
+
+  @override
+  String get unexpectedError => 'عذراً، حدث خطأ غير متوقع.';
+
+  @override
+  String get genericError => 'حدث خطأ ما، يرجى المحاولة لاحقاً';
+
+  @override
+  String get badRequest => 'بيانات غير صالحة.';
+
+  @override
+  String get unauthorized => 'غير مصرح لك بالدخول.';
+
+  @override
+  String get forbidden => 'ليس لديك صلاحية الوصول.';
+
+  @override
+  String get notFound => 'الصفحة أو المستخدم غير موجود.';
+
+  @override
+  String get internalServerError => 'مشكلة في السيرفر الداخلي، جاري العمل على حلها.';
+
+  @override
+  String get unknownError => 'حدث خطأ غير معروف';
+
+  @override
+  String get tryagain => ' إعادة المحاولة';
 }

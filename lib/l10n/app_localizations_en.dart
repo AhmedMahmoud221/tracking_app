@@ -289,4 +289,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yesterday => 'Yesterday';
+
+  @override
+  String get connectionTimeout => 'Connection timeout, check your internet.';
+
+  @override
+  String get sendTimeout => 'Failed to send data, please try again.';
+
+  @override
+  String get receiveTimeout => 'The server did not respond in time.';
+
+  @override
+  String get processCancelled => 'Process was cancelled.';
+
+  @override
+  String get noInternet => 'No internet connection.';
+
+  @override
+  String get unexpectedError => 'Sorry, an unexpected error occurred.';
+
+  @override
+  String get genericError => 'Something went wrong, please try again later.';
+
+  @override
+  String get badRequest => 'Invalid data.';
+
+  @override
+  String get unauthorized => 'Unauthorized access.';
+
+  @override
+  String get forbidden => 'You do not have access permission.';
+
+  @override
+  String get notFound => 'Page or user not found.';
+
+  @override
+  String get internalServerError => 'Internal server error, we are working on it.';
+
+  @override
+  String get unknownError => 'An unknown error occurred';
+
+  @override
+  String get tryagain => 'Try again';
 }

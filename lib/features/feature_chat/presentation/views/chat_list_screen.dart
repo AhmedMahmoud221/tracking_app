@@ -39,7 +39,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: CustomSearchbarUsersList(isDark: isDark),
                 ),
-            
+
                 // Chat List
                 Expanded(child: CustomUsersListView()),
               ],

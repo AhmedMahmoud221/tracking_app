@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_home/domain/create_device_use_case.dart';
-import 'package:live_tracking/features/feature_home/presentation/cubits/create_device_cubit/create_device_state.dart';
+import 'package:live_tracking/features/feature_devices/presentation/cubits/create_device_cubit/create_device_state.dart';
 
 class CreateDeviceCubit extends Cubit<CreateDeviceState> {
   final CreateDeviceUseCase createDeviceUseCase;

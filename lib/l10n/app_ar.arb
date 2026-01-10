@@ -93,5 +93,19 @@
   "block": "حظر",
   "phone": "الهاتف",
   "about": "حول",
-  "yesterday": "أمس"
+  "yesterday": "أمس",
+  "connectionTimeout": "انتهت مهلة الاتصال، تأكد من الإنترنت.",
+  "sendTimeout": "فشل إرسال البيانات، حاول مرة أخرى.",
+  "receiveTimeout": "الخادم لم يستجب في الوقت المحدد.",
+  "processCancelled": "تم إلغاء العملية.",
+  "noInternet": "لا يوجد اتصال بالإنترنت.",
+  "unexpectedError": "عذراً، حدث خطأ غير متوقع.",
+  "genericError": "حدث خطأ ما، يرجى المحاولة لاحقاً",
+  "badRequest": "بيانات غير صالحة.",
+  "unauthorized": "غير مصرح لك بالدخول.",
+  "forbidden": "ليس لديك صلاحية الوصول.",
+  "notFound": "الصفحة أو المستخدم غير موجود.",
+  "internalServerError": "مشكلة في السيرفر الداخلي، جاري العمل على حلها.",
+  "unknownError": "حدث خطأ غير معروف",
+  "tryagain": " إعادة المحاولة"
 }
