@@ -31,9 +31,7 @@ class ChatListCubit extends Cubit<ChatListState> {
     if (showLoading) emit(ChatListLoading());
 
     final result = await repository.getMyChats();
-    result.fold(
-      (error) => emit(ChatListError(error)), 
-      (chatsList) {
+    result.fold((error) => emit(ChatListError(error)), (chatsList) {
       allChats = chatsList.cast<ChatEntity>().toList();
       emit(ChatListSuccess(List.from(allChats)));
     });
@@ -55,97 +53,80 @@ class ChatListCubit extends Cubit<ChatListState> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () async {
-      
-      // emit(ChatListSearchLoading()); 
+      // emit(ChatListSearchLoading());
 
       final result = await repository.searchChats(searchTerm);
 
-      result.fold(
-        (error) => emit(ChatListError(error)),
-        (searchResults) {
-          emit(ChatListSuccess(searchResults));
-        },
-      );
+      result.fold((error) => emit(ChatListError(error)), (searchResults) {
+        emit(ChatListSuccess(searchResults));
+      });
     });
   }
 
   //===============================================================================
   // update form last message event
   void updateFromLastMessageEvent(Map<String, dynamic> data) {
-  final String incomingChatId = data['chatId']?.toString() ?? "";
-  final lastMsg = data['lastMessage'];
-  if (incomingChatId.isEmpty || lastMsg == null) return;
+    final String incomingChatId = data['chatId']?.toString() ?? "";
+    final lastMsg = data['lastMessage'];
+    if (incomingChatId.isEmpty || lastMsg == null) return;
 
-  final senderData = lastMsg['senderId'];
-  final String senderId = (senderData is Map) 
-      ? senderData['_id'].toString() 
-      : senderData.toString();
+    final senderData = lastMsg['senderId'];
+    final String senderId = (senderData is Map)
+        ? senderData['_id'].toString()
+        : senderData.toString();
 
-  final index = allChats.indexWhere((c) => c.chatId.toString() == incomingChatId);
-
-  if (index != -1) {
-    bool isMe = senderId == myId;
-
-    final updatedChat = allChats[index].copyWith(
-      lastMessage: lastMsg['text'] ?? "Media content",
-      lastMessageSenderId: senderId,
-      createdAt: lastMsg['createdAt'] != null 
-          ? DateTime.parse(lastMsg['createdAt']) 
-          : DateTime.now(),
-      hasUnreadMessages: !isMe, // هنا تنور الدايرة الزرقاء
+    final index = allChats.indexWhere(
+      (c) => c.chatId.toString() == incomingChatId,
     );
 
-    final List<ChatEntity> updatedList = List<ChatEntity>.from(allChats);
-    updatedList.removeAt(index);
-    updatedList.insert(0, updatedChat);
-
-    allChats = updatedList;
-
-    emit(ChatListSuccess(allChats));
-    print("🔔 Notification Status: ${!isMe} for chat: $incomingChatId");
-  } else {
-    fetchChats(showLoading: false);
-    _fetchAndMarkAsUnread(incomingChatId);
-  }
-}
-
-  //===============================================================================
-  // update form last message event
-  Future<void> _fetchAndMarkAsUnread(String chatId) async {
-    final result = await repository.getMyChats();
-    result.fold(
-      (error) => emit(ChatListError(error)),
-      (chatsList) {
-        allChats = chatsList.cast<ChatEntity>().toList();
-        
-        int index = allChats.indexWhere((c) => c.chatId == chatId);
-        if (index != -1) {
-          allChats[index] = allChats[index].copyWith(hasUnreadMessages: true);
-        }
-        
-        emit(ChatListSuccess(List.from(allChats)));
-      },
-    );
-  }
-
-  //==============================================================================
-  // جوه ChatListCubit
-  void markChatAsRead(String chatId) {
-    final index = allChats.indexWhere((c) => c.chatId.toString() == chatId);
-    
     if (index != -1) {
-      allChats[index] = allChats[index].copyWith(hasUnreadMessages: false);
-      
-      emit(ChatListSuccess(List.from(allChats)));
-      
-      print("✅ Chat $chatId marked as read localy");
+      final updatedChat = allChats[index].copyWith(
+        lastMessage: lastMsg['text'] ?? "Media content",
+        lastMessageSenderId: senderId,
+        createdAt: lastMsg['createdAt'] != null
+            ? DateTime.parse(lastMsg['createdAt'])
+            : DateTime.now(),
+      );
+
+      final List<ChatEntity> updatedList = List<ChatEntity>.from(allChats);
+      updatedList.removeAt(index);
+      updatedList.insert(0, updatedChat);
+
+      allChats = updatedList;
+      emit(ChatListSuccess(allChats));
+    } else {
+      fetchChats(showLoading: false);
+      // _fetchAndMarkAsUnread(incomingChatId);
     }
   }
 
+  //===============================================================================
+  // update form last message event
+  // Future<void> _fetchAndMarkAsUnread(String chatId) async {
+  //   final result = await repository.getMyChats();
+  //   result.fold((error) => emit(ChatListError(error)), (chatsList) {
+  //     allChats = chatsList.cast<ChatEntity>().toList();
+
+  //     int index = allChats.indexWhere((c) => c.chatId == chatId);
+  //     if (index != -1) {
+  //       allChats[index] = allChats[index].copyWith(hasUnreadMessages: true);
+  //     }
+
+  //     emit(ChatListSuccess(List.from(allChats)));
+  //   });
+  // }
+
   //==============================================================================
-  // داخل ChatListCubit
-  void clearAllNotifications() {
-    allChats = allChats.map((chat) => chat.copyWith(hasUnreadMessages: false)).toList();
-    emit(ChatListSuccess(List.from(allChats)));
-  }
+  // جوه ChatListCubit
+  // void markChatAsRead(String chatId) {
+  //   final index = allChats.indexWhere((c) => c.chatId.toString() == chatId);
+
+  //   if (index != -1) {
+  //     allChats[index] = allChats[index].copyWith(hasUnreadMessages: false);
+
+  //     emit(ChatListSuccess(List.from(allChats)));
+
+  //     print("✅ Chat $chatId marked as read localy");
+  //   }
+  // }
 }

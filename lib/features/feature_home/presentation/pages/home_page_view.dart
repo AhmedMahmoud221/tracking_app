@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:live_tracking/features/feature_chat/presentation/views/chat_page_body.dart';
+import 'package:live_tracking/features/feature_chat/presentation/widgets/chat_page_body.dart';
 import 'package:live_tracking/features/feature_devices/domain/entities/device_entity.dart';
 import 'package:live_tracking/features/feature_devices/presentation/views/devices_page.dart';
 import 'package:live_tracking/features/feature_google_map/presentation/pages/google_map_page.dart';
@@ -30,7 +30,7 @@ class _HomePageViewState extends State<HomePageView> {
           HomePageBody(
             onTrackLastDevice: (device) {
               setState(() {
-                selectedDevice = device; 
+                selectedDevice = device;
                 selectedIndex = 2;
               });
             },

@@ -9,13 +9,19 @@ class UserProfileScreen extends StatelessWidget {
   final ChatMessagesScreen widget;
   final ChatEntity chat;
 
-  const UserProfileScreen({super.key, required this.widget, required this.chat});
+  const UserProfileScreen({
+    super.key,
+    required this.widget,
+    required this.chat,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final Color primaryColor = Colors.blue;
-    final Color cardColor = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF8F9FA);
+    final Color cardColor = isDark
+        ? const Color(0xFF1E1E1E)
+        : const Color(0xFFF8F9FA);
 
     return Scaffold(
       backgroundColor: isDark ? Colors.black : Colors.white,
@@ -23,7 +29,10 @@ class UserProfileScreen extends StatelessWidget {
         slivers: [
           // 1. الجزء العلوي مع الصورة وسهم الرجوع
           SliverAppBar(
-            title: Text('Profile', style: TextStyle(color: Colors.blue, fontSize: 22),),
+            title: Text(
+              'Profile',
+              style: TextStyle(color: Colors.blue, fontSize: 22),
+            ),
             expandedHeight: 300,
             pinned: true,
             stretch: true,
@@ -38,8 +47,10 @@ class UserProfileScreen extends StatelessWidget {
                   Image.network(
                     _getFormattedUrl(chat.profilePicture),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Container(color: Colors.grey, child: const Icon(Icons.person, size: 100)),
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey,
+                      child: const Icon(Icons.person, size: 100),
+                    ),
                   ),
                   // تدرج لوني لجعل النص والأيقونات واضحة فوق الصورة
                   const DecoratedBox(
@@ -47,7 +58,11 @@ class UserProfileScreen extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.black54, Colors.transparent, Colors.black87],
+                        colors: [
+                          Colors.black54,
+                          Colors.transparent,
+                          Colors.black87,
+                        ],
                       ),
                     ),
                   ),
@@ -58,66 +73,71 @@ class UserProfileScreen extends StatelessWidget {
 
           // 2. قائمة المعلومات بتصميم مودرن
           SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Container(
-                  // هذا الـ Transform هو سر التداخل الأنيق
-                  transform: Matrix4.translationValues(0, -40, 0),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.black : Colors.white,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 24,),
-                        // اسم المستخدم
-                        Text(
-                          widget.userName,
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          chat.userStatus,
-                          style: TextStyle(
-                            color: chat.userStatus.toLowerCase() == 'online' 
-                                ? Colors.green 
-                                : Colors.red, 
-                            fontWeight: FontWeight.w500
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 30),
-                        
-                        // صف الإحصائيات
-                        _buildQuickStats(isDark),
-                        
-                        const SizedBox(height: 35),
-                        
-                        // عنوان قسم المعلومات
-                        _buildSectionHeader(AppLocalizations.of(context)!.about, primaryColor),
-                        const SizedBox(height: 15),
-                        
-                        // كارت المعلومات
-                        _buildModernInfoCard(cardColor, isDark, context),
-                        
-                        const SizedBox(height: 30),
-                        
-                        // زر إرسال رسالة
-                        // _buildActionButton(context, primaryColor),
-                        
-                        const SizedBox(height: 500), // مساحة للسكرول
-                      ],
-                    ),
+            delegate: SliverChildListDelegate([
+              Container(
+                // هذا الـ Transform هو سر التداخل الأنيق
+                transform: Matrix4.translationValues(0, -40, 0),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.black : Colors.white,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(40),
                   ),
                 ),
-              ],
-            ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 30,
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 24),
+                      // اسم المستخدم
+                      Text(
+                        widget.userName,
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        chat.userStatus,
+                        style: TextStyle(
+                          color: chat.userStatus.toLowerCase() == 'online'
+                              ? Colors.green
+                              : Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      // صف الإحصائيات
+                      _buildQuickStats(isDark),
+
+                      const SizedBox(height: 35),
+
+                      // عنوان قسم المعلومات
+                      _buildSectionHeader(
+                        AppLocalizations.of(context)!.about,
+                        primaryColor,
+                      ),
+                      const SizedBox(height: 15),
+
+                      // كارت المعلومات
+                      _buildModernInfoCard(cardColor, isDark, context),
+
+                      const SizedBox(height: 30),
+
+                      // زر إرسال رسالة
+                      // _buildActionButton(context, primaryColor),
+                      const SizedBox(height: 500), // مساحة للسكرول
+                    ],
+                  ),
+                ),
+              ),
+            ]),
           ),
         ],
       ),
@@ -136,7 +156,10 @@ class UserProfileScreen extends StatelessWidget {
           value: 'block',
           child: ListTile(
             leading: const Icon(Icons.block, color: Colors.red),
-            title: Text(AppLocalizations.of(context)!.block, style: const TextStyle(color: Colors.red)),
+            title: Text(
+              AppLocalizations.of(context)!.block,
+              style: const TextStyle(color: Colors.red),
+            ),
             contentPadding: EdgeInsets.zero,
           ),
         ),
@@ -164,7 +187,7 @@ class UserProfileScreen extends StatelessWidget {
       scheme: 'tel',
       path: phoneNumber.replaceAll(' ', ''),
     );
-    
+
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
     } else {
@@ -176,7 +199,10 @@ class UserProfileScreen extends StatelessWidget {
   Widget _statItem(String value, String label, bool isDark) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 4),
         Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
       ],
@@ -184,7 +210,11 @@ class UserProfileScreen extends StatelessWidget {
   }
 
   Widget _verticalDivider(bool isDark) {
-    return Container(height: 30, width: 1, color: isDark ? Colors.white10 : Colors.black12);
+    return Container(
+      height: 30,
+      width: 1,
+      color: isDark ? Colors.white10 : Colors.black12,
+    );
   }
 
   Widget _buildSectionHeader(String title, Color color) {
@@ -192,13 +222,22 @@ class UserProfileScreen extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Text(
         title.toUpperCase(),
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, letterSpacing: 1.2, fontSize: 13),
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+          fontSize: 13,
+        ),
       ),
     );
   }
 
   // كارت المعلومات الموحد
-  Widget _buildModernInfoCard(Color bgColor, bool isDark, BuildContext context) {
+  Widget _buildModernInfoCard(
+    Color bgColor,
+    bool isDark,
+    BuildContext context,
+  ) {
     return Column(
       children: [
         // كارت رقم الهاتف
@@ -209,36 +248,40 @@ class UserProfileScreen extends StatelessWidget {
             }
           },
           child: _buildSingleInfoCard(
-            bgColor, 
-            Icons.phone_outlined, 
+            bgColor,
+            Icons.phone_outlined,
             AppLocalizations.of(context)!.phone,
-            chat.phoneNumber
+            chat.phoneNumber,
           ),
         ),
         const SizedBox(height: 16), // مسافة بين الكروت
-        
         // كارت البريد الإلكتروني
         _buildSingleInfoCard(
-          bgColor, 
-          Icons.email_outlined, 
+          bgColor,
+          Icons.email_outlined,
           AppLocalizations.of(context)!.email,
-          chat.email
+          chat.email,
         ),
         const SizedBox(height: 16),
-        
+
         // كارت عن المستخدم
         _buildSingleInfoCard(
-          bgColor, 
-          Icons.info_outline, 
+          bgColor,
+          Icons.info_outline,
           AppLocalizations.of(context)!.about,
-          "Product Designer & Developer"
+          "Product Designer & Developer",
         ),
       ],
     );
   }
 
   // 2. دالة بناء الكارت المنفرد (Single Card)
-  Widget _buildSingleInfoCard(Color bgColor, IconData icon, String value, String sub) {
+  Widget _buildSingleInfoCard(
+    Color bgColor,
+    IconData icon,
+    String value,
+    String sub,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -258,8 +301,8 @@ class UserProfileScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1), 
-              borderRadius: BorderRadius.circular(12)
+              color: Colors.blue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: Colors.blue, size: 22),
           ),
@@ -269,13 +312,16 @@ class UserProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  value, 
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  sub, 
-                  style: const TextStyle(fontSize: 12, color: Colors.grey)
+                  sub,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -286,23 +332,6 @@ class UserProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _buildActionButton(BuildContext context, Color color) {
-  //   return SizedBox(
-  //     width: double.infinity,
-  //     child: ElevatedButton(
-  //       onPressed: () => Navigator.pop(context),
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: color,
-  //         foregroundColor: Colors.white,
-  //         padding: const EdgeInsets.symmetric(vertical: 16),
-  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-  //         elevation: 0,
-  //       ),
-  //       child: const Text("Send Message", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-  //     ),
-  //   );
-  // }
 }
 
 String _getFormattedUrl(String? path) {

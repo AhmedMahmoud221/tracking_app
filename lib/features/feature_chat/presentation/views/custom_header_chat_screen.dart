@@ -5,10 +5,7 @@ import 'package:live_tracking/features/feature_chat/presentation/views/chat_mess
 import 'package:live_tracking/features/feature_chat/presentation/views/user_profile_screen.dart';
 
 class CustomHeaderChatScreen extends StatelessWidget {
-  const CustomHeaderChatScreen({
-    super.key,
-    required this.widget,
-  });
+  const CustomHeaderChatScreen({super.key, required this.widget});
 
   final ChatMessagesScreen widget;
 
@@ -16,12 +13,13 @@ class CustomHeaderChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-         Navigator.push(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => UserProfileScreen(
               widget: widget,
-              chat: ChatEntity( // بنعمل كائن مؤقت بالبيانات اللي معانا
+              chat: ChatEntity(
+                // بنعمل كائن مؤقت بالبيانات اللي معانا
                 chatId: widget.chatId,
                 otherUserName: widget.userName,
                 profilePicture: widget.profilePicture, // تمرير الصورة هنا
@@ -45,7 +43,8 @@ class CustomHeaderChatScreen extends StatelessWidget {
             child: ClipOval(
               child: Image.network(
                 _getFormattedUrl(widget.profilePicture),
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: Colors.white),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.person, color: Colors.white),
                 fit: BoxFit.cover,
                 width: 36,
                 height: 36,
@@ -59,13 +58,7 @@ class CustomHeaderChatScreen extends StatelessWidget {
     );
   }
 }
-// String _getFormattedUrl(String? path) {
-//   if (path == null || path.isEmpty) return 'https://i.pravatar.cc/150';
-//   if (path.startsWith('http')) return path;
-  
-//   final cleanPath = path.startsWith('/') ? path.substring(1) : path;
-//   return "${ApiConstants.baseUrl}/$cleanPath";
-// }
+
 String _getFormattedUrl(String? path) {
   if (path == null || path.isEmpty) return 'https://i.pravatar.cc/150';
   if (path.startsWith('http')) return path;

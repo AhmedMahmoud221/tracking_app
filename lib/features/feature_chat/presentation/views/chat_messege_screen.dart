@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:live_tracking/core/constants/api_constants.dart';
 import 'package:live_tracking/features/feature_chat/domain/enities/message_entity.dart';
-import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_list/chat_list_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_cubit.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_message/chat_message_state.dart';
 import 'package:live_tracking/features/feature_chat/presentation/cubits/chat_socket/chat_socket_cubit.dart';
@@ -32,7 +31,7 @@ class ChatMessagesScreen extends StatefulWidget {
     super.key,
     required this.userName,
     required this.chatId,
-    required this.email, 
+    required this.email,
     this.profilePicture,
     required this.phoneNumber,
     required this.userStatus,
@@ -60,7 +59,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     audioRecorder = AudioRecorder();
     _messageController = context.read<ChatMessagesCubit>().messageController;
 
-    context.read<ChatListCubit>().markChatAsRead(widget.chatId);
+    // context.read<ChatListCubit>().markChatAsRead(widget.chatId);
 
     // نداء ميثود واحدة منظمة
     _startChatFlow();
@@ -96,7 +95,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
 
     audioRecorder.dispose();
     _timer?.cancel();
-    
+
     _cubit.close();
     super.dispose();
   }
@@ -150,6 +149,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     }
   }
 
+  //=================================================logic
   // show message images
   Widget _buildImageBubble(MessageEntity msg, bool isDark) {
     final String imageUrl = _getFormattedUrl(msg.mediaUrl);
@@ -158,7 +158,9 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Column(
-        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           GestureDetector(
             onTap: () {
@@ -170,11 +172,15 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                color: isMe ? Colors.blue : (isDark ? Colors.grey[800] : Colors.white),
-                borderRadius: BorderRadius.circular(15), 
+                color: isMe
+                    ? Colors.blue
+                    : (isDark ? Colors.grey[800] : Colors.white),
+                borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.08), // الظل أخف في اللايت مود
+                    color: Colors.black.withOpacity(
+                      isDark ? 0.3 : 0.08,
+                    ), // الظل أخف في اللايت مود
                     blurRadius: 8,
                     offset: const Offset(0, 2), // إزاحة الظل للأسفل قليلاً
                   ),
@@ -240,13 +246,14 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     if (path.startsWith('http')) return path;
 
     final cleanPath = path.startsWith('/') ? path.substring(1) : path;
-    final base = ApiConstants.baseUrl.endsWith('/') 
-        ? ApiConstants.baseUrl.substring(0, ApiConstants.baseUrl.length - 1) 
+    final base = ApiConstants.baseUrl.endsWith('/')
+        ? ApiConstants.baseUrl.substring(0, ApiConstants.baseUrl.length - 1)
         : ApiConstants.baseUrl;
 
     return "$base/$cleanPath";
   }
 
+  //=================================================logic2
   // show message files
   Widget _buildFileBubble(MessageEntity msg, bool isDark) {
     print("DEBUG: mediaUrl = ${msg.mediaUrl}");
@@ -258,12 +265,14 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
 
     if (msg.fileName != null && msg.fileName!.isNotEmpty) {
       displayFileName = msg.fileName!;
-    } 
+    }
 
     return Align(
       alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Column(
-        crossAxisAlignment: msg.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: msg.isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           InkWell(
             onTap: () async {
@@ -271,10 +280,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               final Uri url = Uri.parse(rawUrl);
 
               try {
-                await launchUrl(
-                  url,
-                  mode: LaunchMode.externalApplication,
-                );
+                await launchUrl(url, mode: LaunchMode.externalApplication);
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("لا يوجد تطبيق لفتح هذا الملف")),
@@ -287,25 +293,38 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
                 // --- التعديل هنا ---
-                color: msg.isMe 
-                    ? (isDark ? Colors.blue.withOpacity(0.2) : Colors.blue.withOpacity(0.1)) 
-                    : (isDark ? Colors.grey[800] : Colors.white), // خلفية بيضاء في اللايت، ورمادي في الدارك
+                color: msg.isMe
+                    ? (isDark
+                          ? Colors.blue.withOpacity(0.2)
+                          : Colors.blue.withOpacity(0.1))
+                    : (isDark
+                          ? Colors.grey[800]
+                          : Colors
+                                .white), // خلفية بيضاء في اللايت، ورمادي في الدارك
                 // ------------------
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isDark ? Colors.blue.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
+                  color: isDark
+                      ? Colors.blue.withOpacity(0.2)
+                      : Colors.grey.withOpacity(0.2),
                 ),
-                boxShadow: isDark ? [] : [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  )
-                ],
+                boxShadow: isDark
+                    ? []
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.insert_drive_file, color: Colors.blue, size: 30),
+                  const Icon(
+                    Icons.insert_drive_file,
+                    color: Colors.blue,
+                    size: 30,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -331,6 +350,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     );
   }
 
+  //=================================================logic3
   // show message videos
   Widget _buildVideoBubble(MessageEntity msg, bool isDark) {
     return Align(
@@ -360,10 +380,12 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               height: 180,
               decoration: BoxDecoration(
                 color: Colors.black87,
-                borderRadius: BorderRadius.circular(15), 
+                borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.08), // الظل أخف في اللايت مود
+                    color: Colors.black.withOpacity(
+                      isDark ? 0.3 : 0.08,
+                    ), // الظل أخف في اللايت مود
                     blurRadius: 8,
                     offset: const Offset(0, 2), // إزاحة الظل للأسفل قليلاً
                   ),
@@ -420,7 +442,8 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         appBar: AppBar(
           titleSpacing: 0,
           title: CustomHeaderChatScreen(widget: widget),
-          surfaceTintColor: Colors.transparent, // يمنع تداخل الألوان عند السكرول
+          surfaceTintColor:
+              Colors.transparent, // يمنع تداخل الألوان عند السكرول
           scrolledUnderElevation: 0,
           backgroundColor: isDark ? Colors.grey[900] : Colors.white,
         ),
@@ -439,14 +462,23 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey),
+                            const Icon(
+                              Icons.chat_bubble_outline,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
                             const SizedBox(height: 16),
                             const Text(
                               "No messages yet",
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             const SizedBox(height: 8),
-                            const Text("Say Hello to start the conversation! 👋"),
+                            const Text(
+                              "Say Hello to start the conversation! 👋",
+                            ),
                           ],
                         ),
                       );
@@ -498,7 +530,9 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                           );
                         }
                         // 4. حالة الملفات/المستندات (جديد)
-                        else if (msgType == 'file' || msgType == 'document' || msgType.contains('application')) {
+                        else if (msgType == 'file' ||
+                            msgType == 'document' ||
+                            msgType.contains('application')) {
                           return Container(
                             key: messageKey,
                             child: _buildFileBubble(msg, isDark),
@@ -535,15 +569,16 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
     );
   }
 
+  //=================================================logic3
   // show Message Bubble
   Widget _buildChatBubble(MessageEntity msg, bool isDark) {
     final bool isMe = msg.isMe;
     final String time = DateFormat('hh:mm a').format(msg.createdAt);
 
     String displayText = msg.text;
-      if (displayText.isEmpty && msg.messageType != 'text') {
-        displayText = "وصلك ملف [${msg.messageType}]";
-      }
+    if (displayText.isEmpty && msg.messageType != 'text') {
+      displayText = "وصلك ملف [${msg.messageType}]";
+    }
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -577,12 +612,17 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             Text(
               msg.isDeleted ? "هذه الرسالة محذوفة" : msg.text,
               style: TextStyle(
-                color: msg.isDeleted ? Colors.grey : (isMe || isDark ? Colors.white : Colors.black87),
+                color: msg.isDeleted
+                    ? Colors.grey
+                    : (isMe || isDark ? Colors.white : Colors.black87),
                 fontStyle: msg.isDeleted ? FontStyle.italic : FontStyle.normal,
               ),
             ),
             if (msg.isEdited && !msg.isDeleted)
-              const Text("معدلة", style: TextStyle(fontSize: 8, color: Colors.grey)),
+              const Text(
+                "معدلة",
+                style: TextStyle(fontSize: 8, color: Colors.grey),
+              ),
             const SizedBox(height: 4),
             Text(
               time,
@@ -692,7 +732,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
                   if (_swipePosition < -120) {
                     _isRecording = false;
                     _stopTimer();
-                    audioRecorder.stop(); 
+                    audioRecorder.stop();
                   }
                 });
               }
@@ -799,7 +839,10 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             child: Row(
               children: [
                 Icon(Icons.arrow_back_ios, size: 12, color: Colors.grey),
-                Text(AppLocalizations.of(context)!.slidetocancel, style: TextStyle(color: Colors.grey)),
+                Text(
+                  AppLocalizations.of(context)!.slidetocancel,
+                  style: TextStyle(color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -807,38 +850,6 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
       ),
     );
   }
-
-  // void _showMessageOptions(MessageEntity msg) {
-  //   // لا تسمح بالتعديل أو الحذف إلا لرسائلك أنت فقط
-  //   if (!msg.isMe) return;
-
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => SafeArea(
-  //       child: Wrap(
-  //         children: [
-  //           if (msg.messageType == 'text') // التعديل للنصوص فقط غالباً
-  //             ListTile(
-  //               leading: const Icon(Icons.edit, color: Colors.blue),
-  //               title: const Text("تعديل الرسالة"),
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 _showEditDialog(msg);
-  //               },
-  //             ),
-  //           ListTile(
-  //             leading: const Icon(Icons.delete, color: Colors.red),
-  //             title: const Text("حذف الرسالة"),
-  //             onTap: () {
-  //               Navigator.pop(context);
-  //               _cubit.deleteMessage(widget.chatId);
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   void _showEditDialog(MessageEntity msg) {
     final editController = TextEditingController(text: msg.text);
@@ -848,7 +859,10 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
         title: const Text("تعديل الرسالة"),
         content: TextField(controller: editController, autofocus: true),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("إلغاء")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("إلغاء"),
+          ),
           TextButton(
             onPressed: () {
               _cubit.editMessage(msg.id, msg.text);
