@@ -96,37 +96,37 @@ class ChatListCubit extends Cubit<ChatListState> {
       emit(ChatListSuccess(allChats));
     } else {
       fetchChats(showLoading: false);
-      // _fetchAndMarkAsUnread(incomingChatId);
+      _fetchAndMarkAsUnread(incomingChatId);
     }
   }
 
   //===============================================================================
   // update form last message event
-  // Future<void> _fetchAndMarkAsUnread(String chatId) async {
-  //   final result = await repository.getMyChats();
-  //   result.fold((error) => emit(ChatListError(error)), (chatsList) {
-  //     allChats = chatsList.cast<ChatEntity>().toList();
+  Future<void> _fetchAndMarkAsUnread(String chatId) async {
+    final result = await repository.getMyChats();
+    result.fold((error) => emit(ChatListError(error)), (chatsList) {
+      allChats = chatsList.cast<ChatEntity>().toList();
 
-  //     int index = allChats.indexWhere((c) => c.chatId == chatId);
-  //     if (index != -1) {
-  //       allChats[index] = allChats[index].copyWith(hasUnreadMessages: true);
-  //     }
+      int index = allChats.indexWhere((c) => c.chatId == chatId);
+      if (index != -1) {
+        allChats[index] = allChats[index].copyWith(hasUnreadMessages: true);
+      }
 
-  //     emit(ChatListSuccess(List.from(allChats)));
-  //   });
-  // }
+      emit(ChatListSuccess(List.from(allChats)));
+    });
+  }
 
   //==============================================================================
   // جوه ChatListCubit
-  // void markChatAsRead(String chatId) {
-  //   final index = allChats.indexWhere((c) => c.chatId.toString() == chatId);
+  void markChatAsRead(String chatId) {
+    final index = allChats.indexWhere((c) => c.chatId.toString() == chatId);
 
-  //   if (index != -1) {
-  //     allChats[index] = allChats[index].copyWith(hasUnreadMessages: false);
+    if (index != -1) {
+      allChats[index] = allChats[index].copyWith(hasUnreadMessages: false);
 
-  //     emit(ChatListSuccess(List.from(allChats)));
+      emit(ChatListSuccess(List.from(allChats)));
 
-  //     print("✅ Chat $chatId marked as read localy");
-  //   }
-  // }
+      print("✅ Chat $chatId marked as read localy");
+    }
+  }
 }

@@ -17,7 +17,7 @@ class UserProfileDataSource {
     final token = await SecureStorage.readToken();
 
     final response = await http.get(
-      Uri.parse('${ApiConstants.baseUrl}api/user'),
+      Uri.parse('${ApiConstants.baseUrl}api/user/me'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

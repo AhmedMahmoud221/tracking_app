@@ -613,7 +613,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
               msg.isDeleted ? "هذه الرسالة محذوفة" : msg.text,
               style: TextStyle(
                 color: msg.isDeleted
-                    ? Colors.grey
+                    ? Colors.black
                     : (isMe || isDark ? Colors.white : Colors.black87),
                 fontStyle: msg.isDeleted ? FontStyle.italic : FontStyle.normal,
               ),
@@ -621,7 +621,7 @@ class _ChatMessagesScreenState extends State<ChatMessagesScreen> {
             if (msg.isEdited && !msg.isDeleted)
               const Text(
                 "معدلة",
-                style: TextStyle(fontSize: 8, color: Colors.grey),
+                style: TextStyle(fontSize: 8, color: Colors.black),
               ),
             const SizedBox(height: 4),
             Text(
